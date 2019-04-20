@@ -29,6 +29,13 @@ ctime={
  ms=0
 }
 
+life = {
+ player = 25,
+ ennemy = 10,
+ boss = 150,
+ immortal_obj = 1000
+}
+
 actors={}
 particles={}
 explosions={}
@@ -43,9 +50,17 @@ function _init()
  make_game()
 end
 
+function init_screen()
+ scr = {}
+ scr.x = 0
+ scr.y = 0
+ scr.shake = 0
+ scr.intensity = 2
+end
+
 -- make
 
-function make_actor(x,y,s,tag,direction)
+function make_actor(x,y,s,tag,health,direction)
  direction = direction or none
  local actor = {}
  actor.tag = tag
@@ -57,44 +72,40 @@ function make_actor(x,y,s,tag,direction)
  actor.s = s
  actor.dx = 0
  actor.dy = 0
+ actor.health = health
  actor.box = {x1=0,y1=0,x2=7,y2=7}
  add(actors,actor)
  return actor
 end
 
 function make_game()
- p = make_actor(48,60,1,player)
+ p = make_actor(48,60,1,player,life.player)
  p.d = up
  p.anim = "talk"
  p.walk = {f=1,st=1,sz=2,spd=1/5}
  p.talk = {f=1+16,st=1+16,sz=3,spd=1/5}
  p.cooldown = 0
  p.box = {x1=0,y1=0,x2=6,y2=7}
- for i=1,2 do
-  mstr = make_actor(rnd(128),rnd(120),4,ennemy)
-  mstr.anim = "walk"
-  mstr.walk = {f=4,st=4,sz=2,spd=1/5}
-  mstr.dx = rnd(1)
-  mstr.dy = rnd(1)
- end
- for i=1,2 do
-  mstr = make_actor(rnd(128),rnd(120),7,ennemy)
-  mstr.anim = "walk"
-  mstr.walk = {f=7,st=7,sz=2,spd=1/5}
-  mstr.dx = rnd(1)
-  mstr.dy = rnd(1)
- end
- scr = {}
- scr.x = 0
- scr.y = 0
- scr.shake = 0
- scr.intensity = 2
- -- name,spr,sfx,animh,animv,delay,dmg,rx,ry,ox,oy
- make_item("sword",105,4,73,89,4,7,2,2,4,2)
- make_item("wand",106,1,74,90,4,8,32,1,5,1)
- make_item("gun",107,5,75,91,6,5,128,1,5,0)
- make_item("bow",108,3,76,92,6,5,64,1,4,-1)
+ make_ennemies(10, {4,7})
+ init_screen()
+ -- name,spr,sfx,animh,animv,delay,dmg,hb,ox,oy
+ make_item("sword",105,4,73,89,15,7,8,2,2)
+ make_item("wand",106,1,74,90,8,8,3,5,1)
+ make_item("gun",107,5,75,91,3,3,1,5,0)
+ make_item("bow",108,3,76,92,6,5,3,4,-1)
  p.weapon = items[1]
+end
+
+function make_ennemies(nb, aspr)
+ for s in all(aspr) do
+  for i=1,nb do
+   mstr = make_actor(rnd(248),rnd(248),s,ennemy,life.ennemy)
+   mstr.anim = "walk"
+   mstr.walk = {f=s,st=s,sz=2,spd=1/5}
+   mstr.dx = rnd(1)
+   mstr.dy = rnd(1)
+  end
+ end
 end
 
 function make_particles(n)
@@ -126,7 +137,7 @@ function make_explosion(x,y,a)
 	end
 end
 
-function make_item(name,spr,sfx,animh,animv,delay,dmg,rx,ry,ox,oy)
+function make_item(name,spr,sfx,animh,animv,delay,dmg,hb,ox,oy)
  local item = {}
  item.name = name
  item.spr = spr
@@ -134,8 +145,7 @@ function make_item(name,spr,sfx,animh,animv,delay,dmg,rx,ry,ox,oy)
  item.animv = animv
  item.delay = delay
  item.dmg = dmg
- item.rx = rx
- item.ry = ry
+ item.hb = hb
  item.ox = ox
  item.oy = oy
  item.sfx = sfx
@@ -155,6 +165,7 @@ function controls_menu()
  if (btnp(fire1)) then
   p.weapon = items[selected_item]
   open_inv = false
+  p.cooldown = 10
  end
 end
 
@@ -216,7 +227,7 @@ function action()
  if (p.cooldown > 0) p.cooldown -= 1
  if ((p.cooldown == 0) and btn(fire1)) then
   shoot()
-  p.cooldown = 10
+  p.cooldown = p.weapon.delay
  end
  if (btnp(fire2)) then
   sp = mget(p.x/8,(p.y-1)/8)
@@ -277,23 +288,31 @@ end
 
 function shoot()
  local speed = 2
+ local center = 0
  if(p.d == left) then
-  b = make_actor(p.x-5,p.y,p.weapon.animh,bullet,left)
+  b = make_actor(p.x-6,p.y,p.weapon.animh,bullet,life.immortal_obj,left)
+  center = p.weapon.hb/2
+  b.box = {x1=0,y1=4-center,x2=5,y2=4+center}
   b.dx = -speed
  end
  if(p.d == right) then
-  b = make_actor(p.x+5,p.y,p.weapon.animh,bullet,right)
+  b = make_actor(p.x+6,p.y,p.weapon.animh,bullet,life.immortal_obj,right)
+  center = p.weapon.hb/2
+  b.box = {x1=3,y1=4-center,x2=8,y2=4+center}
   b.dx = speed
  end
  if(p.d == up) then
-  b = make_actor(p.x,p.y-5,p.weapon.animv,bullet,up)
+  b = make_actor(p.x,p.y-6,p.weapon.animv,life.immortal_obj,bullet,up)
+  center = p.weapon.hb/2
+  b.box = {x1=4-center,y1=0,x2=4+center,y2=5}
   b.dy = -speed
  end
  if(p.d == down) then
-  b = make_actor(p.x,p.y+5,p.weapon.animv,bullet,down)
+  b = make_actor(p.x,p.y+6,p.weapon.animv,life.immortal_obj,bullet,down)
+  center = p.weapon.hb/2
+  b.box = {x1=4-center,y1=3,x2=4+center,y2=8}
   b.dy = speed
  end
- b.box = {x1=3,y1=3,x2=4,y2=4}
  sfx(p.weapon.sfx)
 end
 
@@ -461,8 +480,6 @@ function draw_game()
  highlight(39,fp.x+116,fp.y+5,2)
  draw_inventory(fp.x+80,fp.y)
  debug(fp.x+10,fp.y+10)
-
- dbg = #actors
 end
 
 -- update
@@ -471,6 +488,7 @@ function update_menu()
  if (btn(fire1) and btn(fire2)) then
   _update = update_game
   _draw = draw_game
+   p.cooldown = 10
  end
 end
 
