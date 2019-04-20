@@ -7,7 +7,7 @@ __lua__
 left,right,up,down,fire1,fire2,none=0,1,2,3,4,5,6
 black,dark_blue,dark_purple,dark_green,brown,dark_gray,light_gray,white,red,orange,yellow,green,blue,indigo,pink,peach=0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15
 player,bullet,ennemy=0,1,2
-
+immortal_obj = 1000
 -- var
 dbg=""
 
@@ -33,7 +33,6 @@ life = {
  player = 25,
  ennemy = 10,
  boss = 150,
- immortal_obj = 1000
 }
 
 actors={}
@@ -78,28 +77,37 @@ function make_actor(x,y,s,tag,health,direction)
  return actor
 end
 
-function make_game()
+function make_weapons()
+  -- name,spr,sfx,animh,animv,delay,dmg,speed,hb,ox,oy
+ make_item("sword",105,4,73,89,15,7,1,8,4,3)
+ make_item("wand",106,1,74,90,8,8,3,3,5,1)
+ make_item("gun",107,5,75,91,3,3,10,1,5,0)
+ make_item("bow",108,3,76,92,6,5,6,3,4,-1)
+end
+
+function make_player()
  p = make_actor(48,60,1,player,life.player)
+ p.weapon = items[1]
  p.d = up
  p.anim = "talk"
  p.walk = {f=1,st=1,sz=2,spd=1/5}
  p.talk = {f=1+16,st=1+16,sz=3,spd=1/5}
  p.cooldown = 0
  p.box = {x1=0,y1=0,x2=6,y2=7}
- make_ennemies(10, {4,7})
+end
+
+function make_game()
  init_screen()
- -- name,spr,sfx,animh,animv,delay,dmg,hb,ox,oy
- make_item("sword",105,4,73,89,15,7,8,2,2)
- make_item("wand",106,1,74,90,8,8,3,5,1)
- make_item("gun",107,5,75,91,3,3,1,5,0)
- make_item("bow",108,3,76,92,6,5,3,4,-1)
- p.weapon = items[1]
+ make_weapons()
+ make_player()
+ make_ennemies(10, {4,7})
 end
 
 function make_ennemies(nb, aspr)
  for s in all(aspr) do
   for i=1,nb do
    mstr = make_actor(rnd(248),rnd(248),s,ennemy,life.ennemy)
+   mstr.weapon = items[4]
    mstr.anim = "walk"
    mstr.walk = {f=s,st=s,sz=2,spd=1/5}
    mstr.dx = rnd(1)
@@ -137,13 +145,14 @@ function make_explosion(x,y,a)
 	end
 end
 
-function make_item(name,spr,sfx,animh,animv,delay,dmg,hb,ox,oy)
+function make_item(name,spr,sfx,animh,animv,delay,dmg,speed,hb,ox,oy)
  local item = {}
  item.name = name
  item.spr = spr
  item.animh = animh
  item.animv = animv
  item.delay = delay
+ item.speed = speed
  item.dmg = dmg
  item.hb = hb
  item.ox = ox
@@ -287,28 +296,28 @@ function is_of_limit(x,y,bx,by,r)
 end
 
 function shoot()
- local speed = 2
+ local speed = p.weapon.speed
  local center = 0
  if(p.d == left) then
-  b = make_actor(p.x-6,p.y,p.weapon.animh,bullet,life.immortal_obj,left)
+  b = make_actor(p.x-6,p.y,p.weapon.animh,bullet,immortal_obj,left)
   center = p.weapon.hb/2
   b.box = {x1=0,y1=4-center,x2=5,y2=4+center}
   b.dx = -speed
  end
  if(p.d == right) then
-  b = make_actor(p.x+6,p.y,p.weapon.animh,bullet,life.immortal_obj,right)
+  b = make_actor(p.x+6,p.y,p.weapon.animh,bullet,immortal_obj,right)
   center = p.weapon.hb/2
   b.box = {x1=3,y1=4-center,x2=8,y2=4+center}
   b.dx = speed
  end
  if(p.d == up) then
-  b = make_actor(p.x,p.y-6,p.weapon.animv,life.immortal_obj,bullet,up)
+  b = make_actor(p.x,p.y-6,p.weapon.animv,bullet,immortal_obj,up)
   center = p.weapon.hb/2
   b.box = {x1=4-center,y1=0,x2=4+center,y2=5}
   b.dy = -speed
  end
  if(p.d == down) then
-  b = make_actor(p.x,p.y+6,p.weapon.animv,life.immortal_obj,bullet,down)
+  b = make_actor(p.x,p.y+6,p.weapon.animv,bullet,immortal_obj,down)
   center = p.weapon.hb/2
   b.box = {x1=4-center,y1=3,x2=4+center,y2=8}
   b.dy = speed
@@ -388,6 +397,11 @@ function collisions()
  for a in all(actors) do
   for b in all(actors) do
    if (checkcollisions(a,b)) then
+    -- if (a.tag == bullet and b.tag ~= bullet) then
+    --  b.health -= a.dmg
+    -- elseif (b.tag == bullet and a.tag ~= bullet) then
+
+    -- end
     make_explosion(a.x,a.y,5)
     screenshake(10)
     del(actors,a)
@@ -429,6 +443,7 @@ end
 function draw_actors()
  for a in all(actors) do
   if (a.tag == player or a.tag == ennemy) then
+   draw_weapon(a)
    highlight(anim_player(a),a.x,a.y,5)
   else
    local inv = manage_direction(a.direction)
@@ -437,8 +452,8 @@ function draw_actors()
  end
 end
 
-function draw_weapon()
- spr(p.weapon.spr,p.x+p.weapon.ox,p.y-p.weapon.oy)
+function draw_weapon(a)
+ spr(a.weapon.spr,a.x+a.weapon.ox,a.y-a.weapon.oy)
 end
 
 function draw_menu()
@@ -472,7 +487,6 @@ function draw_game()
  draw_particles()
  draw_explosions()
  draw_actors()
- draw_weapon()
 
  fp = follow_player()
 
