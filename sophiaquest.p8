@@ -116,12 +116,13 @@ function make_ennemies(nb, aspr)
  end
 end
 
-function make_particles(n)
+function make_particles(a,n,c)
+ c = c or 8
 	while (n > 0) do
  	part = {}
- 	part.x = p.x+4
- 	part.y = p.y+4
- 	part.c = flr(rnd(3)+8)
+ 	part.x = a.x+4
+ 	part.y = a.y+4
+ 	part.c = flr(rnd(3)+c)
  	part.dx = (rnd(2)-1)*2
  	part.dy = (rnd(2)-1)*2
  	part.f = 0
@@ -297,31 +298,28 @@ end
 
 function shoot()
  local speed = p.weapon.speed
- local center = 0
+ local center = p.weapon.hb/2
  if(p.d == left) then
   b = make_actor(p.x-6,p.y,p.weapon.animh,bullet,immortal_obj,left)
-  center = p.weapon.hb/2
   b.box = {x1=0,y1=4-center,x2=5,y2=4+center}
   b.dx = -speed
  end
  if(p.d == right) then
   b = make_actor(p.x+6,p.y,p.weapon.animh,bullet,immortal_obj,right)
-  center = p.weapon.hb/2
   b.box = {x1=3,y1=4-center,x2=8,y2=4+center}
   b.dx = speed
  end
  if(p.d == up) then
   b = make_actor(p.x,p.y-6,p.weapon.animv,bullet,immortal_obj,up)
-  center = p.weapon.hb/2
   b.box = {x1=4-center,y1=0,x2=4+center,y2=5}
   b.dy = -speed
  end
  if(p.d == down) then
   b = make_actor(p.x,p.y+6,p.weapon.animv,bullet,immortal_obj,down)
-  center = p.weapon.hb/2
   b.box = {x1=4-center,y1=3,x2=4+center,y2=8}
   b.dy = speed
  end
+ b.dmg = p.weapon.dmg
  sfx(p.weapon.sfx)
 end
 
@@ -393,19 +391,30 @@ function checkcollisions(a,b)
  return true
 end
 
+function is_dead(a)
+ return a.health <= 0
+end
+
 function collisions()
  for a in all(actors) do
   for b in all(actors) do
    if (checkcollisions(a,b)) then
-    -- if (a.tag == bullet and b.tag ~= bullet) then
-    --  b.health -= a.dmg
-    -- elseif (b.tag == bullet and a.tag ~= bullet) then
-
-    -- end
-    make_explosion(a.x,a.y,5)
-    screenshake(10)
-    del(actors,a)
-    del(actors,b)
+    local damaged_actor = a
+    if (a.tag == bullet and b.tag ~= bullet) then
+     b.health -= a.dmg
+     damaged_actor = b
+     make_particles(b,10,5)
+     del(actors,a)
+    elseif (b.tag == bullet and a.tag ~= bullet) then
+     a.health -= b.dmg
+     make_particles(a,10,5)
+     del(actors,b)
+    end
+    if (is_dead(damaged_actor)) then
+     make_explosion(damaged_actor.x,damaged_actor.y,5)
+     screenshake(10)
+     del(actors,damaged_actor)
+    end
    end
   end
  end
