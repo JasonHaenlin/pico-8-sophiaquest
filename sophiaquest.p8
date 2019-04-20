@@ -60,10 +60,10 @@ end
 -- make
 
 function make_actor(x,y,s,tag,health,direction)
- direction = direction or none
+ direction = direction or flr(rnd(3))
  local actor = {}
  actor.tag = tag
- actor.direction = direction
+ actor.d = direction
  actor.bx = x
  actor.by = y
  actor.x = x
@@ -100,7 +100,7 @@ function make_game()
  init_screen()
  make_weapons()
  make_player()
- make_ennemies(10, {4,7})
+ make_ennemies(2, {4,7})
 end
 
 function make_ennemies(nb, aspr)
@@ -108,6 +108,7 @@ function make_ennemies(nb, aspr)
   for i=1,nb do
    mstr = make_actor(rnd(248),rnd(248),s,ennemy,life.ennemy)
    mstr.weapon = items[4]
+   mstr.cooldown = 50
    mstr.anim = "walk"
    mstr.walk = {f=s,st=s,sz=2,spd=1/5}
    mstr.dx = rnd(1)
@@ -187,6 +188,15 @@ function controls()
  if (is_moving(down)) move(p,0,1,8)
  if (is_not_moving()) p.anim = "talk"
  action()
+end
+
+function controls_ennemies(a)
+ if (a.tag ~= ennemy) return
+ if (a.cooldown > 0) a.cooldown -= 1
+ if (a.cooldown == 0) then
+  shoot(a)
+  a.cooldown = 50
+ end
 end
 
 function move_actors()
@@ -296,31 +306,33 @@ function is_of_limit(x,y,bx,by,r)
  return false
 end
 
-function shoot()
- local speed = p.weapon.speed
- local center = p.weapon.hb/2
- if(p.d == left) then
-  b = make_actor(p.x-6,p.y,p.weapon.animh,bullet,immortal_obj,left)
+function shoot(a)
+ a = a or p
+ local speed = a.weapon.speed
+ local center = a.weapon.hb/2
+ local b = {}
+ if(a.d == left) then
+  b = make_actor(a.x-6,a.y,a.weapon.animh,bullet,immortal_obj,left)
   b.box = {x1=0,y1=4-center,x2=5,y2=4+center}
   b.dx = -speed
  end
- if(p.d == right) then
-  b = make_actor(p.x+6,p.y,p.weapon.animh,bullet,immortal_obj,right)
+ if(a.d == right) then
+  b = make_actor(a.x+6,a.y,a.weapon.animh,bullet,immortal_obj,right)
   b.box = {x1=3,y1=4-center,x2=8,y2=4+center}
   b.dx = speed
  end
- if(p.d == up) then
-  b = make_actor(p.x,p.y-6,p.weapon.animv,bullet,immortal_obj,up)
+ if(a.d == up) then
+  b = make_actor(a.x,a.y-6,a.weapon.animv,bullet,immortal_obj,up)
   b.box = {x1=4-center,y1=0,x2=4+center,y2=5}
   b.dy = -speed
  end
- if(p.d == down) then
-  b = make_actor(p.x,p.y+6,p.weapon.animv,bullet,immortal_obj,down)
+ if(a.d == down) then
+  b = make_actor(a.x,a.y+6,a.weapon.animv,bullet,immortal_obj,down)
   b.box = {x1=4-center,y1=3,x2=4+center,y2=8}
   b.dy = speed
  end
- b.dmg = p.weapon.dmg
- sfx(p.weapon.sfx)
+ b.dmg = a.weapon.dmg
+ sfx(a.weapon.sfx)
 end
 
 function time_manager()
@@ -453,9 +465,10 @@ function draw_actors()
  for a in all(actors) do
   if (a.tag == player or a.tag == ennemy) then
    draw_weapon(a)
+   controls_ennemies(a)
    highlight(anim_player(a),a.x,a.y,5)
   else
-   local inv = manage_direction(a.direction)
+   local inv = manage_direction(a.d)
    spr(a.s,a.x,a.y,1,1,inv.h,inv.v)
   end
  end
@@ -525,6 +538,7 @@ function update_game()
   wait_inventory_close()
   controls_menu()
  end
+ check_game_state()
 end
 -- camera
 
@@ -546,6 +560,15 @@ function scamera()
   scr.shake -= 1
  end
  camera(scr.x,scr.y)
+end
+
+function check_game_state()
+ if (is_dead(p)) then
+  cls()
+  make_game()
+  _draw = draw_menu
+  _update = update_menu
+ end
 end
 
 function screenshake(n)
