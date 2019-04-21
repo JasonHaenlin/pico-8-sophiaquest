@@ -8,7 +8,7 @@ left,right,up,down,fire1,fire2,none=0,1,2,3,4,5,6
 black,dark_blue,dark_purple,dark_green,brown,dark_gray,light_gray,white,red,orange,yellow,green,blue,indigo,pink,peach=0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15
 player,bullet,ennemy=0,1,2
 immortalobject=1000
-nbofennemies=1
+nbofennemies=10
 melee,ranged=0,1
 -- var
 dbg=""
@@ -127,8 +127,8 @@ function make_ennemies(nb, aspr)
    mstr.cooldown = 50
    mstr.anim = "walk"
    mstr.walk = {f=s,st=s,sz=2,spd=1/5}
-   mstr.dx = 0.5
-   mstr.dy = 0.5
+   mstr.dx = 0.7
+   mstr.dy = 0.7
    ennemies_left += 1
   end
  end
@@ -208,26 +208,83 @@ function controls()
  action()
 end
 
-function controls_ennemies(a)
+function controls_ennemies(a,d)
  if (a.tag ~= ennemy) return
  if (a.cooldown > 0) a.cooldown -= 1
  if (a.cooldown == 0) then
-  shoot(a)
+  shoot(a,d)
   a.cooldown = 50
  end
 end
 
 function move_actors()
  for a in all(actors) do
-  local go = is_player_near(a)
-  if (a.tag == ennemy) a.d = go
-  if (a.tag == ennemy and go ~= none) move_on(a,go)
+  if (a.tag == ennemy) then
+   local dist = check_distance_from_player(a)
+   if(is_player_near(dist)) then
+    if (dist >= 20) then
+     local dir_m = going_forward(a)
+     move_on(a,dir_m)
+    else
+     local dir_m = gbestdir(a)
+     move_on(a,dir_m)
+    end
+    local dir_a = prepare_attack_opportunity(a)
+    controls_ennemies(a,dir_a)
+   end
+  end
   if (a.tag == bullet) then
-    a.x += a.dx
-    a.y += a.dy
-    if (is_of_limit(a.x,a.y)) del(actors,a)
+   a.x += a.dx
+   a.y += a.dy
+   if (is_of_limit(a.x,a.y)) del(actors,a)
   end
  end
+end
+
+function going_forward(a)
+ local rx = a.x-p.x
+ local ry = a.y-p.y
+ if(abs(rx) > abs(ry)) then
+   if(rx < 0) return right
+   return left
+ else
+   if(ry < 0) return down
+   return up
+ end
+end
+
+function check_distance_from_player(a)
+ local rx = a.x-p.x
+ local ry = a.y-p.y
+ return (abs(rx)+abs(ry))/2
+end
+
+function gbestdir(a)
+ local rx = a.x-p.x
+ local ry = a.y-p.y
+ if((abs(rx)-abs(ry)) < 0 and abs(rx) > 1) then
+   if(rx < 0) return right
+   return left
+ elseif((abs(rx)-abs(ry)) > 0 and abs(ry) > 1) then
+   if(ry < 0) return down
+   return up
+ end
+ return none
+end
+
+function prepare_attack_opportunity(a,d)
+ if(abs(a.x-p.x) < abs(a.y-p.y)) then
+   if(a.y < p.y) return down
+   return up
+ else
+   if(a.x < p.x) return right
+   return left
+ end
+end
+
+function is_player_near(gap)
+ local r = 30
+ return gap <= r and gap > 8
 end
 
 function move_on(a,go)
@@ -319,8 +376,8 @@ function ggdspot(xmax,ymax)
  a.y = 0
  local f = flags.obst
  while(fget(mget(a.x/8,(a.y)/8),flags.obst)) do
-  a.x = rnd(248)
-  a.y = rnd(248)
+  a.x = rnd(xmax)
+  a.y = rnd(ymax)
  end
  return a
 end
@@ -342,52 +399,35 @@ function is_of_limit(x,y,bx,by,r)
  return false
 end
 
-function is_player_near(a)
-  local r = 30
-  local rx = a.x-p.x
-  local ry = a.y-p.y
-  dbg = (abs(rx)-abs(ry))
-  gap = (abs(rx)+abs(ry))/2
-  if(gap <= r and gap > 8) then
-    if((abs(rx)-abs(ry)) < 0 and abs(rx) > 8) then
-      if(rx < 0) return right
-      return left
-    elseif((abs(rx)-abs(ry)) > 0 and abs(ry) > 8) then
-      if(ry < 0) return down
-      return up
-    end
-  end
-  return none
-end
-
-function shoot(a)
+function shoot(a,d)
  a = a or p
+ d = d or a.d
  local speed = a.weapon.speed
  local center = a.weapon.hb/2
  local b = {}
- if(a.d == left) then
+ if(d == left) then
   b = make_actor(a.x-6,a.y,a.weapon.animh,bullet,immortalobject,left)
   b.box = {x1=0,y1=4-center,x2=5,y2=4+center}
   b.dx = -speed
  end
- if(a.d == right) then
+ if(d == right) then
   b = make_actor(a.x+6,a.y,a.weapon.animh,bullet,immortalobject,right)
   b.box = {x1=3,y1=4-center,x2=8,y2=4+center}
   b.dx = speed
  end
- if(a.d == up) then
+ if(d == up) then
   b = make_actor(a.x,a.y-6,a.weapon.animv,bullet,immortalobject,up)
   b.box = {x1=4-center,y1=0,x2=4+center,y2=5}
   b.dy = -speed
  end
- if(a.d == down) then
+ if(d == down) then
   b = make_actor(a.x,a.y+6,a.weapon.animv,bullet,immortalobject,down)
   b.box = {x1=4-center,y1=3,x2=4+center,y2=8}
   b.dy = speed
  end
  b.dmg = a.weapon.dmg
- if (a.d ~= none or a.tag == player) then
-  sfx(a.weapon.sfx)
+ if (d ~= none or a.tag == player) then
+  -- sfx(a.weapon.sfx)
  end
 end
 
@@ -526,7 +566,6 @@ function draw_actors()
  for a in all(actors) do
   if (a.tag == player or a.tag == ennemy) then
    draw_weapon(a)
-   controls_ennemies(a)
    highlight(anim_player(a),a.x,a.y,5)
   else
    local inv = manage_direction(a.d)
@@ -675,8 +714,8 @@ __gfx__
 00000000888888808888888000000000044444000444440000000000022222000222220000000000336665566655556665556663cccccccc0008888888880088
 007007000f4f4f000f4f4f00000000000f3f3f000f3f3f0000aaaa000f5f5f000f5f5f0000eeee00366766556676665666666556ccc77ccc0088888888888058
 000770000fffff000fffff00000990000fffff000fffff0000a33a000fffff000fffff0000e22e00656611661661161166116756cccccccc0088888888888058
-000770001111111f1111111f00099000444444404444444f00a33a00222222202222222f00e22e006561cc11c11cc1cc11cc1656cccccccc000ff07f07ff0058
-00700700f9989900f998990000000000f44944f0f449440000aaaa00f22322f0f223220000eeee003661ccccccccccccccc16656cccccccc000ff00f00ff0065
+000770001111111f1111111f000990004444444f4444444f00a33a002222222f2222222f00e22e006561cc11c11cc1cc11cc1656cccccccc000ff07f07ff0058
+00700700f9989900f998990000000000f4494400f449440000aaaa00f2232200f223220000eeee003661ccccccccccccccc16656cccccccc000ff00f00ff0065
 0000000001111100011111f00000000004444400044444f00000000002222200022222f00000000036561cccccccccccccc16566c77ccc7c000fffffffff0076
 000000000f000f00f0000000000000000f000f00f0000000000000000f000f00f00000000000000036561ccccccccccccccc1663cccccccc0000fff8fff00057
 000000000888880008888800088888000444440004444400044444000222220002222200022222003661cccccccccccccccc1663ccca91cc00999999999999ff
