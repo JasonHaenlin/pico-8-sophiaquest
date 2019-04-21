@@ -7,7 +7,8 @@ __lua__
 left,right,up,down,fire1,fire2,none=0,1,2,3,4,5,6
 black,dark_blue,dark_purple,dark_green,brown,dark_gray,light_gray,white,red,orange,yellow,green,blue,indigo,pink,peach=0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15
 player,bullet,ennemy=0,1,2
-immortal_obj = 1000
+immortalobject = 1000
+nbofennemies = 2
 -- var
 dbg=""
 
@@ -53,6 +54,7 @@ items={}
 
 open_inv=false
 selected_item=1
+ennemies_left=1
 
 -- init
 function _init()
@@ -111,12 +113,13 @@ function make_game()
  init_screen()
  make_weapons()
  make_player()
- make_ennemies(2, {4,7})
+ make_ennemies(nbofennemies, {4,7})
 end
 
 function make_ennemies(nb, aspr)
+ ennemies_left = 0
  for s in all(aspr) do
-  for i=1,nb do
+  for i=1,nb/#aspr do
    mstr = make_actor(rnd(248),rnd(248),s,ennemy,life.ennemy)
    mstr.weapon = items[4]
    mstr.cooldown = 50
@@ -124,6 +127,7 @@ function make_ennemies(nb, aspr)
    mstr.walk = {f=s,st=s,sz=2,spd=1/5}
    mstr.dx = rnd(1)
    mstr.dy = rnd(1)
+   ennemies_left += 1
   end
  end
 end
@@ -323,22 +327,22 @@ function shoot(a)
  local center = a.weapon.hb/2
  local b = {}
  if(a.d == left) then
-  b = make_actor(a.x-6,a.y,a.weapon.animh,bullet,immortal_obj,left)
+  b = make_actor(a.x-6,a.y,a.weapon.animh,bullet,immortalobject,left)
   b.box = {x1=0,y1=4-center,x2=5,y2=4+center}
   b.dx = -speed
  end
  if(a.d == right) then
-  b = make_actor(a.x+6,a.y,a.weapon.animh,bullet,immortal_obj,right)
+  b = make_actor(a.x+6,a.y,a.weapon.animh,bullet,immortalobject,right)
   b.box = {x1=3,y1=4-center,x2=8,y2=4+center}
   b.dx = speed
  end
  if(a.d == up) then
-  b = make_actor(a.x,a.y-6,a.weapon.animv,bullet,immortal_obj,up)
+  b = make_actor(a.x,a.y-6,a.weapon.animv,bullet,immortalobject,up)
   b.box = {x1=4-center,y1=0,x2=4+center,y2=5}
   b.dy = -speed
  end
  if(a.d == down) then
-  b = make_actor(a.x,a.y+6,a.weapon.animv,bullet,immortal_obj,down)
+  b = make_actor(a.x,a.y+6,a.weapon.animv,bullet,immortalobject,down)
   b.box = {x1=4-center,y1=3,x2=4+center,y2=8}
   b.dy = speed
  end
@@ -418,6 +422,10 @@ function is_dead(a)
  return a.health <= 0
 end
 
+function is_game_done()
+ return ennemies_left <= 0
+end
+
 function collisions()
  for a in all(actors) do
   for b in all(actors) do
@@ -434,6 +442,7 @@ function collisions()
      del(actors,b)
     end
     if (is_dead(damaged_actor)) then
+     if (damaged_actor.tag == ennemy) ennemies_left -= 1
      make_explosion(damaged_actor.x,damaged_actor.y,5)
      screenshake(10)
      del(actors,damaged_actor)
@@ -597,7 +606,7 @@ function rcamera()
 end
 
 function check_game_state()
- if (is_dead(p)) then
+ if (is_dead(p) or is_game_done()) then
   cls()
   make_game()
   rcamera()
