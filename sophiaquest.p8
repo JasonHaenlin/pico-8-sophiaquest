@@ -9,7 +9,7 @@ black,dark_blue,dark_purple,dark_green,brown,dark_gray,light_gray,white,red,oran
 player,bullet,ennemy=0,1,2
 immortalobject=1000
 nbofennemies=10
-melee,ranged=0,1
+melee,ranged=1,20
 -- var
 dbg=""
 
@@ -32,7 +32,7 @@ ctime={
 }
 
 life = {
- player = 25,
+ player = 50,
  ennemy = 10,
  boss = 150,
 }
@@ -93,7 +93,7 @@ end
 
 function make_weapons()
   -- name,spr,sfx,animh,animv,delay,dmg,type,speed,hb,ox,oy
- make_item("sword",105,4,73,89,15,7,ranged,1,8,4,3)
+ make_item("sword",105,4,73,89,15,7,melee,1,8,4,3)
  make_item("wand",106,1,74,90,8,8,ranged,3,3,5,1)
  make_item("gun",107,5,75,91,3,3,ranged,10,1,5,0)
  make_item("bow",108,3,76,92,6,5,ranged,6,3,4,-1)
@@ -222,7 +222,7 @@ function move_actors()
   if (a.tag == ennemy) then
    local dist = check_distance_from_player(a)
    if(is_player_near(dist)) then
-    if (dist >= 20) then
+    if (dist >= a.weapon.type) then
      local dir_m = going_forward(a)
      move_on(a,dir_m)
     else
@@ -236,7 +236,7 @@ function move_actors()
   if (a.tag == bullet) then
    a.x += a.dx
    a.y += a.dy
-   if (is_of_limit(a.x,a.y)) del(actors,a)
+   if (is_of_limit(a.x,a.y,a.bx,a.by,a.range)) del(actors,a)
   end
  end
 end
@@ -428,6 +428,11 @@ function shoot(a,d)
  b.dmg = a.weapon.dmg
  if (d ~= none or a.tag == player) then
   sfx(a.weapon.sfx)
+ end
+ if (a.weapon.type == melee) then
+  b.range = 5
+ else
+  b.range = 128
  end
 end
 
