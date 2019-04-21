@@ -427,7 +427,7 @@ function shoot(a,d)
  end
  b.dmg = a.weapon.dmg
  if (d ~= none or a.tag == player) then
-  -- sfx(a.weapon.sfx)
+  sfx(a.weapon.sfx)
  end
 end
 
