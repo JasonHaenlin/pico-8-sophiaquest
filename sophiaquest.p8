@@ -39,14 +39,20 @@ life = {
 }
 
 spr_life = {
- {0,0,5,5,5,5,0,0},
- {0,5,8,8,8,8,5,0},
- {5,8,7,8,8,8,8,5},
- {5,8,8,8,8,8,8,5},
- {5,8,8,8,8,8,8,5},
- {5,8,8,8,8,8,8,5},
- {0,5,8,8,8,8,5,0},
- {0,0,5,5,5,5,0,0}
+ {0,0,5,5,5,5,5,5,5,5,5,5,0,0},
+ {0,5,8,8,8,8,8,8,8,8,8,8,5,0},
+ {5,8,7,7,7,8,8,8,8,8,8,8,8,5},
+ {5,8,7,7,7,8,8,8,8,8,8,8,8,5},
+ {5,8,7,7,7,8,8,8,8,8,8,8,8,5},
+ {5,8,8,8,8,8,8,8,8,8,8,8,8,5},
+ {5,8,8,8,8,8,8,8,8,8,8,8,8,5},
+ {5,8,8,8,8,8,8,8,8,8,8,8,8,5},
+ {5,8,8,8,8,8,8,8,8,8,8,8,8,5},
+ {5,8,8,8,8,8,8,8,8,8,8,8,8,5},
+ {5,8,8,8,8,8,8,8,8,8,8,8,8,5},
+ {5,8,8,8,8,8,8,8,8,8,8,8,8,5},
+ {0,5,8,8,8,8,8,8,8,8,8,8,5,0},
+ {0,0,5,5,5,5,5,5,5,5,5,5,0,0}
 }
 
 actors={}
@@ -109,15 +115,15 @@ function make_actor(x,y,s,tag,health,direction)
 end
 
 function make_weapons()
-  -- name,spr,sfx,animh,animv,delay,dmg,type,speed,hb,ox,oy,dfx
+  -- name,spr,sfx,animh,animv,cd,dmg,type,speed,hb,ox,oy,dfx,cd
  make_item("sword",105,4,73,89,15,7,melee,1,8,4,3)
  make_item("firewand",106,1,74,90,8,8,ranged,3,3,5,1)
  make_item("gun",107,5,75,91,3,3,ranged,10,1,5,0)
  make_item("bow",108,3,76,92,6,5,ranged,6,3,4,-1)
- make_item("secret",109,6,77,93,4,5,ranged,5,1,5,0,dfx_shower)
+ make_item("secret",109,6,77,93,4,5,ranged,5,1,5,0,dfx_shower,50)
  make_item("tatata",110,7,78,94,2,2,ranged,10,1,5,0)
  make_item("boom",111,7,79,95,18,10,melee,1,8,4,3)
- make_item("elechammer",160,8,128,144,20,15,melee,1,8,4,2,dfx_thunder)
+ make_item("elechammer",160,8,128,144,20,15,melee,1,8,4,2,dfx_thunder,50)
 end
 
 function make_player()
@@ -127,7 +133,8 @@ function make_player()
  p.anim = "talk"
  p.walk = {f=1,st=1,sz=2,spd=1/5}
  p.talk = {f=1+16,st=1+16,sz=3,spd=1/5}
- p.cooldown = 0
+ p.cd = 0
+ p.cdfx = 0
  p.box = {x1=0,y1=0,x2=6,y2=7}
 end
 
@@ -181,13 +188,13 @@ function make_particles(a,n,c)
  end
 end
 
-function make_item(name,spr,sfx,animh,animv,delay,dmg,type,speed,hb,ox,oy,dfx)
+function make_item(name,spr,sfx,animh,animv,cd,dmg,type,speed,hb,ox,oy,dfx,cdfx)
  local item = {}
  item.name = name
  item.spr = spr
  item.animh = animh
  item.animv = animv
- item.delay = delay
+ item.cd = cd
  item.speed = speed
  item.dmg = dmg
  item.type = type
@@ -196,6 +203,7 @@ function make_item(name,spr,sfx,animh,animv,delay,dmg,type,speed,hb,ox,oy,dfx)
  item.oy = oy
  item.sfx = sfx
  item.dfx = dfx or function (x,y,p,h) end
+ item.cdfx = cdfx or 20
  add(items,item)
  return item
 end
@@ -272,7 +280,7 @@ function controls_menu()
  if (btnp(fire1)) then
   p.weapon = items[selected_item]
   open_inv = false
-  p.cooldown = 10
+  p.cd = 10
  end
 end
 
@@ -427,17 +435,18 @@ end
 -- action
 
 function action()
- if (p.cooldown > 0) p.cooldown -= 1
- if ((p.cooldown == 0) and btn(fire1)) then
+ if (p.cd > 0) p.cd -= 1
+ if ((p.cd == 0) and btn(fire1)) then
   shoot()
-  p.cooldown = p.weapon.delay
+  p.cd = p.weapon.cd
  end
+ if (p.cdfx > 0) p.cdfx -= 1
  if (btnp(fire2)) then
   sp = mget(p.x/8,(p.y-1)/8)
   if (fget(sp,flags.inventory)) then
    open_inv = true
-  else
-   -- dfx_explosion(p.x,p.y,5)
+  elseif (p.cdfx == 0) then
+   p.cdfx = p.weapon.cdfx
    local target = target_nearest_one(50)
    if (target.x ~= nil) then
     p.weapon.dfx(target.x,target.y,3,abs(fp.y-target.y))
@@ -704,7 +713,7 @@ function draw_thunders()
    add(t.pos,{x=t.x,y=t.y})
   end
   if (flr(rnd(t.p)) == 0) dfx_thunder(t.x,t.y,t.p+2,t.h)
-  if (t.h < -10 or t.y >= t.pos[1].y+50) del(thunders,t)
+  if (t.h < -10) del(thunders,t)
  end
 end
 
@@ -728,6 +737,11 @@ function draw_showers()
  end
 end
 
+function draw_skills(bx,by)
+ draw_item_shape(bx-11,by+7,0,p.cdfx,p.weapon.cdfx)
+ draw_item_shape(bx+18,by+7,p.weapon.animv,p.cd, p.weapon.cd)
+end
+
 function draw_actors()
  for a in all(actors) do
   if (a.tag == player or a.tag == ennemy) then
@@ -745,19 +759,22 @@ function draw_weapon(a)
 end
 
 function draw_hud()
+ local bx = fp.x+60
+ local by = fp.y+108
  print(ctime.s,fp.x,fp.y,light_gray)
- draw_life()
+ draw_life(bx,by)
+ draw_skills(bx,by)
 end
 
-function draw_life()
- local offsetlife=8-flr(((p.health*8)/life.player))
+function draw_life(bx,by)
+ local offsetlife=#spr_life-flr(((p.health*#spr_life)/life.player))
  for y=1,#spr_life do
   for x=1,#spr_life[y] do
    if (spr_life[y][x] ~= black) then
     if (offsetlife >= y and spr_life[y][x] == red) then
-     pset(fp.x+116+x,fp.y+5+y,light_gray)
+     pset(bx+x,by+y,light_gray)
     else
-     pset(fp.x+116+x,fp.y+5+y,spr_life[y][x])
+     pset(bx+x,by+y,spr_life[y][x])
     end
    end
   end
@@ -771,13 +788,12 @@ end
 
 function draw_inventory(x,y)
  if (open_inv) then
-  rectfill(x,y,x+48,y+128,dark_gray)
+  rectfill(x,y,x+48,y+128,dark_blue)
   line(x,y,x,y+128,light_gray)
   tx = x+7
   ty = y+10
   for i=1,#items do
-   rectfill(tx-1,ty-5,tx+9,ty+5,light_gray)
-   spr(items[i].spr,tx,ty-4)
+   draw_item_shape(tx,ty,items[i].spr)
    print(items[i].name,tx+12,ty-2,white)
    if (selected_item == i) then
     spr(58,tx-7,ty-2)
@@ -785,6 +801,23 @@ function draw_inventory(x,y)
    ty += 12
   end
  end
+end
+
+function draw_item_shape(x,y,s,cd,max)
+ cd = cd or 0
+ max = max or 1
+ rectfill(x-1,y-5,x+9,y+5,white)
+ local curcd = ceil((cd*8)/max)
+ rectfill(x-1,y-5+curcd,x+9,y+5,light_gray)
+ line(x-1,y-5,x-1,y+5,dark_gray)
+ line(x-1,y-5,x+9,y-5,dark_gray)
+ line(x+9,y-5,x+9,y+5,dark_gray)
+ line(x+9,y+5,x-1,y+5,dark_gray)
+ spr(s,x,y-4)
+end
+
+function draw_item_cd(x,y,s,cd,max)
+
 end
 
 function draw_game()
@@ -810,7 +843,7 @@ function update_menu()
  if (btn(fire1) and btn(fire2)) then
   _update = update_game
   _draw = draw_game
-  p.cooldown = 10
+  p.cd = 10
  end
 end
 
@@ -925,14 +958,14 @@ __gfx__
 1ccc1cc1666666661111ccc166666666063bb36004599540444443bbbbbbbbbbbb344444c000000c00000000000000000006000000c1c0000500000056899865
 11111cc1666666661cc1ccc16666666606333360045555403444443bbbbbbbbbb34443440000000000000000000000000060600000c1c0000000800005688650
 1ccc1cc1666666661cc1ccc16666666600000000000000004443444bbbbbbbbbb44343440000000000000000000000000000000000c1c0000000500000566500
-1ccc1cc1111111111cc1ccc1666666660000000000000000444344bbbbbbbbbbbb44444400000000000800000000000000004000000080000000000000888000
-1ccc1c0ccc1cccccc0c11111666666660000000000000000444343bbb3bb33bbbb344344000d00000082800000000000000d0400000880000000000000888000
-1ccc11cccc1ccccccc11ccc1666666660000000000000000434434333433443333444444000d00000048000000008000000d0040055555110000800000858000
-1ccc1111111111111111ccc1666666660000000000000000444444444434444444344344000d00000004000000555590000d00400555551105555a5500858000
-1cc0cc1ccccccc1ccccc0cc1666666660000000000000000444444444444434444444444000d00000040000000dd0000000d00400066000000dd0aa000858000
-1c0ccc1ccccccc1cccccc0c1666666660000000000000000333444444444443443444444000d00000004000000d00000000d04000060000000d00aa000555000
-11cccc1ccccccc1ccccccc11666666660000000000000000444444344344444444434444001c10000004000000000000000040000000000000000000000d0000
-111111111111111111111111666666660000000000000000444434444444434444444443000100000004000000000000000000000000000000000000000d0000
+1ccc1cc1111111111cc1ccc1666666660000000000000000444344bbbbbbbbbbbb44444400001000000800000000000000004000000080000000000000888000
+1ccc1c0ccc1cccccc0c11111666666660000000000000000444343bbb3bb33bbbb344344000c10000082800000000000000d0400000880000000000000888000
+1ccc11cccc1ccccccc11ccc1666666660000000000000000434434333433443333444444000c10000048000000008000000d00400555551100008000008d8000
+1ccc1111111111111111ccc1666666660000000000000000444444444434444444344344000c10000004000000555590000d00400555551105555a55008d8000
+1cc0cc1ccccccc1ccccc0cc1666666660000000000000000444444444444434444444444000c10000040000000dd0000000d004000dd000000dd0aa0008d8000
+1c0ccc1ccccccc1cccccc0c1666666660000000000000000333444444444443443444444000c10000004000000d00000000d040000d0000000d00aa000ddd000
+11cccc1ccccccc1ccccccc11666666660000000000000000444444344344444444434444000c00000004000000000000000040000000000000000000000d0000
+111111111111111111111111666666660000000000000000444434444444434444444443000500000004000000000000000000000000000000000000000d0000
 11111111111111111111111111111111000000000000000033344333333443330000000000000000000000000000000000000000000000000000000000000000
 11111111111111111111111111111111000000000000000033d44d3333d44d330000000000000000000000000000000000000000000000000000000000000000
 11111111111111111111111111111111000000000000000033d22d3333d11d330000000000000000000000000000000000000000000000000000000000000000
