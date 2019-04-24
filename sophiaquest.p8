@@ -8,7 +8,7 @@ left,right,up,down,fire1,fire2,none=0,1,2,3,4,5,6
 black,dark_blue,dark_purple,dark_green,brown,dark_gray,light_gray,white,red,orange,yellow,green,blue,indigo,pink,peach=0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15
 player,bullet,ennemy=0,1,2
 immortalobject=1000
-nbofennemies=20
+nbofennemies=1
 melee,ranged=1,20
 -- var
 dbg=""
@@ -127,7 +127,7 @@ function make_weapons()
 end
 
 function make_player()
- p = make_actor(48,60,1,player,life.player)
+ p = make_actor(45,60,1,player,life.player)
  p.weapon = items[5]
  p.d = up
  p.anim = "talk"
@@ -286,10 +286,10 @@ end
 
 function controls()
  p.anim = "walk"
- if (is_moving(left)) move(p,-1,0,0)
- if (is_moving(right)) move(p,1,0,8)
- if (is_moving(up)) move(p,0,-1,0)
- if (is_moving(down)) move(p,0,1,8)
+ if (is_moving(left)) move(p,-1,0,0,6)
+ if (is_moving(right)) move(p,1,0,6,6)
+ if (is_moving(up)) move(p,0,-1,6,0)
+ if (is_moving(down)) move(p,0,1,6,6)
  if (is_not_moving()) p.anim = "talk"
  action()
 end
@@ -392,10 +392,10 @@ function target_nearest_one(limit)
 end
 
 function move_on(a,go)
- if (go == left) move(a,-a.dx,0,0)
- if (go == right) move(a,a.dx,0,8)
- if (go == up) move(a,0,-a.dy,0)
- if (go == down) move(a,0,a.dy,8)
+ if (go == left) move(a,-a.dx,0,0,8)
+ if (go == right) move(a,a.dx,0,8,8)
+ if (go == up) move(a,0,-a.dy,8,0)
+ if (go == down) move(a,0,a.dy,8,8)
 end
 
 function is_moving(direction)
@@ -416,19 +416,24 @@ function is_not_moving()
  return false
 end
 
-function move(a,x,y,o)
- sp = mget((a.x+x+(o*x))/8,(a.y+y+(o*y))/8)
- if (fget(sp,flags.obst) == false) then
+function move(a,x,y,ox,oy)
+ sp1 = mget((a.x+x+(ox*x))/8,(a.y+y+(oy*y))/8)
+ sp2 = mget((a.x+x+ox)/8,(a.y+y+oy)/8)
+ if (fget(sp1,flags.obst) == false and fget(sp2,flags.obst) == false) then
   a.x += x
   a.y += y
  end
- if(fget(sp,flags.item) and a.tag == player) then
-  pick_item((a.x+x+(o*x))/8,(a.y+y+(o*y))/8)
- end
- if(fget(sp,flags.heal) and a.tag == player and a.health < life.player) then
-  pick_item((a.x+x+(o*x))/8,(a.y+y+(o*y))/8)
-  a.health += 10
-  if (a.health > life.player) a.healh = life.player
+ if(a.tag == player) then
+  if(fget(sp1,flags.heal) and a.health < life.player) then
+   pick_item((a.x+x+(ox*x))/8,(a.y+y+(oy*y))/8)
+   a.health += 10
+   if (a.health > life.player) a.healh = life.player
+  end
+  if(fget(sp2,flags.heal) and a.health < life.player) then
+   pick_item((a.x+x+ox)/8,(a.y+y+oy)/8)
+   a.health += 10
+   if (a.health > life.player) a.healh = life.player
+  end
  end
 end
 
@@ -738,7 +743,7 @@ function draw_showers()
 end
 
 function draw_skills(bx,by)
- draw_item_shape(bx-11,by+7,55,p.cdfx,p.weapon.cdfx)
+ draw_item_shape(bx-10,by+7,55,p.cdfx,p.weapon.cdfx)
  draw_item_shape(bx+18,by+7,p.weapon.animv,p.cd, p.weapon.cd)
 end
 
@@ -1038,7 +1043,7 @@ __gfx__
 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
 02020212020202020202021233430202000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
 __gff__
-000202000000000000008080800000000002020200000000000080008000000000000000000000000000808080000000000000808080800009a000000000000000000000050580808000000000000000000000000505800080000000000000000000000000008080800000000000000000000000000003030000000000000000
+000202000000000000008080800000000002020200000000000080008000000000000000000000000000808080000000000000808080800002a000000000000000000000050580808000000000000000000000000505800080000000000000000000000000008080800000000000000000000000000003030000000000000000
 0000000000000000000000000000000000000000000000000000000000000000a00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
 __map__
 4647474747474747474747474747474747474747474747474747474747474748000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
