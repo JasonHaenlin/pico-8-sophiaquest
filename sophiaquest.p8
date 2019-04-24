@@ -219,7 +219,7 @@ function dfx_thunder(x,y,p,h)
  if (#thunders > 100) return
  local thunder = {}
  thunder.x = x+(rnd(10)-5)
- thunder.y = y
+ thunder.y = fp.y
  thunder.pos = {{x=thunder.x,y=thunder.y}}
  thunder.c = 10
  thunder.p = p
@@ -233,14 +233,14 @@ function dfx_shower(x,y,p,h)
   if (#showers > 100) return {pos={}}
   local shower = {}
   shower.x = x
-  shower.y = y
+  shower.y = y-30
   shower.pos = {}
   for r=x-(p/2),x+(p/2)do
    add(shower.pos, {x=r,y=shower.y,time=5})
   end
   shower.c = 12
   shower.p = p+5
-  shower.h = h or 10
+  shower.h = 30
   add(showers, shower)
   -- sfx(8)
   return shower
@@ -440,7 +440,7 @@ function action()
    -- dfx_explosion(p.x,p.y,5)
    local target = target_nearest_one(50)
    if (target.x ~= nil) then
-    p.weapon.dfx(target.x,fp.y,3,abs(fp.y-target.y))
+    p.weapon.dfx(target.x,target.y,3,abs(fp.y-target.y))
     target.health -= 10
     check_actor_health(target)
    else
@@ -716,7 +716,7 @@ function draw_showers()
     xy.time -= 1
    end
   end
-  for i=1,10 do
+  for i=1,3 do
    if (s.h < 5) s.p +=1
    s.y += 1
    s.h -= 1
