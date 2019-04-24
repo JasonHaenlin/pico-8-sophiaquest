@@ -8,9 +8,8 @@ left,right,up,down,fire1,fire2,none=0,1,2,3,4,5,6
 black,dark_blue,dark_purple,dark_green,brown,dark_gray,light_gray,white,red,orange,yellow,green,blue,indigo,pink,peach=0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15
 player,bullet,ennemy=0,1,2
 immortalobject=1000
-nbofennemies=10
+nbofennemies=20
 melee,ranged=1,20
-dfx=-1
 -- var
 dbg=""
 
@@ -54,6 +53,7 @@ actors={}
 particles={}
 explosions={}
 thunders={}
+showers={}
 items={}
 
 map_items={
@@ -109,20 +109,20 @@ function make_actor(x,y,s,tag,health,direction)
 end
 
 function make_weapons()
-  -- name,spr,sfx,animh,animv,delay,dmg,type,speed,hb,ox,oy
+  -- name,spr,sfx,animh,animv,delay,dmg,type,speed,hb,ox,oy,dfx
  make_item("sword",105,4,73,89,15,7,melee,1,8,4,3)
  make_item("firewand",106,1,74,90,8,8,ranged,3,3,5,1)
  make_item("gun",107,5,75,91,3,3,ranged,10,1,5,0)
  make_item("bow",108,3,76,92,6,5,ranged,6,3,4,-1)
- make_item("secret",109,6,77,93,4,5,ranged,5,1,5,0)
+ make_item("secret",109,6,77,93,4,5,ranged,5,1,5,0,dfx_shower)
  make_item("tatata",110,7,78,94,2,2,ranged,10,1,5,0)
  make_item("boom",111,7,79,95,18,10,melee,1,8,4,3)
- make_item("elechammer",160,8,128,144,20,15,melee,1,8,4,2)
+ make_item("elechammer",160,8,128,144,20,15,melee,1,8,4,2,dfx_thunder)
 end
 
 function make_player()
  p = make_actor(48,60,1,player,life.player)
- p.weapon = items[1]
+ p.weapon = items[5]
  p.d = up
  p.anim = "talk"
  p.walk = {f=1,st=1,sz=2,spd=1/5}
@@ -181,33 +181,7 @@ function make_particles(a,n,c)
  end
 end
 
-function make_explosion(x,y,a)
-	while (a > 0) do
-		explo = {}
-		explo.x = x+(rnd(2)-1)*10
-		explo.y = y+(rnd(2)-1)*10
-		explo.r = 4 + rnd(4)
-		explo.c = 8;
-		add(explosions, explo)
-		sfx(0)
-		a -= 1
-	end
-end
-
-function make_thunder(x,y,p,h)
- if (#thunders > 100) return
- thunder = {}
- thunder.x = x+(rnd(10)-5)
- thunder.y = y
- thunder.pos = {{x=thunder.x,y=thunder.y}}
- thunder.c = 10
- thunder.p = p
- thunder.h = h or 50
- add(thunders, thunder)
- sfx(8)
-end
-
-function make_item(name,spr,sfx,animh,animv,delay,dmg,type,speed,hb,ox,oy)
+function make_item(name,spr,sfx,animh,animv,delay,dmg,type,speed,hb,ox,oy,dfx)
  local item = {}
  item.name = name
  item.spr = spr
@@ -221,8 +195,69 @@ function make_item(name,spr,sfx,animh,animv,delay,dmg,type,speed,hb,ox,oy)
  item.ox = ox
  item.oy = oy
  item.sfx = sfx
+ item.dfx = dfx or function (x,y,p,h) end
  add(items,item)
  return item
+end
+
+-- draw effect
+
+function dfx_explosion(x,y,a,h)
+	while (a > 0) do
+		explo = {}
+		explo.x = x+(rnd(2)-1)*10
+		explo.y = y+(rnd(2)-1)*10
+		explo.r = 4 + rnd(4)
+		explo.c = 8;
+		add(explosions, explo)
+		sfx(0)
+		a -= 1
+	end
+end
+
+function dfx_thunder(x,y,p,h)
+ if (#thunders > 100) return
+ local thunder = {}
+ thunder.x = x+(rnd(10)-5)
+ thunder.y = y
+ thunder.pos = {{x=thunder.x,y=thunder.y}}
+ thunder.c = 10
+ thunder.p = p
+ thunder.h = h or 50
+ add(thunders, thunder)
+ sfx(8)
+ return thunder
+end
+
+function dfx_shower(x,y,p,h)
+  if (#showers > 100) return {pos={}}
+  local shower = {}
+  shower.x = x
+  shower.y = y
+  shower.pos = {}
+  for r=x-(p/2),x+(p/2)do
+   add(shower.pos, {x=r,y=shower.y,time=5})
+  end
+  shower.c = 12
+  shower.p = p+5
+  shower.h = h or 10
+  add(showers, shower)
+  -- sfx(8)
+  return shower
+end
+
+function dfx_disapearance(x,y,a,h)
+ a = a or flr((rnd(5)+1))
+	while (a > 0) do
+		disa = {}
+		disa.x = x+(rnd(2)-1)*5
+		disa.y = y+(rnd(2)-1)*5
+		disa.r = 2 + rnd(4)
+		disa.c = 5;
+		add(explosions, disa)
+		sfx(10)
+		a -= 1
+	end
 end
 
 -- move
@@ -330,19 +365,21 @@ function is_player_near(gap)
  return gap <= r and gap > 8
 end
 
-function target_nearest_one()
+function target_nearest_one(limit)
+ limit = limit or 1000
  local rx = 1000
  local ry = 1000
  local target = {}
  for a in all(actors) do
   if(a.tag == ennemy) then
-   if((rx+ry)/2 > (abs(a.y-p.y)+abs(a.x-p.x))/2) then
+   if((rx+ry)/2 > check_distance_from_player(a)) then
     rx = abs(a.x-p.x)
     ry = abs(a.y-p.y)
     target = a
    end
   end
  end
+ if (check_distance_from_player(target) > limit) return {}
  return target
 end
 
@@ -400,11 +437,15 @@ function action()
   if (fget(sp,flags.inventory)) then
    open_inv = true
   else
-   -- make_explosion(p.x,p.y,5)
-   local target = target_nearest_one()
-   make_thunder(target.x,fp.y,2,abs(fp.y-target.y))
-   target.health -= life.ennemy
-   check_actor_health(target)
+   -- dfx_explosion(p.x,p.y,5)
+   local target = target_nearest_one(50)
+   if (target.x ~= nil) then
+    p.weapon.dfx(target.x,fp.y,3,abs(fp.y-target.y))
+    target.health -= 10
+    check_actor_health(target)
+   else
+    sfx(9)
+   end
   end
  end
 end
@@ -587,8 +628,8 @@ end
 function check_actor_health(damaged_actor)
  if (is_dead(damaged_actor)) then
   if (damaged_actor.tag == ennemy) ennemies_left -= 1
-  make_explosion(damaged_actor.x,damaged_actor.y,5)
-  screenshake(10)
+  dfx_disapearance(damaged_actor.x,damaged_actor.y)
+  screenshake(5)
   del(actors,damaged_actor)
  end
 end
@@ -614,6 +655,14 @@ function collisions()
  end
 end
 
+function rnd_color(colors)
+ local rndv = flr(rnd(1000))
+ for m=1,#colors do
+  if (rndv >= 100/m+1) return colors[m]
+ end
+ return colors[1]
+end
+
 -- draw
 
 function _draw()
@@ -636,9 +685,9 @@ end
 function draw_explosions()
 	for e in all(explosions) do
   circfill(e.x,e.y,e.r,e.c)
-  e.r -= 1
-  if (e.r < 4) e.c = 9
-  if (e.r < 2) e.c = 10
+  e.r -= 0.5
+  if (e.r < 4) e.c += 1
+  if (e.r < 2) e.c += 1
   if (e.r <= 0) del(explosions, e)
 	end
 end
@@ -654,8 +703,28 @@ function draw_thunders()
    t.h -= 1
    add(t.pos,{x=t.x,y=t.y})
   end
-  if (flr(rnd(t.p)) == 0) make_thunder(t.x,t.y,t.p+2,t.h)
+  if (flr(rnd(t.p)) == 0) dfx_thunder(t.x,t.y,t.p+2,t.h)
   if (t.h < -10 or t.y >= t.pos[1].y+50) del(thunders,t)
+ end
+end
+
+function draw_showers()
+ for s in all(showers) do
+  for xy in all(s.pos) do
+   if (xy.time > 0) then
+    pset(xy.x,xy.y,rnd_color({s.c,7}))
+    xy.time -= 1
+   end
+  end
+  for i=1,10 do
+   if (s.h < 5) s.p +=1
+   s.y += 1
+   s.h -= 1
+   for r=s.x-(s.p/2),s.x+(s.p/2)do
+    add(s.pos, {x=r,y=s.y,time=5})
+   end
+  end
+  if (s.h < 0) del(showers,s)
  end
 end
 
@@ -728,6 +797,7 @@ function draw_game()
  draw_explosions()
  draw_thunders()
  draw_actors()
+ draw_showers()
  draw_hud()
  draw_inventory(fp.x+80,fp.y)
 
@@ -980,3 +1050,5 @@ __sfx__
 0001000028750237602175025730257101a7101874017760167601674018720197702f5002f5002f5002f5002e50029500215001a5002e5002e5002d50028500225001c500195001a50028500275002650000000
 000200002a63024630226302a6301d630236302a6301d6301a6302c6301f6302b6300000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
 00040000376203762037620376203762037620366203661034610326102e60029600216001a6000e6000160003600000000000000000000000000000000000000000000000000000000000000000000000000000
+0001000012040100400f0400e0400f0401004011040000000000000000110001200012000130000000014000140001c0001500015000160001700017000170000000000000000000000000000000000000000000
+000500001364013630136200000013640136301362000000136401363013620000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
