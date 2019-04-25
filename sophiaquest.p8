@@ -166,8 +166,8 @@ function make_ennemies(nb, aspr)
    mstr.weapon = items[4]
    mstr.cd = 50
    mstr.anim = "stay"
-   mstr.walk = make_anim("walk",cframes(s+33,s+1,s+33,s+1,s+34,s+32),1/5)
-   mstr.stay = make_anim("stay",cframes(s+1,s+1,s+1,s+1,s+2,s),1/5)
+   mstr.walk = make_anim("walk",cframes(s+33,s+1,s+33,s+1,s+34,s+32),1/10)
+   mstr.stay = make_anim("stay",cframes(s+1,s+1,s+1,s+1,s+2,s),1/10)
    mstr.dx = 0.9
    mstr.dy = 0.9
    ennemies_left += 1
@@ -331,6 +331,8 @@ function move_actors()
     end
     local dir_a = prepare_attack_opportunity(a)
     controls_ennemies(a,dir_a)
+   else
+     a.anim = "stay"
    end
   end
   if (a.tag == bullet) then
@@ -410,7 +412,10 @@ function move_on(a,go)
  if (go == right) move(a,a.dx,0,8,8)
  if (go == up) move(a,0,-a.dy,8,0)
  if (go == down) move(a,0,a.dy,8,8)
- if (go ~= none) a.d = go
+ if (go ~= none) then
+  a.d = go
+  a.anim = "walk"
+ end
 end
 
 function is_moving(direction)
@@ -491,7 +496,7 @@ function wait_inventory_close()
 end
 
 function anim(a,f)
-	f.time += f.spd
+ f.time += f.spd
  if(f.time >= 2) f.time = 0
 	return f.f[a.d+1][flr(f.time)+1]
 end
