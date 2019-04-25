@@ -503,22 +503,22 @@ function shoot(a, d)
  local center = a.weapon.hb / 2
  local b = {}
  if(d == left) then
-  b = make_actor(a.x-6, a.y, a.weapon.animh, bullet, immortal_object, left)
+  b = make_actor(a.x-6, a.y+4, a.weapon.animh, bullet, immortal_object, left)
   b.box = {x1 = 0, y1 = 4-center, x2 = 5, y2 = 4+center}
   b.dx = -speed
  end
  if(d == right) then
-  b = make_actor(a.x+6, a.y, a.weapon.animh, bullet, immortal_object, right)
+  b = make_actor(a.x+6, a.y+4, a.weapon.animh, bullet, immortal_object, right)
   b.box = {x1 = 3, y1 = 4-center, x2 = 8, y2 = 4+center}
   b.dx = speed
  end
  if(d == up) then
-  b = make_actor(a.x, a.y-6, a.weapon.animv, bullet, immortal_object, up)
+  b = make_actor(a.x, a.y-8, a.weapon.animv, bullet, immortal_object, up)
   b.box = {x1 = 4-center, y1 = 0, x2 = 4+center, y2 = 5}
   b.dy = -speed
  end
  if(d == down) then
-  b = make_actor(a.x, a.y+6, a.weapon.animv, bullet, immortal_object, down)
+  b = make_actor(a.x, a.y+18, a.weapon.animv, bullet, immortal_object, down)
   b.box = {x1 = 4-center, y1 = 3, x2 = 4+center, y2 = 8}
   b.dy = speed
  end
