@@ -8,16 +8,11 @@ left,right,up,down,fire1,fire2,none=0,1,2,3,4,5,6
 black,dark_blue,dark_purple,dark_green,brown,dark_gray,light_gray,white,red,orange,yellow,green,blue,indigo,pink,peach=0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15
 player,bullet,ennemy=0,1,2
 immortalobject=1000
-nbofennemies=1
+nbofennemies=10
 melee,ranged=1,20
 -- var
 dbg=""
 
-animations={
- anim="talk",
- walk={f=1,st=1,sz=2,spd=1/5},
- talk={f=16,st=16,sz=3,spd=1/5}
-}
 
 flags={
  heal=0,
@@ -41,9 +36,9 @@ life = {
 spr_life = {
  {0,0,5,5,5,5,5,5,5,5,5,5,0,0},
  {0,5,8,8,8,8,8,8,8,8,8,8,5,0},
- {5,8,7,7,7,8,8,8,8,8,8,8,8,5},
- {5,8,7,7,7,8,8,8,8,8,8,8,8,5},
- {5,8,7,7,7,8,8,8,8,8,8,8,8,5},
+ {5,8,8,8,8,8,8,8,8,8,8,8,8,5},
+ {5,8,8,7,7,8,8,8,8,8,8,8,8,5},
+ {5,8,8,7,7,8,8,8,8,8,8,8,8,5},
  {5,8,8,8,8,8,8,8,8,8,8,8,8,5},
  {5,8,8,8,8,8,8,8,8,8,8,8,8,5},
  {5,8,8,8,8,8,8,8,8,8,8,8,8,5},
@@ -127,16 +122,23 @@ function make_weapons()
 end
 
 function make_player()
- local s = 129
- p = make_actor(45,60,s,player,life.player)
+ p = make_actor(45,60,129,player,life.player,up)
  p.weapon = items[5]
- p.d = up
- p.anim = "talk"
- p.walk = {f=s,st=s,sz=2,spd=1/5}
- p.talk = {f=s+32,st=s+32,sz=3,spd=1/5}
+ p.anim = "stay"
+ p.walk = make_anim("walk",cframes(162,130,162,130,163,161),1/5)
+ p.stay = make_anim("stay",cframes(130,130,130,130,131,129),1/5)
  p.cd = 0
  p.cdfx = 0
  p.box = {x1=0,y1=0,x2=6,y2=7}
+end
+
+function make_anim(name,frames,spd)
+ local a = {}
+ a.time = 0
+ a.anim = name
+ a.spd = spd
+ a.f = frames
+ return a
 end
 
 function make_game()
@@ -144,7 +146,7 @@ function make_game()
  make_weapons()
  make_player()
  make_map_items()
- make_ennemies(nbofennemies, {4})
+ -- make_ennemies(nbofennemies, {4})
 end
 
 function make_map_items()
@@ -160,7 +162,7 @@ function make_ennemies(nb, aspr)
  for s in all(aspr) do
   for i=1,nb/#aspr do
    a = ggdspot(248,248)
-   mstr = make_actor(a.x,a.y,s,ennemy,life.ennemy)
+   mstr = make_actor(a.x,a.y,s,ennemy,life.ennemy,up)
    mstr.weapon = items[4]
    mstr.cooldown = 50
    mstr.anim = "walk"
@@ -271,6 +273,16 @@ end
 
 -- move
 
+function cframes(fl1,fl2,fr1,fr2,fu,fd)
+ local f = {
+  {{f=fl1,fy=true},{f=fl2,fy=true}},
+  {{f=fr1,fy=false},{f=fr2,fy=false}},
+  {{f=fu,fy=false},{f=fu,fy=true}},
+  {{f=fd,fy=false},{f=fd,fy=true}}
+ }
+ return f
+end
+
 function controls_menu()
  if (btnp(up) and selected_item > 1) then
   selected_item -= 1
@@ -291,7 +303,7 @@ function controls()
  if (is_moving(right)) move(p,1,0,6,6)
  if (is_moving(up)) move(p,0,-1,6,0)
  if (is_moving(down)) move(p,0,1,6,6)
- if (is_not_moving()) p.anim = "talk"
+ if (is_not_moving()) p.anim = "stay"
  action()
 end
 
@@ -378,7 +390,7 @@ function target_nearest_one(limit)
  limit = limit or 1000
  local rx = 1000
  local ry = 1000
- local target = {}
+ local target = {x=1000,y=1000}
  for a in all(actors) do
   if(a.tag == ennemy) then
    if((rx+ry)/2 > check_distance_from_player(a)) then
@@ -476,19 +488,17 @@ function wait_inventory_close()
  end
 end
 
-function anim(a)
-	a.f += a.spd
-	if(a.f > a.st + a.sz) then
-		a.f = a.st
-	end
-	return flr(a.f)
+function anim(a,f)
+	f.time += f.spd
+ if(f.time > 2) f.time = 0
+	return f.f[a.d+1][flr(f.time)+1]
 end
 
 function anim_player(a)
-	if(a.anim == "talk") then
-		return anim(a.talk)
+	if(a.anim == "stay") then
+		return anim(a,a.stay)
 	else
-		return anim(a.walk)
+		return anim(a,a.walk)
 	end
 end
 
@@ -594,14 +604,14 @@ function manage_direction(direction)
  return inv
 end
 
-function highlight(f,x,y,c,direction)
- local inv = manage_direction(direction)
+function highlight(anim,x,y,c,direction)
 	for i=1,16 do
 		pal(i,c)
  end
- spr(f,x,y+1,1,1,inv.h,inv.v)
+ spr(anim.f,x,y+1,1,2,anim.fy,false)
  pal()
- spr(f,x,y,1,1,inv.h,inv.v)
+ spr(anim.f,x,y,1,2,anim.fy,false)
+ dbg = p.anim
 end
 
 -- collisions
@@ -752,7 +762,7 @@ function draw_actors()
  for a in all(actors) do
   if (a.tag == player or a.tag == ennemy) then
    draw_weapon(a)
-   highlight(anim_player(a),a.x,a.y,5)
+   highlight(anim_player(a),a.x,a.y,5,2)
   else
    local inv = manage_direction(a.d)
    spr(a.s,a.x,a.y,1,1,inv.h,inv.v)
