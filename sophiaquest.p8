@@ -4,20 +4,20 @@ __lua__
 
 
 -- const
-LEFT, RIGHT, UP, DOWN, FIRE1, FIRE2, NONE = 0, 1, 2, 3, 4, 5, 6
-BLACK, DARK_BLUE, DARK_PURPLE, DARK_GREEN, BROWN, DARK_GRAY, LIGHT_GRAY, WHITE, RED, ORANGE, YELLOW, GREEN, BLUE, INDIGO, PINK, PEACH = 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15
-PLAYER, BULLET, ENNEMY = 0, 1, 2
-IMMORTAL_OBJECT = 1000
-INF = 1000
-MELEE, RANGED = 1, 20
-NB_OF_ENNEMIS = 10
-F_HEAL, F_ITEM, F_INV, F_OBST = 0, 1, 5, 7
-L_PLAYER, L_ENNEMY, L_BOSS = 50, 10, 150
-WALK, STAY = "walk", "stay"
+left, right, up, down, fire1, fire2, none = 0, 1, 2, 3, 4, 5, 6
+black, dark_blue, dark_purple, dark_green, brown, dark_gray, light_gray, white, red, orange, yellow, green, blue, indigo, pink, peach = 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15
+player, bullet, ennemy = 0, 1, 2
+immortal_object = 1000
+inf = 1000
+melee, ranged = 1, 20
+nb_of_ennemis = 20
+f_heal, f_item, f_inv, f_obst = 0, 1, 5, 7
+l_player, l_ennemy, l_boss = 50, 10, 150
+walk, stay = "walk", "stay"
 
 -- init
 function _init()
- g_dbg = ""
+ g_dbg = {"","","","","","","","","",""}
 
  g_actors = {}
  g_particles = {}
@@ -48,7 +48,7 @@ end
 function make_actor(x, y, s, tag, health, direction)
  local actor = {
   tag = tag,
-  d = direction or UP,
+  d = direction or up,
   bx = x,
   by = y,
   x = x,
@@ -64,22 +64,23 @@ function make_actor(x, y, s, tag, health, direction)
 end
 
 function make_weapons()
- make_item("sword",    105, 4, 73,  89,  15, 7,  MELEE,  1,  8, 4, 3)
- make_item("firewand", 106, 1, 74,  90,  8,  8,  RANGED, 3,  3, 5, 1)
- make_item("gun",      107, 5, 75,  91,  3,  3,  RANGED, 10, 1, 5, 0)
- make_item("bow",      108, 3, 76,  92,  6,  5,  RANGED, 6,  3, 4,-1)
- make_item("secret",   109, 6, 77,  93,  4,  5,  RANGED, 5,  1, 5, 0, dfx_shower, 50)
- make_item("tatata",   110, 7, 78,  94,  2,  2,  RANGED, 10, 1, 5, 0)
- make_item("boom",     111, 7, 79,  95,  18, 10, MELEE,  1,  8, 4, 3)
- make_item("elec",     160, 8, 128, 144, 20, 15, MELEE,  1,  8, 4, 2, dfx_thunder, 50)
+ -- name, spr, sfx, animh, animv, cd, dmg, type, speed, hb, ox, oy, dfx, cdfx
+ make_item("sword",    105, 4, 73,  89,  15, 7,  melee,  1,  8, 5, -4)
+ make_item("firewand", 106, 1, 74,  90,  8,  8,  ranged, 3,  3, 5, -4)
+ make_item("gun",      107, 5, 75,  91,  3,  3,  ranged, 10, 1, 5, -5)
+ make_item("bow",      108, 3, 76,  92,  6,  5,  ranged, 6,  3, 5,-5)
+ make_item("secret",   109, 6, 77,  93,  4,  5,  ranged, 5,  1, 5, -5, dfx_shower, 50)
+ make_item("tatata",   110, 7, 78,  94,  2,  2,  ranged, 10, 1, 5, -5)
+ make_item("boom",     111, 7, 79,  95,  18, 10, melee,  1,  8, 5, -4)
+ make_item("elec",     160, 8, 128, 144, 20, 15, melee,  1,  8, 5, -5, dfx_thunder, 50)
 end
 
 function make_player()
- g_p = make_actor(45, 60, 129, PLAYER, L_PLAYER, UP)
+ g_p = make_actor(45, 60, 129, player, l_player, up)
  g_p.weapon = g_items[5]
- g_p.anim_state = STAY
- g_p.walk = make_anim(WALK, create_direction_frames(162, 130, 162, 130, 163, 161), 1/5)
- g_p.stay = make_anim(STAY, create_direction_frames(130, 130, 130, 130, 131, 129), 1/5)
+ g_p.anim = stay
+ g_p.walk = make_anim(walk, create_direction_frames(162, 130, 162, 130, 163, 161), 1/5)
+ g_p.stay = make_anim(stay, create_direction_frames(130, 130, 130, 130, 131, 129), 1/5)
  g_p.cd = 0
  g_p.cdfx = 0
  g_p.box = {x1 = 0, y1 = 0, x2 = 6, y2 = 7}
@@ -88,7 +89,7 @@ end
 function make_anim(name, frames, spd)
  return {
   time = 0,
-  anim_state = name,
+  anim = name,
   spd = spd,
   f = frames
  }
@@ -98,7 +99,7 @@ function make_game()
  make_weapons()
  make_player()
  make_map_items()
- make_ennemies(NB_OF_ENNEMIS, {132})
+ -- make_ennemies(nb_of_ennemis, {132})
 end
 
 function make_map_items()
@@ -114,12 +115,12 @@ function make_ennemies(nb, aspr)
  for s in all(aspr) do
   for i=1, nb/#aspr do
    local a = g_good_spot(248, 248)
-   local e = make_actor(a.x, a.y, s, ENNEMY, L_ENNEMY, UP)
+   local e = make_actor(a.x, a.y, s, ennemy, l_ennemy, up)
    e.weapon = g_items[4]
    e.cd = 50
-   e.anim_state = STAY
-   e.walk = make_anim(WALK, create_direction_frames(s+33, s+1, s+33, s+1, s+34, s+32), 1/10)
-   e.stay = make_anim(STAY, create_direction_frames(s+1, s+1, s+1, s+1, s+2, s), 1/10)
+   e.anim = stay
+   e.walk = make_anim(walk, create_direction_frames(s+33, s+1, s+33, s+1, s+34, s+32), 1/10)
+   e.stay = make_anim(stay, create_direction_frames(s+1, s+1, s+1, s+1, s+2, s), 1/10)
    e.dx = 0.9
    e.dy = 0.9
    g_ennemies_left += 1
@@ -234,21 +235,21 @@ end
 
 function create_direction_frames(fl1, fl2, fr1, fr2, fu, fd)
  return {
-  {{f = fl1, fy = true  },{f = fl2, fy = true }},
-  {{f = fr1, fy = false },{f = fr2, fy = false}},
-  {{f = fu,  fy = false },{f = fu,  fy = true }},
-  {{f = fd,  fy = false },{f = fd,  fy = true }}
+  {{f = fl1, flip = true  },{f = fl2, flip = true }},
+  {{f = fr1, flip = false },{f = fr2, flip = false}},
+  {{f = fu,  flip = false },{f = fu,  flip = true }},
+  {{f = fd,  flip = false },{f = fd,  flip = true }}
  }
 end
 
 function controls_menu()
- if (btnp(UP) and g_selected_item > 1) then
+ if (btnp(up) and g_selected_item > 1) then
   g_selected_item -= 1
  end
- if (btnp(DOWN) and g_selected_item < #g_items) then
+ if (btnp(down) and g_selected_item < #g_items) then
   g_selected_item += 1
  end
- if (btnp(FIRE1)) then
+ if (btnp(fire1)) then
   g_p.weapon = g_items[g_selected_item]
   g_open_inv = false
   g_p.cd = 10
@@ -256,17 +257,17 @@ function controls_menu()
 end
 
 function controls_player()
- g_p.anim_state = WALK
- if (is_moving(LEFT))  move(g_p,-1, 0, 0, 6)
- if (is_moving(RIGHT)) move(g_p, 1, 0, 6, 6)
- if (is_moving(UP))    move(g_p, 0,-1, 6, 0)
- if (is_moving(DOWN))  move(g_p, 0, 1, 6, 6)
- if (is_not_moving())  g_p.anim_state = STAY
+ g_p.anim = walk
+ if (is_moving(left))  move(g_p,-1, 0, 0, 6)
+ if (is_moving(right)) move(g_p, 1, 0, 6, 6)
+ if (is_moving(up))    move(g_p, 0,-1, 6, 0)
+ if (is_moving(down))  move(g_p, 0, 1, 6, 6)
+ if (is_not_moving())  g_p.anim = stay
  action_player()
 end
 
 function action_ennemies(a, d)
- if (a.tag ~= ENNEMY) return
+ if (a.tag ~= ennemy) return
  if (a.cd > 0) a.cd -= 1
  if (a.cd == 0) then
   shoot(a, d)
@@ -276,10 +277,10 @@ end
 
 function controls_ennemies()
  for a in all(g_actors) do
-  if (a.tag == ENNEMY) then
+  if (a.tag == ennemy) then
    local dist = check_distance_from_player(a)
    if(is_player_near(dist)) then
-    a.anim_state = WALK
+    a.anim = walk
     if (dist >= a.weapon.type) then
      local dir_m = going_forward(a)
      move_on(a, dir_m)
@@ -290,10 +291,10 @@ function controls_ennemies()
     local dir_a = prepare_attack_opportunity(a)
     action_ennemies(a, dir_a)
    else
-     a.anim_state = STAY
+     a.anim = stay
    end -- is player near
   end -- tag is ennemy
-  if (a.tag == BULLET) then
+  if (a.tag == bullet) then
    a.x += a.dx
    a.y += a.dy
    if (is_of_limit(a.x, a.y, a.bx, a.by, a.range)) del(g_actors, a)
@@ -305,11 +306,11 @@ function going_forward(a)
  local rx = a.x - g_p.x
  local ry = a.y - g_p.y
  if(abs(rx) > abs(ry)) then
-   if(rx < 0) return RIGHT
-   return LEFT
+   if(rx < 0) return right
+   return left
  else
-   if(ry < 0) return DOWN
-   return UP
+   if(ry < 0) return down
+   return up
  end
 end
 
@@ -323,22 +324,22 @@ function get_best_direction(a)
  local rx = a.x - g_p.x
  local ry = a.y - g_p.y
  if((abs(rx) - abs(ry)) < 0 and abs(rx) > 1) then
-   if(rx < 0) return RIGHT
-   return LEFT
+   if(rx < 0) return right
+   return left
  elseif((abs(rx) - abs(ry)) > 0 and abs(ry) > 1) then
-   if(ry < 0) return DOWN
-   return UP
+   if(ry < 0) return down
+   return up
  end
- return NONE
+ return none
 end
 
 function prepare_attack_opportunity(a, d)
  if(abs(a.x - g_p.x) < abs(a.y - g_p.y)) then
-   if(a.y < g_p.y) return DOWN
-   return UP
+   if(a.y < g_p.y) return down
+   return up
  else
-   if(a.x < g_p.x) return RIGHT
-   return LEFT
+   if(a.x < g_p.x) return right
+   return left
  end
 end
 
@@ -347,12 +348,12 @@ function is_player_near(gap)
 end
 
 function target_nearest_one(limit)
- limit = limit or INF
- local rx = INF
- local ry = INF
- local target = {x = INF , y=INF}
+ limit = limit or inf
+ local rx = inf
+ local ry = inf
+ local target = {x = inf , y=inf}
  for a in all(g_actors) do
-  if(a.tag == ENNEMY) then
+  if(a.tag == ennemy) then
    if((rx+ry)/2 > check_distance_from_player(a)) then
     rx = abs(a.x-g_p.x)
     ry = abs(a.y-g_p.y)
@@ -365,11 +366,11 @@ function target_nearest_one(limit)
 end
 
 function move_on(a, go)
- if (go == LEFT)  move(a ,-a.dx, 0, 0, 8)
- if (go == RIGHT) move(a, a.dx, 0, 8, 8)
- if (go == UP)    move(a, 0 ,-a.dy, 8, 0)
- if (go == DOWN)  move(a, 0, a.dy, 8, 8)
- if (go ~= NONE)  a.d = go
+ if (go == left)  move(a ,-a.dx, 0, 0, 8)
+ if (go == right) move(a, a.dx, 0, 8, 8)
+ if (go == up)    move(a, 0 ,-a.dy, 8, 0)
+ if (go == down)  move(a, 0, a.dy, 8, 8)
+ if (go ~= none)  a.d = go
 end
 
 function is_moving(direction)
@@ -381,10 +382,10 @@ function is_moving(direction)
 end
 
 function is_not_moving()
-  if ((btn(LEFT)
- or btn(RIGHT)
- or btn(UP)
- or btn(DOWN)) == false) then
+  if ((btn(left)
+ or btn(right)
+ or btn(up)
+ or btn(down)) == false) then
   return true
  end
  return false
@@ -393,20 +394,20 @@ end
 function move(a, x, y, ox, oy)
  local sp1 = mget((a.x + x + (ox * x)) / 8 ,(a.y + y + (oy * y)) / 8)
  local sp2 = mget((a.x + x + ox) / 8 ,(a.y + y + oy) / 8)
- if (fget(sp1, F_OBST) == false and fget(sp2, F_OBST) == false) then
+ if (fget(sp1, f_obst) == false and fget(sp2, f_obst) == false) then
   a.x += x
   a.y += y
  end
- if(a.tag == PLAYER) then
-  if(fget(sp1, F_HEAL) and a.health < L_PLAYER) then
+ if(a.tag == player) then
+  if(fget(sp1, f_heal) and a.health < l_player) then
    pick_item((a.x + x + (ox * x)) / 8 ,(a.y + y + (oy * y)) / 8)
    a.health += 10
-   if (a.health > L_PLAYER) a.healh = L_PLAYER
+   if (a.health > l_player) a.healh = l_player
   end
-  if(fget(sp2, F_HEAL) and a.health < L_PLAYER) then
+  if(fget(sp2, f_heal) and a.health < l_player) then
    pick_item((a.x + x + ox) / 8 ,(a.y + y + oy) / 8)
    a.health += 10
-   if (a.health > L_PLAYER) a.healh = L_PLAYER
+   if (a.health > l_player) a.healh = l_player
   end
  end
 end
@@ -415,14 +416,14 @@ end
 
 function action_player()
  if (g_p.cd > 0) g_p.cd -= 1
- if ((g_p.cd == 0) and btn(FIRE1)) then
+ if ((g_p.cd == 0) and btn(fire1)) then
   shoot()
   g_p.cd = g_p.weapon.cd
  end
  if (g_p.cdfx > 0) g_p.cdfx -= 1
- if (btnp(FIRE2)) then
+ if (btnp(fire2)) then
   sp = mget(g_p.x / 8 ,(g_p.y - 1) / 8)
-  if (fget(sp, F_INV)) then
+  if (fget(sp, f_inv)) then
    g_open_inv = true
   elseif (g_p.cdfx == 0) then
    g_p.cdfx = g_p.weapon.cdfx
@@ -444,7 +445,7 @@ function pick_item(x, y)
 end
 
 function wait_inventory_close()
- if (btnp(FIRE2)) then
+ if (btnp(fire2)) then
   g_open_inv = false;
  end
 end
@@ -456,7 +457,7 @@ function anim_state(a, f)
 end
 
 function anim_player(a)
-	if(a.anim_state == STAY) then
+	if(a.anim == stay) then
 		return anim_state(a, a.stay)
 	else
 		return anim_state(a, a.walk)
@@ -470,8 +471,8 @@ function g_good_spot(xmax, ymax)
   x = 0,
   y = 0
  }
- local f = F_OBST
- while(fget(mget(a.x / 8 ,(a.y) / 8), F_OBST)) do
+ local f = f_obst
+ while(fget(mget(a.x / 8 ,(a.y) / 8), f_obst)) do
   a.x = rnd(xmax)
   a.y = rnd(ymax)
  end
@@ -501,31 +502,31 @@ function shoot(a, d)
  local speed = a.weapon.speed
  local center = a.weapon.hb / 2
  local b = {}
- if(d == LEFT) then
-  b = make_actor(a.x-6, a.y, a.weapon.animh, BULLET, IMMORTAL_OBJECT, LEFT)
+ if(d == left) then
+  b = make_actor(a.x-6, a.y, a.weapon.animh, bullet, immortal_object, left)
   b.box = {x1 = 0, y1 = 4-center, x2 = 5, y2 = 4+center}
   b.dx = -speed
  end
- if(d == RIGHT) then
-  b = make_actor(a.x+6, a.y, a.weapon.animh, BULLET, IMMORTAL_OBJECT, RIGHT)
+ if(d == right) then
+  b = make_actor(a.x+6, a.y, a.weapon.animh, bullet, immortal_object, right)
   b.box = {x1 = 3, y1 = 4-center, x2 = 8, y2 = 4+center}
   b.dx = speed
  end
- if(d == UP) then
-  b = make_actor(a.x, a.y-6, a.weapon.animv, BULLET, IMMORTAL_OBJECT, UP)
+ if(d == up) then
+  b = make_actor(a.x, a.y-6, a.weapon.animv, bullet, immortal_object, up)
   b.box = {x1 = 4-center, y1 = 0, x2 = 4+center, y2 = 5}
   b.dy = -speed
  end
- if(d == DOWN) then
-  b = make_actor(a.x, a.y+6, a.weapon.animv, BULLET, IMMORTAL_OBJECT, DOWN)
+ if(d == down) then
+  b = make_actor(a.x, a.y+6, a.weapon.animv, bullet, immortal_object, down)
   b.box = {x1 = 4-center, y1 = 3, x2 = 4+center, y2 = 8}
   b.dy = speed
  end
  b.dmg = a.weapon.dmg
- if (d ~= NONE or a.tag == PLAYER) then
+ if (d ~= none or a.tag == player) then
   sfx(a.weapon.sfx)
  end
- if (a.weapon.type == MELEE) then
+ if (a.weapon.type == melee) then
   b.range = 5
  else
   b.range = 128
@@ -536,34 +537,51 @@ function get_formalised_position(a)
  return a - 64 < 0 and 0 or a - 64
 end
 
-function manage_direction(direction)
- direction = direction or NONE
- local inv = {}
- inv.h = false
- inv.v = false
+function manage_weapon_direction(direction)
+ direction = direction or none
+ local inv = {
+  h = false,
+  v = false,
+  ox = 0,
+  oy = 0
+ }
+ if (direction == left or direction == up) then
+  inv.h = true
+  inv.v = false
+  inv.ox = -6
+ end
+ if (direction == right) inv.ox = -4
+ if (direction == up) inv.ox = -10
+ return inv
+end
 
- if (direction == LEFT) then
+function manage_aim_direction(direction)
+ direction = direction or none
+ local inv = {
+  h = false,
+  v = false
+ }
+ if (direction == left) then
   inv.h = true
   inv.v = false
  end
-
- if (direction == DOWN) then
+ if (direction == down) then
   inv.h = false
   inv.v = true
  end
  return inv
 end
 
-function draw_border(anim_state, x, y, c)
+function draw_border_on_caracter(anim, x, y, c)
 	for i=1, 16 do
 		pal(i, c)
  end
- spr(anim_state.f, x,   y+1, 1, 2, anim_state.fy, false)
- spr(anim_state.f, x,   y-1, 1, 2, anim_state.fy, false)
- spr(anim_state.f, x-1, y,   1, 2, anim_state.fy, false)
- spr(anim_state.f, x+1, y,   1, 2, anim_state.fy, false)
+ spr(anim.f, x,   y+1, 1, 2, anim.flip, false)
+ spr(anim.f, x,   y-1, 1, 2, anim.flip, false)
+ spr(anim.f, x-1, y,   1, 2, anim.flip, false)
+ spr(anim.f, x+1, y,   1, 2, anim.flip, false)
  pal()
- spr(anim_state.f, x,   y,   1, 2, anim_state.fy, false)
+ spr(anim.f, x,   y,   1, 2, anim.flip, false)
 end
 
 -- collisions
@@ -600,24 +618,24 @@ end
 
 function check_actor_health(damaged_actor)
  if (is_dead(damaged_actor)) then
-  if (damaged_actor.tag == ENNEMY) g_ennemies_left -= 1
+  if (damaged_actor.tag == ennemy) g_ennemies_left -= 1
   dfx_disapearance(damaged_actor.x, damaged_actor.y)
   screenshake(5)
   del(g_actors, damaged_actor)
  end
 end
 
-function collisions()
+function controls_collisions()
  for a in all(g_actors) do
   for b in all(g_actors) do
    if (check_collisions(a, b)) then
     local damaged_actor = a
-    if (a.tag == BULLET and b.tag ~= BULLET) then
+    if (a.tag == bullet and b.tag ~= bullet) then
      b.health -= a.dmg
      damaged_actor = b
      make_particles(b, 10, 5)
      del(g_actors, a)
-    elseif (b.tag == BULLET and a.tag ~= BULLET) then
+    elseif (b.tag == bullet and a.tag ~= bullet) then
      a.health -= b.dmg
      make_particles(a, 10, 5)
      del(g_actors, b)
@@ -706,20 +724,20 @@ function draw_skills(bx, by)
  draw_item_shape(bx+18, by+7, g_p.weapon.animv, g_p.cd, g_p.weapon.cd)
 end
 
-function draw_g_actors()
+function draw_actors()
  for a in all(g_actors) do
-  if (a.tag == PLAYER or a.tag == ENNEMY) then
-   draw_weapon(a)
-   draw_border(anim_player(a), a.x, a.y, BLACK)
+  if (a.tag == player or a.tag == ennemy) then
+   draw_border_on_caracter(anim_player(a), a.x, a.y, black)
+   draw_weapon(a,manage_weapon_direction(a.d))
   else
-   local inv = manage_direction(a.d)
+   local inv = manage_aim_direction(a.d)
    spr(a.s, a.x, a.y, 1, 1, inv.h, inv.v)
   end
  end
 end
 
-function draw_weapon(a)
- spr(a.weapon.spr, a.x+a.weapon.ox, a.y-a.weapon.oy)
+function draw_weapon(a,f)
+ spr(a.weapon.spr, a.x + a.weapon.ox + f.ox, a.y - a.weapon.oy + f.oy, 1, 1, f.h, f.v)
 end
 
 function draw_hud()
@@ -730,12 +748,12 @@ function draw_hud()
 end
 
 function draw_life(bx, by)
- local offsetlife = #spr_life - flr(((g_p.health * #spr_life) / L_PLAYER))
+ local offsetlife = #spr_life - flr(((g_p.health * #spr_life) / l_player))
  for y = 1 , #spr_life do
   for x = 1 , #spr_life[y] do
-   if (spr_life[y][x] ~= BLACK) then
-    if (offsetlife >= y and spr_life[y][x] == RED) then
-     pset(bx + x, by + y, LIGHT_GRAY)
+   if (spr_life[y][x] ~= black) then
+    if (offsetlife >= y and spr_life[y][x] == red) then
+     pset(bx + x, by + y, light_gray)
     else
      pset(bx + x, by + y, spr_life[y][x])
     end
@@ -746,18 +764,19 @@ end
 
 function draw_menu()
  map(0, 48, 0, 0, 16, 16)
- print("press x+c", 50, 90, WHITE)
+ print("sophia quest", 35, 75, white)
+ print("press x+c", 50, 90, white)
 end
 
 function draw_inventory(x, y)
  if (g_open_inv) then
-  rectfill(x, y, x + 48, y + 128, DARK_BLUE)
-  line(x, y, x, y + 128, LIGHT_GRAY)
+  rectfill(x, y, x + 48, y + 128, dark_blue)
+  line(x, y, x, y + 128, light_gray)
   local tx = x + 7
   local ty = y + 10
   for i = 1 ,#g_items do
    draw_item_shape(tx, ty, g_items[i].spr)
-   print(g_items[i].name, tx + 12, ty - 2, WHITE)
+   print(g_items[i].name, tx + 12, ty - 2, white)
    if (g_selected_item == i) then
     spr(58, tx - 7, ty - 2)
    end
@@ -769,14 +788,14 @@ end
 function draw_item_shape(x, y, s, cd, max)
  local cd = cd or 0
  local max = max or 1
- rectfill(x-2, y-5, x+9, y+5, WHITE)
+ rectfill(x - 2, y - 5,  x + 9, y + 5, white)
  local curcd = ceil((cd*8)/max)
- rectfill(x-2, y-5+curcd, x+9, y+5, LIGHT_GRAY)
- line(x-2, y-5, x-2, y+5, DARK_GRAY)
- line(x-2, y-5, x+9, y-5, DARK_GRAY)
- line(x+9, y-5, x+9, y+5, DARK_GRAY)
- line(x+9, y+5, x-2, y+5, DARK_GRAY)
- spr(s, x, y-4)
+ rectfill(x - 2, y - 5 + curcd, x + 9, y + 5, light_gray)
+ line(x - 2, y - 5, x - 2, y + 5, dark_gray)
+ line(x - 2, y - 5, x + 9, y - 5, dark_gray)
+ line(x + 9, y - 5, x + 9, y + 5, dark_gray)
+ line(x + 9, y + 5, x - 2, y + 5, dark_gray)
+ spr(s, x, y - 4)
 end
 
 function draw_game()
@@ -789,7 +808,7 @@ function draw_game()
  draw_particles()
  draw_explosions()
  draw_thunders()
- draw_g_actors()
+ draw_actors()
  draw_waterfalls()
  draw_hud()
  draw_inventory(g_fp.x+80, g_fp.y)
@@ -800,7 +819,7 @@ end
 -- update
 
 function update_menu()
- if (btn(FIRE1) and btn(FIRE2)) then
+ if (btn(fire1) and btn(fire2)) then
   _update = update_game
   _draw = draw_game
   g_p.cd = 10
@@ -811,7 +830,7 @@ function update_game()
  if (g_open_inv == false) then
   controls_ennemies()
   controls_player()
-  collisions()
+  controls_collisions()
  else
   wait_inventory_close()
   controls_menu()
@@ -881,7 +900,7 @@ spr_life = {
  {0, 0, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 0, 0}
 }
 
--- map g_items positions
+-- map items positions
 
 map_items = {
  {
@@ -899,8 +918,15 @@ map_items = {
 
 -- debug
 
+function log(tab,text)
+ if(tab < 0 or tab > #g_dbg) return
+ g_dbg[tab] = text
+end
+
 function debug(x, y)
-  print(g_dbg, x, y, RED)
+ for i=1,#g_dbg do
+  print(g_dbg[i], x, y+(6*i), red)
+ end
 end
 
 __gfx__
@@ -953,12 +979,12 @@ __gfx__
 11111cc1666666661cc1ccc16666666606333360045555403444443bbbbbbbbbb34443440000000000000000000000000070700000c1c0000000800005688650
 1ccc1cc1666666661cc1ccc16666666600000000000000004443444bbbbbbbbbb44343440000000000000000000000000000000000c1c0000000500000566500
 1ccc1cc1111111111cc1ccc1666666660000000000000000444344bbbbbbbbbbbb44444400001000000800000000000000004000000080000000000000888000
-1ccc1c0ccc1cccccc0c11111666666660000000000000000444343bbb3bb33bbbb344344000c10000082800000000000000d0400000880000000000000888000
-1ccc11cccc1ccccccc11ccc1666666660000000000000000434434333433443333444444000c10000048000000008000000d00400555551100008000008d8000
-1ccc1111111111111111ccc1666666660000000000000000444444444434444444344344000c10000004000000555590000d00400555551105555a55008d8000
-1cc0cc1ccccccc1ccccc0cc1666666660000000000000000444444444444434444444444000c10000040000000dd0000000d004000dd000000dd0aa0008d8000
-1c0ccc1ccccccc1cccccc0c1666666660000000000000000333444444444443443444444000c10000004000000d00000000d040000d0000000d00aa000ddd000
-11cccc1ccccccc1ccccccc11666666660000000000000000444444344344444444434444000c00000004000000000000000040000000000000000000000d0000
+1ccc1c0ccc1cccccc0c11111666666660000000000000000444343bbb3bb33bbbb344344000d10000082800000000000000d0400000880000000000000888000
+1ccc11cccc1ccccccc11ccc1666666660000000000000000434434333433443333444444000d10000048000000008000000d00400555551100008000008d8000
+1ccc1111111111111111ccc1666666660000000000000000444444444434444444344344000d10000004000000555590000d00400555551105555a55008d8000
+1cc0cc1ccccccc1ccccc0cc1666666660000000000000000444444444444434444444444000d10000040000000dd0000000d004000dd000000dd0aa0008d8000
+1c0ccc1ccccccc1cccccc0c1666666660000000000000000333444444444443443444444000d10000004000000d00000000d040000d0000000d00aa000ddd000
+11cccc1ccccccc1ccccccc11666666660000000000000000444444344344444444434444000d00000004000000000000000040000000000000000000000d0000
 111111111111111111111111666666660000000000000000444434444444434444444443000500000004000000000000000000000000000000000000000d0000
 11111111111111111111111111111111000000000000000033344333333443330000000000000000000000000000000000000000000000000000000000000000
 11111111111111111111111111111111000000000000000033d44d3333d44d330000000000000000000000000000000000000000000000000000000000000000
