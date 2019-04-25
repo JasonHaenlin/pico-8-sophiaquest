@@ -146,7 +146,7 @@ function make_game()
  make_weapons()
  make_player()
  make_map_items()
- -- make_ennemies(nbofennemies, {4})
+ make_ennemies(nbofennemies, {132})
 end
 
 function make_map_items()
@@ -164,11 +164,12 @@ function make_ennemies(nb, aspr)
    a = ggdspot(248,248)
    mstr = make_actor(a.x,a.y,s,ennemy,life.ennemy,up)
    mstr.weapon = items[4]
-   mstr.cooldown = 50
-   mstr.anim = "walk"
-   mstr.walk = {f=s,st=s,sz=2,spd=1/5}
-   mstr.dx = 0.7
-   mstr.dy = 0.7
+   mstr.cd = 50
+   mstr.anim = "stay"
+   mstr.walk = make_anim("walk",cframes(s+33,s+1,s+33,s+1,s+34,s+32),1/5)
+   mstr.stay = make_anim("stay",cframes(s+1,s+1,s+1,s+1,s+2,s),1/5)
+   mstr.dx = 0.9
+   mstr.dy = 0.9
    ennemies_left += 1
   end
  end
@@ -309,10 +310,10 @@ end
 
 function controls_ennemies(a,d)
  if (a.tag ~= ennemy) return
- if (a.cooldown > 0) a.cooldown -= 1
- if (a.cooldown == 0) then
+ if (a.cd > 0) a.cd -= 1
+ if (a.cd == 0) then
   shoot(a,d)
-  a.cooldown = 50
+  a.cd = 50
  end
 end
 
@@ -409,6 +410,7 @@ function move_on(a,go)
  if (go == right) move(a,a.dx,0,8,8)
  if (go == up) move(a,0,-a.dy,8,0)
  if (go == down) move(a,0,a.dy,8,8)
+ if (go ~= none) a.d = go
 end
 
 function is_moving(direction)
@@ -490,7 +492,7 @@ end
 
 function anim(a,f)
 	f.time += f.spd
- if(f.time > 2) f.time = 0
+ if(f.time >= 2) f.time = 0
 	return f.f[a.d+1][flr(f.time)+1]
 end
 
@@ -609,9 +611,11 @@ function highlight(anim,x,y,c,direction)
 		pal(i,c)
  end
  spr(anim.f,x,y+1,1,2,anim.fy,false)
+ spr(anim.f,x,y-1,1,2,anim.fy,false)
+ spr(anim.f,x-1,y,1,2,anim.fy,false)
+ spr(anim.f,x+1,y,1,2,anim.fy,false)
  pal()
  spr(anim.f,x,y,1,2,anim.fy,false)
- dbg = p.anim
 end
 
 -- collisions
@@ -762,7 +766,7 @@ function draw_actors()
  for a in all(actors) do
   if (a.tag == player or a.tag == ennemy) then
    draw_weapon(a)
-   highlight(anim_player(a),a.x,a.y,5,2)
+   highlight(anim_player(a),a.x,a.y,black,2)
   else
    local inv = manage_direction(a.d)
    spr(a.s,a.x,a.y,1,1,inv.h,inv.v)
