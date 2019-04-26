@@ -103,7 +103,7 @@ function make_game()
  make_weapons()
  make_player()
  make_map_items()
- -- make_ennemies(nb_of_ennemis, {132})
+ -- make_ennemies(nb_of_ennemis, {131})
 end
 
 function make_map_items()
