@@ -78,7 +78,7 @@ function make_weapons()
 end
 
 function make_player()
- g_p = make_actor(333,85,129,player,life.player,up)
+ g_p = make_actor(333, 85, 129, player, l_player, up)
  g_p.weapon = g_items[5]
  g_p.anim = stay
  g_p.walk = make_anim(walk, create_direction_frames(162, 130, 162, 130, 163, 161), 1/5)
