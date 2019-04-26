@@ -83,8 +83,8 @@ function make_player()
  g_p = make_actor(333, 85, 129, player, l_player, up)
  g_p.weapon = g_items[5]
  g_p.anim = stay
- g_p.walk = make_anim(walk, create_direction_frames(162, 130, 162, 130, 163, 161), 1/5)
- g_p.stay = make_anim(stay, create_direction_frames(130, 130, 130, 130, 131, 129), 1/5)
+ g_p.walk = make_anim(walk, create_direction_frames(161, 129, 161, 129, 162, 160), 1/5)
+ g_p.stay = make_anim(stay, create_direction_frames(129, 129, 129, 129, 130, 128), 1/5)
  g_p.cd = 0
  g_p.cdfx = 0
  g_p.box = {x1 = 0, y1 = 1, x2 = 7, y2 = 14}
