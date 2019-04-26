@@ -15,7 +15,7 @@ f_heal, f_item, f_inv, f_obst = 0, 1, 5, 7
 l_player, l_ennemy, l_boss = 50, 10, 150
 walk, stay = "walk", "stay"
 
-debug_enabled = true
+debug_enabled = false
 
 -- init
 function _init()
@@ -83,8 +83,8 @@ function make_player()
  g_p = make_actor(333, 85, 129, player, l_player, up)
  g_p.weapon = g_items[5]
  g_p.anim = stay
- g_p.walk = make_anim(walk, create_direction_frames(162, 130, 162, 130, 163, 161), 1/5)
- g_p.stay = make_anim(stay, create_direction_frames(130, 130, 130, 130, 131, 129), 1/5)
+ g_p.walk = make_anim(walk, create_direction_frames(162, 130, 162, 130, 163, true, 161, true), 1/5)
+ g_p.stay = make_anim(stay, create_direction_frames(130, 130, 130, 130, 131, false, 129, false), 1/5)
  g_p.cd = 0
  g_p.cdfx = 0
  g_p.box = {x1 = 0, y1 = 1, x2 = 7, y2 = 14}
@@ -123,8 +123,8 @@ function make_ennemies(nb, aspr)
    e.weapon = g_items[4]
    e.cd = 50
    e.anim = stay
-   e.walk = make_anim(walk, create_direction_frames(s+33, s+1, s+33, s+1, s+34, s+32), 1/10)
-   e.stay = make_anim(stay, create_direction_frames(s+1, s+1, s+1, s+1, s+2, s), 1/10)
+   e.walk = make_anim(walk, create_direction_frames(s+33, s+1, s+33, s+1, s+34, true, s+32, true), 1/10)
+   e.stay = make_anim(stay, create_direction_frames(s+1, s+1, s+1, s+1, s+2, false, s, false), 1/10)
    e.dx = 0.9
    e.dy = 0.9
    e.box = {x1 = 0, y1 = 1, x2 = 7, y2 = 14}
@@ -238,12 +238,12 @@ end
 
 -- move
 
-function create_direction_frames(fl1, fl2, fr1, fr2, fu, fd)
+function create_direction_frames(fl1, fl2, fr1, fr2, fu, fuflip, fd, fdflip)
  return {
   {{f = fl1, flip = true  },{f = fl2, flip = true }},
   {{f = fr1, flip = false },{f = fr2, flip = false}},
-  {{f = fu,  flip = false },{f = fu,  flip = true }},
-  {{f = fd,  flip = false },{f = fd,  flip = true }}
+  {{f = fu,  flip = false },{f = fu,  flip = fuflip }},
+  {{f = fd,  flip = false },{f = fd,  flip = fdflip }}
  }
 end
 
@@ -958,7 +958,7 @@ end
 
 function debug()
  debug_collision_matrix()
- -- debug_hitbox_matrix()
+ debug_hitbox_matrix()
  debug_log(g_fp.x+10, g_fp.y+10)
 end
 
