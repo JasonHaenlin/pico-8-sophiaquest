@@ -4,179 +4,135 @@ __lua__
 
 
 -- const
-left,right,up,down,fire1,fire2,none=0,1,2,3,4,5,6
-black,dark_blue,dark_purple,dark_green,brown,dark_gray,light_gray,white,red,orange,yellow,green,blue,indigo,pink,peach=0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15
-player,bullet,ennemy=0,1,2
-immortalobject=1000
-nbofennemies=10
-melee,ranged=1,20
--- var
-dbg=""
+left, right, up, down, fire1, fire2, none = 0, 1, 2, 3, 4, 5, 6
+black, dark_blue, dark_purple, dark_green, brown, dark_gray, light_gray, white, red, orange, yellow, green, blue, indigo, pink, peach = 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15
+player, bullet, ennemy = 0, 1, 2
+immortal_object = 1000
+inf = 1000
+melee, ranged = 1, 20
+nb_of_ennemis = 20
+f_heal, f_item, f_inv, f_obst = 0, 1, 5, 7
+l_player, l_ennemy, l_boss = 50, 10, 150
+walk, stay = "walk", "stay"
 
-
-flags={
- heal=0,
- item=1,
- inventory=5,
- obst=7
-}
-
-ctime={
- m=0,
- s=0,
- ms=0
-}
-
-life = {
- player = 50,
- ennemy = 10,
- boss = 150,
-}
-
-spr_life = {
- {0,0,5,5,5,5,5,5,5,5,5,5,0,0},
- {0,5,8,8,8,8,8,8,8,8,8,8,5,0},
- {5,8,8,8,8,8,8,8,8,8,8,8,8,5},
- {5,8,8,7,7,8,8,8,8,8,8,8,8,5},
- {5,8,8,7,7,8,8,8,8,8,8,8,8,5},
- {5,8,8,8,8,8,8,8,8,8,8,8,8,5},
- {5,8,8,8,8,8,8,8,8,8,8,8,8,5},
- {5,8,8,8,8,8,8,8,8,8,8,8,8,5},
- {5,8,8,8,8,8,8,8,8,8,8,8,8,5},
- {5,8,8,8,8,8,8,8,8,8,8,8,8,5},
- {5,8,8,8,8,8,8,8,8,8,8,8,8,5},
- {5,8,8,8,8,8,8,8,8,8,8,8,8,5},
- {0,5,8,8,8,8,8,8,8,8,8,8,5,0},
- {0,0,5,5,5,5,5,5,5,5,5,5,0,0}
-}
-
-actors={}
-particles={}
-explosions={}
-thunders={}
-showers={}
-items={}
-
-map_items={
- {
-  name = "heal_potion",
-  spr=118,
-  pos={
-   {x=9,y=4},
-   {x=17,y=16},
-   {x=25,y=14},
-   {x=21,y=7},
-   {x=25,y=10}
-  }
- }
-}
-
-open_inv=false
-selected_item=1
-ennemies_left=1
+debug_enabled = true
 
 -- init
 function _init()
+ debug_init()
+
+ g_actors = {}
+ g_particles = {}
+ g_explosions = {}
+ g_thunders = {}
+ g_showers = {}
+ g_items = {}
+
+ g_open_inv=false
+ g_selected_item=1
+ g_ennemies_left=1
  _update = update_menu
+ init_screen()
  make_game()
 end
 
 function init_screen()
- scr = {}
- scr.x = 0
- scr.y = 0
- scr.shake = 0
- scr.intensity = 2
+ g_scr = {
+  x = 0,
+  y = 0,
+  shake = 0,
+  intensity = 2
+ }
 end
 
 -- make
 
-function make_actor(x,y,s,tag,health,direction)
- direction = direction or flr(rnd(3))
- local actor = {}
- actor.tag = tag
- actor.d = direction
- actor.bx = x
- actor.by = y
- actor.x = x
- actor.y = y
- actor.s = s
- actor.dx = 0
- actor.dy = 0
- actor.health = health
- actor.box = {x1=0,y1=0,x2=7,y2=7}
- add(actors,actor)
+function make_actor(x, y, s, tag, health, direction)
+ local actor = {
+  tag = tag,
+  d = direction or up,
+  bx = x,
+  by = y,
+  x = x,
+  y = y,
+  s = s,
+  dx = 0,
+  dy = 0,
+  health = health,
+  box = {x1 = 0, y1 = 0, x2 = 7, y2 = 7}
+ }
+ add(g_actors, actor)
  return actor
 end
 
 function make_weapons()
-  -- name,spr,sfx,animh,animv,cd,dmg,type,speed,hb,ox,oy,dfx,cd
- make_item("sword",105,4,73,89,15,7,melee,1,8,4,3)
- make_item("firewand",106,1,74,90,8,8,ranged,3,3,5,1)
- make_item("gun",107,5,75,91,3,3,ranged,10,1,5,0)
- make_item("bow",108,3,76,92,6,5,ranged,6,3,4,-1)
- make_item("secret",109,6,77,93,4,5,ranged,5,1,5,0,dfx_shower,50)
- make_item("tatata",110,7,78,94,2,2,ranged,10,1,5,0)
- make_item("boom",111,7,79,95,18,10,melee,1,8,4,3)
- make_item("elechammer",160,8,128,144,20,15,melee,1,8,4,2,dfx_thunder,50)
+ -- name, spr, sfx, animh, animv, cd, dmg, type, speed, hb, ox, oy, dfx, cdfx
+ make_item("sword",    105, 4, 73,  89,  15, 7,  melee,  1,  8, 5, -4)
+ make_item("firewand", 106, 1, 74,  90,  8,  8,  ranged, 3,  3, 5, -4)
+ make_item("gun",      107, 5, 75,  91,  3,  3,  ranged, 10, 1, 5, -5)
+ make_item("bow",      108, 3, 76,  92,  6,  5,  ranged, 6,  3, 5,-5)
+ make_item("secret",   109, 6, 77,  93,  4,  5,  ranged, 5,  1, 5, -5, dfx_shower, 50)
+ make_item("tatata",   110, 7, 78,  94,  2,  2,  ranged, 10, 1, 5, -5)
+ make_item("boom",     111, 7, 79,  95,  18, 10, melee,  1,  8, 5, -4)
+ make_item("elec",     160, 8, 128, 144, 20, 15, melee,  1,  8, 5, -5, dfx_thunder, 50)
 end
 
 function make_player()
- p = make_actor(333,85,129,player,life.player,up)
- p.weapon = items[5]
- p.anim = "stay"
- p.walk = make_anim("walk",cframes(162,130,162,130,163,161),1/5)
- p.stay = make_anim("stay",cframes(130,130,130,130,131,129),1/5)
- p.cd = 0
- p.cdfx = 0
- p.box = {x1=0,y1=0,x2=6,y2=7}
+ g_p = make_actor(333,85,129,player,life.player,up)
+ g_p.weapon = g_items[5]
+ g_p.anim = stay
+ g_p.walk = make_anim(walk, create_direction_frames(162, 130, 162, 130, 163, 161), 1/5)
+ g_p.stay = make_anim(stay, create_direction_frames(130, 130, 130, 130, 131, 129), 1/5)
+ g_p.cd = 0
+ g_p.cdfx = 0
+ g_p.box = {x1 = 0, y1 = 1, x2 = 7, y2 = 14}
 end
 
-function make_anim(name,frames,spd)
- local a = {}
- a.time = 0
- a.anim = name
- a.spd = spd
- a.f = frames
- return a
+function make_anim(name, frames, spd)
+ return {
+  time = 0,
+  anim = name,
+  spd = spd,
+  f = frames
+ }
 end
 
 function make_game()
- init_screen()
  make_weapons()
  make_player()
  make_map_items()
- make_ennemies(nbofennemies, {132})
+ -- make_ennemies(nb_of_ennemis, {132})
 end
 
 function make_map_items()
- for obj in all(map_items) do
-  for p in all(obj.pos) do
-   mset(p.x,p.y,obj.spr)
+ for o in all(map_items) do
+  for p in all(o.pos) do
+   mset(g_p.x, g_p.y, o.spr)
   end
  end
 end
 
 function make_ennemies(nb, aspr)
- ennemies_left = 0
+ g_ennemies_left = 0
  for s in all(aspr) do
-  for i=1,nb/#aspr do
-   a = ggdspot(248,248)
-   mstr = make_actor(a.x,a.y,s,ennemy,life.ennemy,up)
-   mstr.weapon = items[4]
-   mstr.cd = 50
-   mstr.anim = "stay"
-   mstr.walk = make_anim("walk",cframes(s+33,s+1,s+33,s+1,s+34,s+32),1/10)
-   mstr.stay = make_anim("stay",cframes(s+1,s+1,s+1,s+1,s+2,s),1/10)
-   mstr.dx = 0.9
-   mstr.dy = 0.9
-   ennemies_left += 1
+  for i=1, nb/#aspr do
+   local a = g_good_spot(248, 248)
+   local e = make_actor(a.x, a.y, s, ennemy, l_ennemy, up)
+   e.weapon = g_items[4]
+   e.cd = 50
+   e.anim = stay
+   e.walk = make_anim(walk, create_direction_frames(s+33, s+1, s+33, s+1, s+34, s+32), 1/10)
+   e.stay = make_anim(stay, create_direction_frames(s+1, s+1, s+1, s+1, s+2, s), 1/10)
+   e.dx = 0.9
+   e.dy = 0.9
+   e.box = {x1 = 0, y1 = 1, x2 = 7, y2 = 14}
+   g_ennemies_left += 1
   end
  end
 end
 
-function make_particles(a,n,c)
- c = c or 8
+function make_particles(a, n, c)
+ local c = c or 8
 	while (n > 0) do
  	part = {}
  	part.x = a.x+4
@@ -186,87 +142,93 @@ function make_particles(a,n,c)
  	part.dy = (rnd(2)-1)*2
  	part.f = 0
  	part.maxf = 15
- 	add(particles,part)
+ 	add(g_particles, part)
  	sfx(1)
  	n -= 1
  end
 end
 
-function make_item(name,spr,sfx,animh,animv,cd,dmg,type,speed,hb,ox,oy,dfx,cdfx)
- local item = {}
- item.name = name
- item.spr = spr
- item.animh = animh
- item.animv = animv
- item.cd = cd
- item.speed = speed
- item.dmg = dmg
- item.type = type
- item.hb = hb
- item.ox = ox
- item.oy = oy
- item.sfx = sfx
- item.dfx = dfx or function (x,y,p,h) end
- item.cdfx = cdfx or 20
- add(items,item)
+function make_item(name, spr, sfx, animh, animv, cd, dmg, type, speed, hb, ox, oy, dfx, cdfx)
+ local item = {
+  name = name,
+  spr = spr,
+  animh = animh,
+  animv = animv,
+  cd = cd,
+  speed = speed,
+  dmg = dmg,
+  type = type,
+  hb = hb,
+  ox = ox,
+  oy = oy,
+  sfx = sfx,
+  dfx = dfx or function (x, y, p, h) end,
+  cdfx = cdfx or 20
+ }
+ add(g_items, item)
  return item
 end
 
 -- draw effect
 
-function dfx_explosion(x,y,a,h)
+function dfx_explosion(x, y, a, h)
 	while (a > 0) do
-		explo = {}
-		explo.x = x+(rnd(2)-1)*10
-		explo.y = y+(rnd(2)-1)*10
-		explo.r = 4 + rnd(4)
-		explo.c = 8;
-		add(explosions, explo)
+		local explo = {
+   x = x+(rnd(2)-1)*10,
+   y = y+(rnd(2)-1)*10,
+   r = 4 + rnd(4),
+   c = 8
+  }
+		add(g_explosions, explo)
 		sfx(0)
 		a -= 1
 	end
 end
 
-function dfx_thunder(x,y,p,h)
- if (#thunders > 100) return
- local thunder = {}
- thunder.x = x+(rnd(10)-5)
- thunder.y = fp.y
- thunder.pos = {{x=thunder.x,y=thunder.y}}
- thunder.c = 10
- thunder.p = p
- thunder.h = h or 50
- add(thunders, thunder)
+function dfx_thunder(x, y, p, h)
+ if (#g_thunders > 100) return
+ local xt = x + (rnd(10)-5)
+ local thunder = {
+  x = xt,
+  y = g_fp.y,
+  pos = {{x = xt, y = g_fp.y}},
+  c = 10,
+  p = p,
+  h = h or 50
+ }
+ add(g_thunders, thunder)
  sfx(8)
  return thunder
 end
 
-function dfx_shower(x,y,p,h)
-  if (#showers > 100) return {pos={}}
-  local shower = {}
-  shower.x = x
-  shower.y = y-30
-  shower.pos = {}
-  for r=x-(p/2),x+(p/2)do
-   add(shower.pos, {x=r,y=shower.y,time=5})
+function dfx_shower(x, y, p, h)
+  if (#g_showers > 100) return {pos = {}}
+  local shower = {
+   x = x,
+   y = y-30,
+   pos = {},
+   c = 12,
+   p = p+5,
+   h = 30
+  }
+  for r=x-(p/2), x+(p/2)do
+   add(shower.pos, {x = r, y= shower.y, time=5})
   end
-  shower.c = 12
-  shower.p = p+5
-  shower.h = 30
-  add(showers, shower)
+  add(g_showers, shower)
   -- sfx(8)
   return shower
 end
 
-function dfx_disapearance(x,y,a,h)
- a = a or flr((rnd(5)+1))
+function dfx_disapearance(x, y, a, h)
+ local a = a or flr((rnd(5)+1))
 	while (a > 0) do
-		disa = {}
-		disa.x = x+(rnd(2)-1)*5
-		disa.y = y+(rnd(2)-1)*5
-		disa.r = 2 + rnd(4)
-		disa.c = 5;
-		add(explosions, disa)
+		disa = {
+   x = x+(rnd(2)-1)*5,
+   y = y+(rnd(2)-1)*5,
+   r = 2 + rnd(4),
+   c = 5
+  }
+		add(g_explosions, disa)
 		sfx(10)
 		a -= 1
 	end
@@ -274,78 +236,79 @@ end
 
 -- move
 
-function cframes(fl1,fl2,fr1,fr2,fu,fd)
- local f = {
-  {{f=fl1,fy=true},{f=fl2,fy=true}},
-  {{f=fr1,fy=false},{f=fr2,fy=false}},
-  {{f=fu,fy=false},{f=fu,fy=true}},
-  {{f=fd,fy=false},{f=fd,fy=true}}
+function create_direction_frames(fl1, fl2, fr1, fr2, fu, fd)
+ return {
+  {{f = fl1, flip = true  },{f = fl2, flip = true }},
+  {{f = fr1, flip = false },{f = fr2, flip = false}},
+  {{f = fu,  flip = false },{f = fu,  flip = true }},
+  {{f = fd,  flip = false },{f = fd,  flip = true }}
  }
- return f
 end
 
 function controls_menu()
- if (btnp(up) and selected_item > 1) then
-  selected_item -= 1
+ if (btnp(up) and g_selected_item > 1) then
+  g_selected_item -= 1
  end
- if (btnp(down) and selected_item < #items) then
-  selected_item += 1
+ if (btnp(down) and g_selected_item < #g_items) then
+  g_selected_item += 1
  end
  if (btnp(fire1)) then
-  p.weapon = items[selected_item]
-  open_inv = false
-  p.cd = 10
+  g_p.weapon = g_items[g_selected_item]
+  g_open_inv = false
+  g_p.cd = 10
  end
 end
 
-function controls()
- p.anim = "walk"
- if (is_moving(left)) move(p,-1,0,0,6)
- if (is_moving(right)) move(p,1,0,6,6)
- if (is_moving(up)) move(p,0,-1,6,0)
- if (is_moving(down)) move(p,0,1,6,6)
- if (is_not_moving()) p.anim = "stay"
- action()
+function controls_player()
+ g_p.anim = walk
+ if (is_moving(left))  move(g_p,-1, 0, 0, 6)
+ if (is_moving(right)) move(g_p, 1, 0, 6, 6)
+ if (is_moving(up))    move(g_p, 0,-1, 6, 0)
+ if (is_moving(down))  move(g_p, 0, 1, 6, 6)
+ if (is_not_moving())  g_p.anim = stay
+ action_player()
 end
 
-function controls_ennemies(a,d)
+function action_ennemies(a, d)
  if (a.tag ~= ennemy) return
  if (a.cd > 0) a.cd -= 1
  if (a.cd == 0) then
-  shoot(a,d)
+  shoot(a, d)
   a.cd = 50
  end
 end
 
-function move_actors()
- for a in all(actors) do
+function controls_ennemies()
+ for a in all(g_actors) do
   if (a.tag == ennemy) then
    local dist = check_distance_from_player(a)
    if(is_player_near(dist)) then
+    a.anim = walk
     if (dist >= a.weapon.type) then
      local dir_m = going_forward(a)
-     move_on(a,dir_m)
+     move_on(a, dir_m)
     else
-     local dir_m = gbestdir(a)
-     move_on(a,dir_m)
-    end
+     local dir_m = get_best_direction(a)
+     move_on(a, dir_m)
+    end -- dist >= weapon type
     local dir_a = prepare_attack_opportunity(a)
-    controls_ennemies(a,dir_a)
+    a.d = dir_a
+    action_ennemies(a, dir_a)
    else
-     a.anim = "stay"
-   end
-  end
+     a.anim = stay
+   end -- is player near
+  end -- tag is ennemy
   if (a.tag == bullet) then
    a.x += a.dx
    a.y += a.dy
-   if (is_of_limit(a.x,a.y,a.bx,a.by,a.range)) del(actors,a)
+   if (is_of_limit(a.x, a.y, a.bx, a.by, a.range)) del(g_actors, a)
   end
  end
 end
 
 function going_forward(a)
- local rx = a.x-p.x
- local ry = a.y-p.y
+ local rx = a.x - g_p.x
+ local ry = a.y - g_p.y
  if(abs(rx) > abs(ry)) then
    if(rx < 0) return right
    return left
@@ -356,71 +319,67 @@ function going_forward(a)
 end
 
 function check_distance_from_player(a)
- local rx = a.x-p.x
- local ry = a.y-p.y
- return (abs(rx)+abs(ry))/2
+ local rx = a.x - g_p.x
+ local ry = a.y - g_p.y
+ return (abs(rx) + abs(ry)) / 2
 end
 
-function gbestdir(a)
- local rx = a.x-p.x
- local ry = a.y-p.y
- if((abs(rx)-abs(ry)) < 0 and abs(rx) > 1) then
+function get_best_direction(a)
+ local rx = a.x - g_p.x
+ local ry = a.y - g_p.y
+ if((abs(rx) - abs(ry)) < 0 and abs(rx) > 1) then
    if(rx < 0) return right
    return left
- elseif((abs(rx)-abs(ry)) > 0 and abs(ry) > 1) then
+ elseif((abs(rx) - abs(ry)) > 0 and abs(ry) > 1) then
    if(ry < 0) return down
    return up
  end
  return none
 end
 
-function prepare_attack_opportunity(a,d)
- if(abs(a.x-p.x) < abs(a.y-p.y)) then
-   if(a.y < p.y) return down
+function prepare_attack_opportunity(a, d)
+ if(abs(a.x - g_p.x) < abs(a.y - g_p.y)) then
+   if(a.y < g_p.y) return down
    return up
  else
-   if(a.x < p.x) return right
+   if(a.x < g_p.x) return right
    return left
  end
 end
 
 function is_player_near(gap)
- local r = 30
- return gap <= r and gap > 8
+ return gap <= 30 and gap > 8
 end
 
 function target_nearest_one(limit)
- limit = limit or 1000
- local rx = 1000
- local ry = 1000
- local target = {x=1000,y=1000}
- for a in all(actors) do
+ limit = limit or inf
+ local rx = inf
+ local ry = inf
+ local target = {x = inf , y=inf}
+ for a in all(g_actors) do
   if(a.tag == ennemy) then
    if((rx+ry)/2 > check_distance_from_player(a)) then
-    rx = abs(a.x-p.x)
-    ry = abs(a.y-p.y)
+    rx = abs(a.x-g_p.x)
+    ry = abs(a.y-g_p.y)
     target = a
-   end
-  end
- end
+   end -- check distance from player
+  end -- tag is ennemy
+ end -- for all actors
  if (check_distance_from_player(target) > limit) return {}
  return target
 end
 
-function move_on(a,go)
- if (go == left) move(a,-a.dx,0,0,8)
- if (go == right) move(a,a.dx,0,8,8)
- if (go == up) move(a,0,-a.dy,8,0)
- if (go == down) move(a,0,a.dy,8,8)
- if (go ~= none) then
-  a.d = go
-  a.anim = "walk"
- end
+function move_on(a, go)
+ if (go == left)  move(a ,-a.dx, 0, 0, 8)
+ if (go == right) move(a, a.dx, 0, 8, 8)
+ if (go == up)    move(a, 0 ,-a.dy, 8, 0)
+ if (go == down)  move(a, 0, a.dy, 8, 8)
+ if (go ~= none)  a.d = go
 end
 
 function is_moving(direction)
  if (btn(direction)) then
-  p.d = direction
+  g_p.d = direction
   return true
  end
  return false
@@ -436,134 +395,144 @@ function is_not_moving()
  return false
 end
 
-function move(a,x,y,ox,oy)
- sp1 = mget((a.x+x+(ox*x))/8,(a.y+y+(oy*y))/8)
- sp2 = mget((a.x+x+ox)/8,(a.y+y+oy)/8)
- if (fget(sp1,flags.obst) == false and fget(sp2,flags.obst) == false) then
+function move(a, x, y, ox, oy)
+ local x1 = (a.x + x + (ox * x)) / 8
+ local y1 = (a.y + y + (oy * y)) / 8
+ local x2 = (a.x + x + ox) / 8
+ local y2 = (a.y + y + oy) / 8
+ g_cm.x1 = x1 * 8
+ g_cm.y1 = y1 * 8
+ g_cm.x2 = x2 * 8
+ g_cm.y2 = y2 * 8
+ local sp1 = mget(x1, y1)
+ local sp2 = mget(x2, y2)
+
+ if (fget(sp1, f_obst) == false and fget(sp2, f_obst) == false) then
   a.x += x
   a.y += y
  end
  if(a.tag == player) then
-  if(fget(sp1,flags.heal) and a.health < life.player) then
-   pick_item((a.x+x+(ox*x))/8,(a.y+y+(oy*y))/8)
+  if(fget(sp1, f_heal) and a.health < l_player) then
+   pick_item((a.x + x + (ox * x)) / 8 ,(a.y + y + (oy * y)) / 8)
    a.health += 10
-   if (a.health > life.player) a.healh = life.player
+   if (a.health > l_player) a.healh = l_player
   end
-  if(fget(sp2,flags.heal) and a.health < life.player) then
-   pick_item((a.x+x+ox)/8,(a.y+y+oy)/8)
+  if(fget(sp2, f_heal) and a.health < l_player) then
+   pick_item((a.x + x + ox) / 8 ,(a.y + y + oy) / 8)
    a.health += 10
-   if (a.health > life.player) a.healh = life.player
+   if (a.health > l_player) a.healh = l_player
   end
  end
 end
 
 -- action
 
-function action()
- if (p.cd > 0) p.cd -= 1
- if ((p.cd == 0) and btn(fire1)) then
+function action_player()
+ if (g_p.cd > 0) g_p.cd -= 1
+ if ((g_p.cd == 0) and btn(fire1)) then
   shoot()
-  p.cd = p.weapon.cd
+  g_p.cd = g_p.weapon.cd
  end
- if (p.cdfx > 0) p.cdfx -= 1
+ if (g_p.cdfx > 0) g_p.cdfx -= 1
  if (btnp(fire2)) then
-  sp = mget(p.x/8,(p.y-1)/8)
-  if (fget(sp,flags.inventory)) then
-   open_inv = true
-  elseif (p.cdfx == 0) then
-   p.cdfx = p.weapon.cdfx
+  sp = mget(g_p.x / 8 ,(g_p.y - 1) / 8)
+  if (fget(sp, f_inv)) then
+   g_open_inv = true
+  elseif (g_p.cdfx == 0) then
+   g_p.cdfx = g_p.weapon.cdfx
    local target = target_nearest_one(50)
    if (target.x ~= nil) then
-    p.weapon.dfx(target.x,target.y,3,abs(fp.y-target.y))
+    g_p.weapon.dfx(target.x, target.y, 3, abs(g_fp.y - target.y))
     target.health -= 10
     check_actor_health(target)
    else
     sfx(9)
-   end
-  end
- end
+   end -- is target present
+  end -- case is inv else cdfx is over
+ end -- fire 2 button triggered
 end
 
-function pick_item(x,y)
+function pick_item(x, y)
  sfx(2)
- mset(x,y,32)
+ mset(x, y, 32)
 end
 
 function wait_inventory_close()
  if (btnp(fire2)) then
-  open_inv = false;
+  g_open_inv = false;
  end
 end
 
-function anim(a,f)
+function anim_state(a, f)
  f.time += f.spd
  if(f.time >= 2) f.time = 0
 	return f.f[a.d+1][flr(f.time)+1]
 end
 
 function anim_player(a)
-	if(a.anim == "stay") then
-		return anim(a,a.stay)
+	if(a.anim == stay) then
+		return anim_state(a, a.stay)
 	else
-		return anim(a,a.walk)
+		return anim_state(a, a.walk)
 	end
 end
 
 -- util
 
-function ggdspot(xmax,ymax)
- local a = {}
- a.x = 0
- a.y = 0
- local f = flags.obst
- while(fget(mget(a.x/8,(a.y)/8),flags.obst)) do
+function g_good_spot(xmax, ymax)
+ local a = {
+  x = 0,
+  y = 0
+ }
+ local f = f_obst
+ while(fget(mget(a.x / 8 ,(a.y) / 8), f_obst)) do
   a.x = rnd(xmax)
   a.y = rnd(ymax)
  end
  return a
 end
 
-function is_of_limit(x,y,bx,by,r)
- local fpx = gformalisedposition(p.x);
- local fpy = gformalisedposition(p.y);
- bx = bx or x
- by = by or y
- r = r or 1
- if (x < fpx or x >= fpx+128 or
-		y < fpy or y >= fpy+128) then
+function is_of_limit(x, y, bx, by, r)
+ local fpx = get_formalised_position(g_p.x);
+ local fpy = get_formalised_position(g_p.y);
+ local bx = bx or x
+ local by = by or y
+ local r = r or 1
+ if (x < fpx or x >= fpx + 128 or
+		y < fpy or y >= fpy + 128) then
 		return true
  end
- if (x < bx-r or x >= bx+r or
-  y < by-r or y >= by+r) then
+ if (x < bx - r or x >= bx + r or
+  y < by - r or y >= by + r) then
   return true
  end
  return false
 end
 
-function shoot(a,d)
- a = a or p
- d = d or a.d
+function shoot(a, d)
+ local a = a or g_p
+ local d = d or a.d
  local speed = a.weapon.speed
- local center = a.weapon.hb/2
+ local center = a.weapon.hb / 2
  local b = {}
  if(d == left) then
-  b = make_actor(a.x-6,a.y,a.weapon.animh,bullet,immortalobject,left)
-  b.box = {x1=0,y1=4-center,x2=5,y2=4+center}
+  b = make_actor(a.x-6, a.y+4, a.weapon.animh, bullet, immortal_object, left)
+  b.box = {x1 = 0, y1 = 4-center, x2 = 5, y2 = 4+center}
   b.dx = -speed
  end
  if(d == right) then
-  b = make_actor(a.x+6,a.y,a.weapon.animh,bullet,immortalobject,right)
-  b.box = {x1=3,y1=4-center,x2=8,y2=4+center}
+  b = make_actor(a.x+6, a.y+4, a.weapon.animh, bullet, immortal_object, right)
+  b.box = {x1 = 3, y1 = 4-center, x2 = 8, y2 = 4+center}
   b.dx = speed
  end
  if(d == up) then
-  b = make_actor(a.x,a.y-6,a.weapon.animv,bullet,immortalobject,up)
-  b.box = {x1=4-center,y1=0,x2=4+center,y2=5}
+  b = make_actor(a.x, a.y-8, a.weapon.animv, bullet, immortal_object, up)
+  b.box = {x1 = 4-center, y1 = 0, x2 = 4+center, y2 = 5}
   b.dy = -speed
  end
  if(d == down) then
-  b = make_actor(a.x,a.y+6,a.weapon.animv,bullet,immortalobject,down)
-  b.box = {x1=4-center,y1=3,x2=4+center,y2=8}
+  b = make_actor(a.x, a.y+18, a.weapon.animv, bullet, immortal_object, down)
+  b.box = {x1 = 4-center, y1 = 3, x2 = 4+center, y2 = 8}
   b.dy = speed
  end
  b.dmg = a.weapon.dmg
@@ -577,33 +546,38 @@ function shoot(a,d)
  end
 end
 
-function time_manager()
- ctime.ms += 1/30
- if(ctime.ms >= 1) then
-  ctime.ms = 0
-  ctime.s += 1
-  if (ctime.s >= 60) then
-   ctime.s = 0
-   ctime.m += 1
-  end
- end
+function get_formalised_position(a)
+ return a - 64 < 0 and 0 or a - 64
 end
 
-function gformalisedposition(p)
- return p-64<0 and 0 or p-64
-end
-
-function manage_direction(direction)
+function manage_weapon_direction(direction)
  direction = direction or none
- local inv = {}
- inv.h = false
- inv.v = false
+ local inv = {
+  h = false,
+  v = false,
+  ox = 0,
+  oy = 0
+ }
+ if (direction == left or direction == up) then
+  inv.h = true
+  inv.v = false
+  inv.ox = -6
+ end
+ if (direction == right) inv.ox = -4
+ if (direction == up) inv.ox = -10
+ return inv
+end
 
+function manage_aim_direction(direction)
+ direction = direction or none
+ local inv = {
+  h = false,
+  v = false
+ }
  if (direction == left) then
   inv.h = true
   inv.v = false
  end
-
  if (direction == down) then
   inv.h = false
   inv.v = true
@@ -611,37 +585,33 @@ function manage_direction(direction)
  return inv
 end
 
-function highlight(anim,x,y,c,direction)
-	for i=1,16 do
-		pal(i,c)
+function draw_border_on_caracter(anim, x, y, c)
+	for i=1, 16 do
+		pal(i, c)
  end
- spr(anim.f,x,y+1,1,2,anim.fy,false)
- spr(anim.f,x,y-1,1,2,anim.fy,false)
- spr(anim.f,x-1,y,1,2,anim.fy,false)
- spr(anim.f,x+1,y,1,2,anim.fy,false)
+ spr(anim.f, x,   y+1, 1, 2, anim.flip, false)
+ spr(anim.f, x,   y-1, 1, 2, anim.flip, false)
+ spr(anim.f, x-1, y,   1, 2, anim.flip, false)
+ spr(anim.f, x+1, y,   1, 2, anim.flip, false)
  pal()
- spr(anim.f,x,y,1,2,anim.fy,false)
+ spr(anim.f, x,   y,   1, 2, anim.flip, false)
 end
 
 -- collisions
 
-function gbox(a)
- local box = {}
- box.x1 = a.x + a.box.x1
- box.y1 = a.y + a.box.y1
- box.x2 = a.x + a.box.x2
- box.y2 = a.y + a.box.y2
- return box
+function get_box(a)
+ return {
+  x1 = a.x + a.box.x1,
+  y1 = a.y + a.box.y1,
+  x2 = a.x + a.box.x2,
+  y2 = a.y + a.box.y2
+ }
 end
 
-function checkitems()
-
-end
-
-function checkcollisions(a,b)
+function check_collisions(a, b)
  if(a == b or a.tag == b.tag) return false
- local box_a = gbox(a)
- local box_b = gbox(b)
+ local box_a = get_box(a)
+ local box_b = get_box(b)
  if (box_a.x1 > box_b.x2 or
      box_a.y1 > box_b.y2 or
      box_b.x1 > box_a.x2 or
@@ -656,42 +626,42 @@ function is_dead(a)
 end
 
 function is_game_done()
- return ennemies_left <= 0
+ return g_ennemies_left <= 0
 end
 
 function check_actor_health(damaged_actor)
  if (is_dead(damaged_actor)) then
-  if (damaged_actor.tag == ennemy) ennemies_left -= 1
-  dfx_disapearance(damaged_actor.x,damaged_actor.y)
+  if (damaged_actor.tag == ennemy) g_ennemies_left -= 1
+  dfx_disapearance(damaged_actor.x, damaged_actor.y)
   screenshake(5)
-  del(actors,damaged_actor)
+  del(g_actors, damaged_actor)
  end
 end
 
-function collisions()
- for a in all(actors) do
-  for b in all(actors) do
-   if (checkcollisions(a,b)) then
+function controls_collisions()
+ for a in all(g_actors) do
+  for b in all(g_actors) do
+   if (check_collisions(a, b)) then
     local damaged_actor = a
     if (a.tag == bullet and b.tag ~= bullet) then
      b.health -= a.dmg
      damaged_actor = b
-     make_particles(b,10,5)
-     del(actors,a)
+     make_particles(b, 10, 5)
+     del(g_actors, a)
     elseif (b.tag == bullet and a.tag ~= bullet) then
      a.health -= b.dmg
-     make_particles(a,10,5)
-     del(actors,b)
-    end
+     make_particles(a, 10, 5)
+     del(g_actors, b)
+    end -- collision from bullet
     check_actor_health(damaged_actor)
-   end
+   end -- if collision
   end
  end
 end
 
 function rnd_color(colors)
  local rndv = flr(rnd(1000))
- for m=1,#colors do
+ for m=1 ,#colors do
   if (rndv >= 100/m+1) return colors[m]
  end
  return colors[1]
@@ -705,101 +675,100 @@ function _draw()
 end
 
 function draw_particles()
-	for part in all(particles) do
+	for part in all(g_particles) do
 		pset(part.x, part.y, part.c)
 		part.x += part.dx
 		part.y += part.dy
 		part.f += 1
-		if (part.f > part.maxf or is_of_limit(part.x,part.y)) then
-			del(particles, part)
+		if (part.f > part.maxf or is_of_limit(part.x, part.y)) then
+			del(g_particles, part)
 		end
 	end
 end
 
 function draw_explosions()
-	for e in all(explosions) do
-  circfill(e.x,e.y,e.r,e.c)
+	for e in all(g_explosions) do
+  circfill(e.x, e.y, e.r, e.c)
   e.r -= 0.5
   if (e.r < 4) e.c += 1
   if (e.r < 2) e.c += 1
-  if (e.r <= 0) del(explosions, e)
+  if (e.r <= 0) del(g_explosions, e)
 	end
 end
 
 function draw_thunders()
- for t in all(thunders) do
+ for t in all(g_thunders) do
   for xy in all(t.pos) do
-   pset(xy.x,xy.y,t.c)
+   pset(xy.x, xy.y, t.c)
   end
-  for nt=1,10 do
+  for nt=1, 10 do
    t.x += (rnd(2)-1)
    t.y += 1
    t.h -= 1
-   add(t.pos,{x=t.x,y=t.y})
+   add(t.pos ,{x = t.x, y=t.y})
   end
-  if (flr(rnd(t.p)) == 0) dfx_thunder(t.x,t.y,t.p+2,t.h)
-  if (t.h < -10) del(thunders,t)
+  if (flr(rnd(t.p)) == 0) dfx_thunder(t.x, t.y, t.p+2, t.h)
+  if (t.h < -10) del(g_thunders, t)
  end
 end
 
-function draw_showers()
- for s in all(showers) do
+function draw_waterfalls()
+ for s in all(g_showers) do
   for xy in all(s.pos) do
    if (xy.time > 0) then
-    pset(xy.x,xy.y,rnd_color({s.c,7}))
+    pset(xy.x, xy.y, rnd_color({s.c, 7}))
     xy.time -= 1
    end
   end
-  for i=1,3 do
+  for i=1, 3 do
    if (s.h < 5) s.p +=1
    s.y += 1
    s.h -= 1
-   for r=s.x-(s.p/2),s.x+(s.p/2)do
-    add(s.pos, {x=r,y=s.y,time=5})
+   for r=s.x-(s.p/2), s.x+(s.p/2)do
+    add(s.pos, {x = r, y= s.y, time=5})
    end
   end
-  if (s.h < 0) del(showers,s)
+  if (s.h < 0) del(g_showers, s)
  end
 end
 
-function draw_skills(bx,by)
- draw_item_shape(bx-10,by+7,55,p.cdfx,p.weapon.cdfx)
- draw_item_shape(bx+18,by+7,p.weapon.animv,p.cd, p.weapon.cd)
+function draw_skills(bx, by)
+ draw_item_shape(bx-10, by+7, 55, g_p.cdfx, g_p.weapon.cdfx)
+ draw_item_shape(bx+18, by+7, g_p.weapon.animv, g_p.cd, g_p.weapon.cd)
 end
 
 function draw_actors()
- for a in all(actors) do
+ for a in all(g_actors) do
   if (a.tag == player or a.tag == ennemy) then
-   draw_weapon(a)
-   highlight(anim_player(a),a.x,a.y,black,2)
+   draw_border_on_caracter(anim_player(a), a.x, a.y, black)
+   draw_weapon(a,manage_weapon_direction(a.d))
   else
-   local inv = manage_direction(a.d)
-   spr(a.s,a.x,a.y,1,1,inv.h,inv.v)
+   local inv = manage_aim_direction(a.d)
+   spr(a.s, a.x, a.y, 1, 1, inv.h, inv.v)
   end
  end
 end
 
-function draw_weapon(a)
- spr(a.weapon.spr,a.x+a.weapon.ox,a.y-a.weapon.oy)
+function draw_weapon(a,f)
+ spr(a.weapon.spr, a.x + a.weapon.ox + f.ox, a.y - a.weapon.oy + f.oy, 1, 1, f.h, f.v)
 end
 
 function draw_hud()
- local bx = fp.x+60
- local by = fp.y+108
- print(ctime.s,fp.x,fp.y,light_gray)
- draw_life(bx,by)
- draw_skills(bx,by)
+ local bx = g_fp.x+60
+ local by = g_fp.y+108
+ draw_life(bx, by)
+ draw_skills(bx, by)
 end
 
-function draw_life(bx,by)
- local offsetlife=#spr_life-flr(((p.health*#spr_life)/life.player))
- for y=1,#spr_life do
-  for x=1,#spr_life[y] do
+function draw_life(bx, by)
+ local offsetlife = #spr_life - flr(((g_p.health * #spr_life) / l_player))
+ for y = 1 , #spr_life do
+  for x = 1 , #spr_life[y] do
    if (spr_life[y][x] ~= black) then
     if (offsetlife >= y and spr_life[y][x] == red) then
-     pset(bx+x,by+y,light_gray)
+     pset(bx + x, by + y, light_gray)
     else
-     pset(bx+x,by+y,spr_life[y][x])
+     pset(bx + x, by + y, spr_life[y][x])
     end
    end
   end
@@ -807,59 +776,57 @@ function draw_life(bx,by)
 end
 
 function draw_menu()
- map(0,48,0,0,16,16)
- print("press x+c",50,90,white)
+ map(0, 48, 0, 0, 16, 16)
+ print("sophia quest", 35, 75, white)
+ print("press x+c", 50, 90, white)
 end
 
-function draw_inventory(x,y)
- if (open_inv) then
-  rectfill(x,y,x+48,y+128,dark_blue)
-  line(x,y,x,y+128,light_gray)
-  tx = x+7
-  ty = y+10
-  for i=1,#items do
-   draw_item_shape(tx,ty,items[i].spr)
-   print(items[i].name,tx+12,ty-2,white)
-   if (selected_item == i) then
-    spr(58,tx-7,ty-2)
+function draw_inventory(x, y)
+ if (g_open_inv) then
+  rectfill(x, y, x + 48, y + 128, dark_blue)
+  line(x, y, x, y + 128, light_gray)
+  local tx = x + 7
+  local ty = y + 10
+  for i = 1 ,#g_items do
+   draw_item_shape(tx, ty, g_items[i].spr)
+   print(g_items[i].name, tx + 12, ty - 2, white)
+   if (g_selected_item == i) then
+    spr(58, tx - 7, ty - 2)
    end
    ty += 12
   end
  end
 end
 
-function draw_item_shape(x,y,s,cd,max)
- cd = cd or 0
- max = max or 1
- rectfill(x-2,y-5,x+9,y+5,white)
+function draw_item_shape(x, y, s, cd, max)
+ local cd = cd or 0
+ local max = max or 1
+ rectfill(x - 2, y - 5,  x + 9, y + 5, white)
  local curcd = ceil((cd*8)/max)
- rectfill(x-2,y-5+curcd,x+9,y+5,light_gray)
- line(x-2,y-5,x-2,y+5,dark_gray)
- line(x-2,y-5,x+9,y-5,dark_gray)
- line(x+9,y-5,x+9,y+5,dark_gray)
- line(x+9,y+5,x-2,y+5,dark_gray)
- spr(s,x,y-4)
-end
-
-function draw_item_cd(x,y,s,cd,max)
-
+ rectfill(x - 2, y - 5 + curcd, x + 9, y + 5, light_gray)
+ line(x - 2, y - 5, x - 2, y + 5, dark_gray)
+ line(x - 2, y - 5, x + 9, y - 5, dark_gray)
+ line(x + 9, y - 5, x + 9, y + 5, dark_gray)
+ line(x + 9, y + 5, x - 2, y + 5, dark_gray)
+ spr(s, x, y - 4)
 end
 
 function draw_game()
  cls()
- map(0,0,0,0,48,48)
- fp = follow_player()
+ map(0, 0, 0, 0, 48, 48)
+ g_fp = follow_player()
 
- scamera()
+ set_camera()
+
  draw_particles()
  draw_explosions()
  draw_thunders()
  draw_actors()
- draw_showers()
+ draw_waterfalls()
  draw_hud()
- draw_inventory(fp.x+80,fp.y)
+ draw_inventory(g_fp.x+80, g_fp.y)
 
- debug(fp.x+10,fp.y+10)
+ if(debug_enabled) debug()
 end
 
 -- update
@@ -868,16 +835,15 @@ function update_menu()
  if (btn(fire1) and btn(fire2)) then
   _update = update_game
   _draw = draw_game
-  p.cd = 10
+  g_p.cd = 10
  end
 end
 
 function update_game()
- if (open_inv == false) then
-  move_actors()
-  controls()
-  collisions()
-  time_manager()
+ if (g_open_inv == false) then
+  controls_ennemies()
+  controls_player()
+  controls_collisions()
  else
   wait_inventory_close()
   controls_menu()
@@ -886,52 +852,122 @@ function update_game()
 end
 -- camera
 
-function follow_player(ofx,ofy)
- ofx = ofx or 0
- ofy = ofy or 0
- local pos = {}
- pos.x = (gformalisedposition(p.x))+ofx
- pos.y = (gformalisedposition(p.y))+ofy
- return pos
+function follow_player(ofx, ofy)
+ local ofx = ofx or 0
+ local ofy = ofy or 0
+ return {
+  x = (get_formalised_position(g_p.x)) + ofx,
+  y = (get_formalised_position(g_p.y)) + ofy
+ }
 end
 
-function scamera()
- scr.x = gformalisedposition(p.x)
- scr.y = gformalisedposition(p.y)
- if (scr.shake > 0) then
-  scr.x += (rnd(2)-1)*scr.intensity
-  scr.y += (rnd(2)-1)*scr.intensity
-  scr.shake -= 1
+function set_camera()
+ g_scr.x = get_formalised_position(g_p.x)
+ g_scr.y = get_formalised_position(g_p.y)
+ if (g_scr.shake > 0) then
+  g_scr.x += (rnd(2)-1)*g_scr.intensity
+  g_scr.y += (rnd(2)-1)*g_scr.intensity
+  g_scr.shake -= 1
  end
- camera(scr.x,scr.y)
+ camera(g_scr.x, g_scr.y)
 end
 
-function rcamera()
-  camera(0,0)
+function reset_camera()
+  camera(0, 0)
 end
 
 function check_game_state()
- if (is_dead(p) or is_game_done()) then
+ if (is_dead(g_p) or is_game_done()) then
   cls()
-  actors={}
-  particles={}
-  explosions={}
-  items={}
+  g_actors = {}
+  g_particles = {}
+  g_explosions = {}
+  g_items = {}
   make_game()
-  rcamera()
+  reset_camera()
   _draw = draw_menu
   _update = update_menu
  end
 end
 
 function screenshake(n)
- scr.shake = n
+ g_scr.shake = n
 end
+
+-- sprites
+
+spr_life = {
+ {0, 0, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 0, 0},
+ {0, 5, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 5, 0},
+ {5, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 5},
+ {5, 8, 8, 7, 7, 8, 8, 8, 8, 8, 8, 8, 8, 5},
+ {5, 8, 8, 7, 7, 8, 8, 8, 8, 8, 8, 8, 8, 5},
+ {5, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 5},
+ {5, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 5},
+ {5, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 5},
+ {5, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 5},
+ {5, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 5},
+ {5, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 5},
+ {5, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 5},
+ {0, 5, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 5, 0},
+ {0, 0, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 0, 0}
+}
+
+-- map items positions
+
+map_items = {
+ {
+  name = "heal_potion",
+   spr = 118,
+   pos = {
+   {x = 9, y = 4},
+   {x = 17, y = 16},
+   {x = 25, y = 14},
+   {x = 21, y = 7},
+   {x = 25, y = 10}
+  }
+ }
+}
 
 -- debug
 
-function debug(x,y)
-  print(dbg,x,y,red)
+function debug_init()
+  g_dbg = {"","","","","","","","","",""}
+  g_cm = {
+  x1 = 0,
+  y1 = 0,
+  x2 = 0,
+  y2 = 0
+ }
+end
+
+function debug()
+ debug_collision_matrix()
+ debug_hitbox_matrix()
+ debug_log(g_fp.x+10, g_fp.y+10)
+end
+
+function debug_collision_matrix()
+ line(g_cm.x1,g_cm.y1,g_cm.x2,g_cm.y2,pink)
+end
+
+function debug_hitbox_matrix()
+ local b = get_box(g_p)
+ line(b.x1, b.y1, b.x1, b.y2, red)
+ line(b.x1, b.y1, b.x2, b.y1, red)
+ line(b.x2, b.y1, b.x2, b.y2, red)
+ line(b.x2, b.y2, b.x1, b.y2, red)
+end
+
+function log(tab,text)
+ if(tab < 0 or tab > #g_dbg) return
+ g_dbg[tab] = text
+end
+
+function debug_log(x, y)
+ for i=1,#g_dbg do
+  print(g_dbg[i], x, y+(6*i), red)
+ end
 end
 
 __gfx__
