@@ -4,132 +4,179 @@ __lua__
 
 
 -- const
-left, right, up, down, fire1, fire2, none = 0, 1, 2, 3, 4, 5, 6
-black, dark_blue, dark_purple, dark_green, brown, dark_gray, light_gray, white, red, orange, yellow, green, blue, indigo, pink, peach = 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15
-player, bullet, ennemy = 0, 1, 2
-immortal_object = 1000
-inf = 1000
-melee, ranged = 1, 20
-nb_of_ennemis = 20
-f_heal, f_item, f_inv, f_obst = 0, 1, 5, 7
-l_player, l_ennemy, l_boss = 50, 10, 150
-walk, stay = "walk", "stay"
+left,right,up,down,fire1,fire2,none=0,1,2,3,4,5,6
+black,dark_blue,dark_purple,dark_green,brown,dark_gray,light_gray,white,red,orange,yellow,green,blue,indigo,pink,peach=0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15
+player,bullet,ennemy=0,1,2
+immortalobject=1000
+nbofennemies=10
+melee,ranged=1,20
+-- var
+dbg=""
+
+
+flags={
+ heal=0,
+ item=1,
+ inventory=5,
+ obst=7
+}
+
+ctime={
+ m=0,
+ s=0,
+ ms=0
+}
+
+life = {
+ player = 50,
+ ennemy = 10,
+ boss = 150,
+}
+
+spr_life = {
+ {0,0,5,5,5,5,5,5,5,5,5,5,0,0},
+ {0,5,8,8,8,8,8,8,8,8,8,8,5,0},
+ {5,8,8,8,8,8,8,8,8,8,8,8,8,5},
+ {5,8,8,7,7,8,8,8,8,8,8,8,8,5},
+ {5,8,8,7,7,8,8,8,8,8,8,8,8,5},
+ {5,8,8,8,8,8,8,8,8,8,8,8,8,5},
+ {5,8,8,8,8,8,8,8,8,8,8,8,8,5},
+ {5,8,8,8,8,8,8,8,8,8,8,8,8,5},
+ {5,8,8,8,8,8,8,8,8,8,8,8,8,5},
+ {5,8,8,8,8,8,8,8,8,8,8,8,8,5},
+ {5,8,8,8,8,8,8,8,8,8,8,8,8,5},
+ {5,8,8,8,8,8,8,8,8,8,8,8,8,5},
+ {0,5,8,8,8,8,8,8,8,8,8,8,5,0},
+ {0,0,5,5,5,5,5,5,5,5,5,5,0,0}
+}
+
+actors={}
+particles={}
+explosions={}
+thunders={}
+showers={}
+items={}
+
+map_items={
+ {
+  name = "heal_potion",
+  spr=118,
+  pos={
+   {x=9,y=4},
+   {x=17,y=16},
+   {x=25,y=14},
+   {x=21,y=7},
+   {x=25,y=10}
+  }
+ }
+}
+
+open_inv=false
+selected_item=1
+ennemies_left=1
 
 -- init
 function _init()
- g_dbg = {"","","","","","","","","",""}
-
- g_actors = {}
- g_particles = {}
- g_explosions = {}
- g_thunders = {}
- g_showers = {}
- g_items = {}
-
- g_open_inv=false
- g_selected_item=1
- g_ennemies_left=1
  _update = update_menu
- init_screen()
  make_game()
 end
 
 function init_screen()
- g_scr = {
-  x = 0,
-  y = 0,
-  shake = 0,
-  intensity = 2
- }
+ scr = {}
+ scr.x = 0
+ scr.y = 0
+ scr.shake = 0
+ scr.intensity = 2
 end
 
 -- make
 
-function make_actor(x, y, s, tag, health, direction)
- local actor = {
-  tag = tag,
-  d = direction or up,
-  bx = x,
-  by = y,
-  x = x,
-  y = y,
-  s = s,
-  dx = 0,
-  dy = 0,
-  health = health,
-  box = {x1 = 0, y1 = 0, x2 = 7, y2 = 7}
- }
- add(g_actors, actor)
+function make_actor(x,y,s,tag,health,direction)
+ direction = direction or flr(rnd(3))
+ local actor = {}
+ actor.tag = tag
+ actor.d = direction
+ actor.bx = x
+ actor.by = y
+ actor.x = x
+ actor.y = y
+ actor.s = s
+ actor.dx = 0
+ actor.dy = 0
+ actor.health = health
+ actor.box = {x1=0,y1=0,x2=7,y2=7}
+ add(actors,actor)
  return actor
 end
 
 function make_weapons()
- -- name, spr, sfx, animh, animv, cd, dmg, type, speed, hb, ox, oy, dfx, cdfx
- make_item("sword",    105, 4, 73,  89,  15, 7,  melee,  1,  8, 5, -4)
- make_item("firewand", 106, 1, 74,  90,  8,  8,  ranged, 3,  3, 5, -4)
- make_item("gun",      107, 5, 75,  91,  3,  3,  ranged, 10, 1, 5, -5)
- make_item("bow",      108, 3, 76,  92,  6,  5,  ranged, 6,  3, 5,-5)
- make_item("secret",   109, 6, 77,  93,  4,  5,  ranged, 5,  1, 5, -5, dfx_shower, 50)
- make_item("tatata",   110, 7, 78,  94,  2,  2,  ranged, 10, 1, 5, -5)
- make_item("boom",     111, 7, 79,  95,  18, 10, melee,  1,  8, 5, -4)
- make_item("elec",     160, 8, 128, 144, 20, 15, melee,  1,  8, 5, -5, dfx_thunder, 50)
+  -- name,spr,sfx,animh,animv,cd,dmg,type,speed,hb,ox,oy,dfx,cd
+ make_item("sword",105,4,73,89,15,7,melee,1,8,4,3)
+ make_item("firewand",106,1,74,90,8,8,ranged,3,3,5,1)
+ make_item("gun",107,5,75,91,3,3,ranged,10,1,5,0)
+ make_item("bow",108,3,76,92,6,5,ranged,6,3,4,-1)
+ make_item("secret",109,6,77,93,4,5,ranged,5,1,5,0,dfx_shower,50)
+ make_item("tatata",110,7,78,94,2,2,ranged,10,1,5,0)
+ make_item("boom",111,7,79,95,18,10,melee,1,8,4,3)
+ make_item("elechammer",160,8,128,144,20,15,melee,1,8,4,2,dfx_thunder,50)
 end
 
 function make_player()
- g_p = make_actor(45, 60, 129, player, l_player, up)
- g_p.weapon = g_items[5]
- g_p.anim = stay
- g_p.walk = make_anim(walk, create_direction_frames(162, 130, 162, 130, 163, 161), 1/5)
- g_p.stay = make_anim(stay, create_direction_frames(130, 130, 130, 130, 131, 129), 1/5)
- g_p.cd = 0
- g_p.cdfx = 0
- g_p.box = {x1 = 0, y1 = 0, x2 = 6, y2 = 7}
+ p = make_actor(45,60,129,player,life.player,up)
+ p.weapon = items[5]
+ p.anim = "stay"
+ p.walk = make_anim("walk",cframes(162,130,162,130,163,161),1/5)
+ p.stay = make_anim("stay",cframes(130,130,130,130,131,129),1/5)
+ p.cd = 0
+ p.cdfx = 0
+ p.box = {x1=0,y1=0,x2=6,y2=7}
 end
 
-function make_anim(name, frames, spd)
- return {
-  time = 0,
-  anim = name,
-  spd = spd,
-  f = frames
- }
+function make_anim(name,frames,spd)
+ local a = {}
+ a.time = 0
+ a.anim = name
+ a.spd = spd
+ a.f = frames
+ return a
 end
 
 function make_game()
+ init_screen()
  make_weapons()
  make_player()
  make_map_items()
- -- make_ennemies(nb_of_ennemis, {132})
+ make_ennemies(nbofennemies, {132})
 end
 
 function make_map_items()
- for o in all(map_items) do
-  for p in all(o.pos) do
-   mset(g_p.x, g_p.y, o.spr)
+ for obj in all(map_items) do
+  for p in all(obj.pos) do
+   mset(p.x,p.y,obj.spr)
   end
  end
 end
 
 function make_ennemies(nb, aspr)
- g_ennemies_left = 0
+ ennemies_left = 0
  for s in all(aspr) do
-  for i=1, nb/#aspr do
-   local a = g_good_spot(248, 248)
-   local e = make_actor(a.x, a.y, s, ennemy, l_ennemy, up)
-   e.weapon = g_items[4]
-   e.cd = 50
-   e.anim = stay
-   e.walk = make_anim(walk, create_direction_frames(s+33, s+1, s+33, s+1, s+34, s+32), 1/10)
-   e.stay = make_anim(stay, create_direction_frames(s+1, s+1, s+1, s+1, s+2, s), 1/10)
-   e.dx = 0.9
-   e.dy = 0.9
-   g_ennemies_left += 1
+  for i=1,nb/#aspr do
+   a = ggdspot(248,248)
+   mstr = make_actor(a.x,a.y,s,ennemy,life.ennemy,up)
+   mstr.weapon = items[4]
+   mstr.cd = 50
+   mstr.anim = "stay"
+   mstr.walk = make_anim("walk",cframes(s+33,s+1,s+33,s+1,s+34,s+32),1/10)
+   mstr.stay = make_anim("stay",cframes(s+1,s+1,s+1,s+1,s+2,s),1/10)
+   mstr.dx = 0.9
+   mstr.dy = 0.9
+   ennemies_left += 1
   end
  end
 end
 
-function make_particles(a, n, c)
- local c = c or 8
+function make_particles(a,n,c)
+ c = c or 8
 	while (n > 0) do
  	part = {}
  	part.x = a.x+4
@@ -139,93 +186,87 @@ function make_particles(a, n, c)
  	part.dy = (rnd(2)-1)*2
  	part.f = 0
  	part.maxf = 15
- 	add(g_particles, part)
+ 	add(particles,part)
  	sfx(1)
  	n -= 1
  end
 end
 
-function make_item(name, spr, sfx, animh, animv, cd, dmg, type, speed, hb, ox, oy, dfx, cdfx)
- local item = {
-  name = name,
-  spr = spr,
-  animh = animh,
-  animv = animv,
-  cd = cd,
-  speed = speed,
-  dmg = dmg,
-  type = type,
-  hb = hb,
-  ox = ox,
-  oy = oy,
-  sfx = sfx,
-  dfx = dfx or function (x, y, p, h) end,
-  cdfx = cdfx or 20
- }
- add(g_items, item)
+function make_item(name,spr,sfx,animh,animv,cd,dmg,type,speed,hb,ox,oy,dfx,cdfx)
+ local item = {}
+ item.name = name
+ item.spr = spr
+ item.animh = animh
+ item.animv = animv
+ item.cd = cd
+ item.speed = speed
+ item.dmg = dmg
+ item.type = type
+ item.hb = hb
+ item.ox = ox
+ item.oy = oy
+ item.sfx = sfx
+ item.dfx = dfx or function (x,y,p,h) end
+ item.cdfx = cdfx or 20
+ add(items,item)
  return item
 end
 
 -- draw effect
 
-function dfx_explosion(x, y, a, h)
+function dfx_explosion(x,y,a,h)
 	while (a > 0) do
-		local explo = {
-   x = x+(rnd(2)-1)*10,
-   y = y+(rnd(2)-1)*10,
-   r = 4 + rnd(4),
-   c = 8
-  }
-		add(g_explosions, explo)
+		explo = {}
+		explo.x = x+(rnd(2)-1)*10
+		explo.y = y+(rnd(2)-1)*10
+		explo.r = 4 + rnd(4)
+		explo.c = 8;
+		add(explosions, explo)
 		sfx(0)
 		a -= 1
 	end
 end
 
-function dfx_thunder(x, y, p, h)
- if (#g_thunders > 100) return
- local xt = x + (rnd(10)-5)
- local thunder = {
-  x = xt,
-  y = g_fp.y,
-  pos = {{x = xt, y = g_fp.y}},
-  c = 10,
-  p = p,
-  h = h or 50
- }
- add(g_thunders, thunder)
+function dfx_thunder(x,y,p,h)
+ if (#thunders > 100) return
+ local thunder = {}
+ thunder.x = x+(rnd(10)-5)
+ thunder.y = fp.y
+ thunder.pos = {{x=thunder.x,y=thunder.y}}
+ thunder.c = 10
+ thunder.p = p
+ thunder.h = h or 50
+ add(thunders, thunder)
  sfx(8)
  return thunder
 end
 
-function dfx_shower(x, y, p, h)
-  if (#g_showers > 100) return {pos = {}}
-  local shower = {
-   x = x,
-   y = y-30,
-   pos = {},
-   c = 12,
-   p = p+5,
-   h = 30
-  }
-  for r=x-(p/2), x+(p/2)do
-   add(shower.pos, {x = r, y= shower.y, time=5})
+function dfx_shower(x,y,p,h)
+  if (#showers > 100) return {pos={}}
+  local shower = {}
+  shower.x = x
+  shower.y = y-30
+  shower.pos = {}
+  for r=x-(p/2),x+(p/2)do
+   add(shower.pos, {x=r,y=shower.y,time=5})
   end
-  add(g_showers, shower)
+  shower.c = 12
+  shower.p = p+5
+  shower.h = 30
+  add(showers, shower)
   -- sfx(8)
   return shower
 end
 
-function dfx_disapearance(x, y, a, h)
- local a = a or flr((rnd(5)+1))
+function dfx_disapearance(x,y,a,h)
+ a = a or flr((rnd(5)+1))
 	while (a > 0) do
-		disa = {
-   x = x+(rnd(2)-1)*5,
-   y = y+(rnd(2)-1)*5,
-   r = 2 + rnd(4),
-   c = 5
-  }
-		add(g_explosions, disa)
+		disa = {}
+		disa.x = x+(rnd(2)-1)*5
+		disa.y = y+(rnd(2)-1)*5
+		disa.r = 2 + rnd(4)
+		disa.c = 5;
+		add(explosions, disa)
 		sfx(10)
 		a -= 1
 	end
@@ -233,78 +274,78 @@ end
 
 -- move
 
-function create_direction_frames(fl1, fl2, fr1, fr2, fu, fd)
- return {
-  {{f = fl1, flip = true  },{f = fl2, flip = true }},
-  {{f = fr1, flip = false },{f = fr2, flip = false}},
-  {{f = fu,  flip = false },{f = fu,  flip = true }},
-  {{f = fd,  flip = false },{f = fd,  flip = true }}
+function cframes(fl1,fl2,fr1,fr2,fu,fd)
+ local f = {
+  {{f=fl1,fy=true},{f=fl2,fy=true}},
+  {{f=fr1,fy=false},{f=fr2,fy=false}},
+  {{f=fu,fy=false},{f=fu,fy=true}},
+  {{f=fd,fy=false},{f=fd,fy=true}}
  }
+ return f
 end
 
 function controls_menu()
- if (btnp(up) and g_selected_item > 1) then
-  g_selected_item -= 1
+ if (btnp(up) and selected_item > 1) then
+  selected_item -= 1
  end
- if (btnp(down) and g_selected_item < #g_items) then
-  g_selected_item += 1
+ if (btnp(down) and selected_item < #items) then
+  selected_item += 1
  end
  if (btnp(fire1)) then
-  g_p.weapon = g_items[g_selected_item]
-  g_open_inv = false
-  g_p.cd = 10
+  p.weapon = items[selected_item]
+  open_inv = false
+  p.cd = 10
  end
 end
 
-function controls_player()
- g_p.anim = walk
- if (is_moving(left))  move(g_p,-1, 0, 0, 6)
- if (is_moving(right)) move(g_p, 1, 0, 6, 6)
- if (is_moving(up))    move(g_p, 0,-1, 6, 0)
- if (is_moving(down))  move(g_p, 0, 1, 6, 6)
- if (is_not_moving())  g_p.anim = stay
- action_player()
+function controls()
+ p.anim = "walk"
+ if (is_moving(left)) move(p,-1,0,0,6)
+ if (is_moving(right)) move(p,1,0,6,6)
+ if (is_moving(up)) move(p,0,-1,6,0)
+ if (is_moving(down)) move(p,0,1,6,6)
+ if (is_not_moving()) p.anim = "stay"
+ action()
 end
 
-function action_ennemies(a, d)
+function controls_ennemies(a,d)
  if (a.tag ~= ennemy) return
  if (a.cd > 0) a.cd -= 1
  if (a.cd == 0) then
-  shoot(a, d)
+  shoot(a,d)
   a.cd = 50
  end
 end
 
-function controls_ennemies()
- for a in all(g_actors) do
+function move_actors()
+ for a in all(actors) do
   if (a.tag == ennemy) then
    local dist = check_distance_from_player(a)
    if(is_player_near(dist)) then
-    a.anim = walk
     if (dist >= a.weapon.type) then
      local dir_m = going_forward(a)
-     move_on(a, dir_m)
+     move_on(a,dir_m)
     else
-     local dir_m = get_best_direction(a)
-     move_on(a, dir_m)
-    end -- dist >= weapon type
+     local dir_m = gbestdir(a)
+     move_on(a,dir_m)
+    end
     local dir_a = prepare_attack_opportunity(a)
-    action_ennemies(a, dir_a)
+    controls_ennemies(a,dir_a)
    else
-     a.anim = stay
-   end -- is player near
-  end -- tag is ennemy
+     a.anim = "stay"
+   end
+  end
   if (a.tag == bullet) then
    a.x += a.dx
    a.y += a.dy
-   if (is_of_limit(a.x, a.y, a.bx, a.by, a.range)) del(g_actors, a)
+   if (is_of_limit(a.x,a.y,a.bx,a.by,a.range)) del(actors,a)
   end
  end
 end
 
 function going_forward(a)
- local rx = a.x - g_p.x
- local ry = a.y - g_p.y
+ local rx = a.x-p.x
+ local ry = a.y-p.y
  if(abs(rx) > abs(ry)) then
    if(rx < 0) return right
    return left
@@ -315,67 +356,71 @@ function going_forward(a)
 end
 
 function check_distance_from_player(a)
- local rx = a.x - g_p.x
- local ry = a.y - g_p.y
- return (abs(rx) + abs(ry)) / 2
+ local rx = a.x-p.x
+ local ry = a.y-p.y
+ return (abs(rx)+abs(ry))/2
 end
 
-function get_best_direction(a)
- local rx = a.x - g_p.x
- local ry = a.y - g_p.y
- if((abs(rx) - abs(ry)) < 0 and abs(rx) > 1) then
+function gbestdir(a)
+ local rx = a.x-p.x
+ local ry = a.y-p.y
+ if((abs(rx)-abs(ry)) < 0 and abs(rx) > 1) then
    if(rx < 0) return right
    return left
- elseif((abs(rx) - abs(ry)) > 0 and abs(ry) > 1) then
+ elseif((abs(rx)-abs(ry)) > 0 and abs(ry) > 1) then
    if(ry < 0) return down
    return up
  end
  return none
 end
 
-function prepare_attack_opportunity(a, d)
- if(abs(a.x - g_p.x) < abs(a.y - g_p.y)) then
-   if(a.y < g_p.y) return down
+function prepare_attack_opportunity(a,d)
+ if(abs(a.x-p.x) < abs(a.y-p.y)) then
+   if(a.y < p.y) return down
    return up
  else
-   if(a.x < g_p.x) return right
+   if(a.x < p.x) return right
    return left
  end
 end
 
 function is_player_near(gap)
- return gap <= 30 and gap > 8
+ local r = 30
+ return gap <= r and gap > 8
 end
 
 function target_nearest_one(limit)
- limit = limit or inf
- local rx = inf
- local ry = inf
- local target = {x = inf , y=inf}
- for a in all(g_actors) do
+ limit = limit or 1000
+ local rx = 1000
+ local ry = 1000
+ local target = {x=1000,y=1000}
+ for a in all(actors) do
   if(a.tag == ennemy) then
    if((rx+ry)/2 > check_distance_from_player(a)) then
-    rx = abs(a.x-g_p.x)
-    ry = abs(a.y-g_p.y)
+    rx = abs(a.x-p.x)
+    ry = abs(a.y-p.y)
     target = a
-   end -- check distance from player
-  end -- tag is ennemy
- end -- for all actors
+   end
+  end
+ end
  if (check_distance_from_player(target) > limit) return {}
  return target
 end
 
-function move_on(a, go)
- if (go == left)  move(a ,-a.dx, 0, 0, 8)
- if (go == right) move(a, a.dx, 0, 8, 8)
- if (go == up)    move(a, 0 ,-a.dy, 8, 0)
- if (go == down)  move(a, 0, a.dy, 8, 8)
- if (go ~= none)  a.d = go
+function move_on(a,go)
+ if (go == left) move(a,-a.dx,0,0,8)
+ if (go == right) move(a,a.dx,0,8,8)
+ if (go == up) move(a,0,-a.dy,8,0)
+ if (go == down) move(a,0,a.dy,8,8)
+ if (go ~= none) then
+  a.d = go
+  a.anim = "walk"
+ end
 end
 
 function is_moving(direction)
  if (btn(direction)) then
-  g_p.d = direction
+  p.d = direction
   return true
  end
  return false
@@ -391,135 +436,134 @@ function is_not_moving()
  return false
 end
 
-function move(a, x, y, ox, oy)
- local sp1 = mget((a.x + x + (ox * x)) / 8 ,(a.y + y + (oy * y)) / 8)
- local sp2 = mget((a.x + x + ox) / 8 ,(a.y + y + oy) / 8)
- if (fget(sp1, f_obst) == false and fget(sp2, f_obst) == false) then
+function move(a,x,y,ox,oy)
+ sp1 = mget((a.x+x+(ox*x))/8,(a.y+y+(oy*y))/8)
+ sp2 = mget((a.x+x+ox)/8,(a.y+y+oy)/8)
+ if (fget(sp1,flags.obst) == false and fget(sp2,flags.obst) == false) then
   a.x += x
   a.y += y
  end
  if(a.tag == player) then
-  if(fget(sp1, f_heal) and a.health < l_player) then
-   pick_item((a.x + x + (ox * x)) / 8 ,(a.y + y + (oy * y)) / 8)
+  if(fget(sp1,flags.heal) and a.health < life.player) then
+   pick_item((a.x+x+(ox*x))/8,(a.y+y+(oy*y))/8)
    a.health += 10
-   if (a.health > l_player) a.healh = l_player
+   if (a.health > life.player) a.healh = life.player
   end
-  if(fget(sp2, f_heal) and a.health < l_player) then
-   pick_item((a.x + x + ox) / 8 ,(a.y + y + oy) / 8)
+  if(fget(sp2,flags.heal) and a.health < life.player) then
+   pick_item((a.x+x+ox)/8,(a.y+y+oy)/8)
    a.health += 10
-   if (a.health > l_player) a.healh = l_player
+   if (a.health > life.player) a.healh = life.player
   end
  end
 end
 
 -- action
 
-function action_player()
- if (g_p.cd > 0) g_p.cd -= 1
- if ((g_p.cd == 0) and btn(fire1)) then
+function action()
+ if (p.cd > 0) p.cd -= 1
+ if ((p.cd == 0) and btn(fire1)) then
   shoot()
-  g_p.cd = g_p.weapon.cd
+  p.cd = p.weapon.cd
  end
- if (g_p.cdfx > 0) g_p.cdfx -= 1
+ if (p.cdfx > 0) p.cdfx -= 1
  if (btnp(fire2)) then
-  sp = mget(g_p.x / 8 ,(g_p.y - 1) / 8)
-  if (fget(sp, f_inv)) then
-   g_open_inv = true
-  elseif (g_p.cdfx == 0) then
-   g_p.cdfx = g_p.weapon.cdfx
+  sp = mget(p.x/8,(p.y-1)/8)
+  if (fget(sp,flags.inventory)) then
+   open_inv = true
+  elseif (p.cdfx == 0) then
+   p.cdfx = p.weapon.cdfx
    local target = target_nearest_one(50)
    if (target.x ~= nil) then
-    g_p.weapon.dfx(target.x, target.y, 3, abs(g_fp.y - target.y))
+    p.weapon.dfx(target.x,target.y,3,abs(fp.y-target.y))
     target.health -= 10
     check_actor_health(target)
    else
     sfx(9)
-   end -- is target present
-  end -- case is inv else cdfx is over
- end -- fire 2 button triggered
+   end
+  end
+ end
 end
 
-function pick_item(x, y)
+function pick_item(x,y)
  sfx(2)
- mset(x, y, 32)
+ mset(x,y,32)
 end
 
 function wait_inventory_close()
  if (btnp(fire2)) then
-  g_open_inv = false;
+  open_inv = false;
  end
 end
 
-function anim_state(a, f)
+function anim(a,f)
  f.time += f.spd
  if(f.time >= 2) f.time = 0
 	return f.f[a.d+1][flr(f.time)+1]
 end
 
 function anim_player(a)
-	if(a.anim == stay) then
-		return anim_state(a, a.stay)
+	if(a.anim == "stay") then
+		return anim(a,a.stay)
 	else
-		return anim_state(a, a.walk)
+		return anim(a,a.walk)
 	end
 end
 
 -- util
 
-function g_good_spot(xmax, ymax)
- local a = {
-  x = 0,
-  y = 0
- }
- local f = f_obst
- while(fget(mget(a.x / 8 ,(a.y) / 8), f_obst)) do
+function ggdspot(xmax,ymax)
+ local a = {}
+ a.x = 0
+ a.y = 0
+ local f = flags.obst
+ while(fget(mget(a.x/8,(a.y)/8),flags.obst)) do
   a.x = rnd(xmax)
   a.y = rnd(ymax)
  end
  return a
 end
 
-function is_of_limit(x, y, bx, by, r)
- local fpx = get_formalised_position(g_p.x);
- local fpy = get_formalised_position(g_p.y);
- local bx = bx or x
- local by = by or y
- local r = r or 1
- if (x < fpx or x >= fpx + 128 or
-		y < fpy or y >= fpy + 128) then
+function is_of_limit(x,y,bx,by,r)
+ local fpx = gformalisedposition(p.x);
+ local fpy = gformalisedposition(p.y);
+ bx = bx or x
+ by = by or y
+ r = r or 1
+ if (x < fpx or x >= fpx+128 or
+		y < fpy or y >= fpy+128) then
 		return true
  end
- if (x < bx - r or x >= bx + r or
-  y < by - r or y >= by + r) then
+ if (x < bx-r or x >= bx+r or
+  y < by-r or y >= by+r) then
   return true
  end
  return false
 end
 
-function shoot(a, d)
- local a = a or g_p
- local d = d or a.d
+function shoot(a,d)
+ a = a or p
+ d = d or a.d
  local speed = a.weapon.speed
- local center = a.weapon.hb / 2
+ local center = a.weapon.hb/2
  local b = {}
  if(d == left) then
-  b = make_actor(a.x-6, a.y+4, a.weapon.animh, bullet, immortal_object, left)
-  b.box = {x1 = 0, y1 = 4-center, x2 = 5, y2 = 4+center}
+  b = make_actor(a.x-6,a.y,a.weapon.animh,bullet,immortalobject,left)
+  b.box = {x1=0,y1=4-center,x2=5,y2=4+center}
   b.dx = -speed
  end
  if(d == right) then
-  b = make_actor(a.x+6, a.y+4, a.weapon.animh, bullet, immortal_object, right)
-  b.box = {x1 = 3, y1 = 4-center, x2 = 8, y2 = 4+center}
+  b = make_actor(a.x+6,a.y,a.weapon.animh,bullet,immortalobject,right)
+  b.box = {x1=3,y1=4-center,x2=8,y2=4+center}
   b.dx = speed
  end
  if(d == up) then
-  b = make_actor(a.x, a.y-8, a.weapon.animv, bullet, immortal_object, up)
-  b.box = {x1 = 4-center, y1 = 0, x2 = 4+center, y2 = 5}
+  b = make_actor(a.x,a.y-6,a.weapon.animv,bullet,immortalobject,up)
+  b.box = {x1=4-center,y1=0,x2=4+center,y2=5}
   b.dy = -speed
  end
  if(d == down) then
-  b = make_actor(a.x, a.y+18, a.weapon.animv, bullet, immortal_object, down)
-  b.box = {x1 = 4-center, y1 = 3, x2 = 4+center, y2 = 8}
+  b = make_actor(a.x,a.y+6,a.weapon.animv,bullet,immortalobject,down)
+  b.box = {x1=4-center,y1=3,x2=4+center,y2=8}
   b.dy = speed
  end
  b.dmg = a.weapon.dmg
@@ -533,38 +577,33 @@ function shoot(a, d)
  end
 end
 
-function get_formalised_position(a)
- return a - 64 < 0 and 0 or a - 64
-end
-
-function manage_weapon_direction(direction)
- direction = direction or none
- local inv = {
-  h = false,
-  v = false,
-  ox = 0,
-  oy = 0
- }
- if (direction == left or direction == up) then
-  inv.h = true
-  inv.v = false
-  inv.ox = -6
+function time_manager()
+ ctime.ms += 1/30
+ if(ctime.ms >= 1) then
+  ctime.ms = 0
+  ctime.s += 1
+  if (ctime.s >= 60) then
+   ctime.s = 0
+   ctime.m += 1
+  end
  end
- if (direction == right) inv.ox = -4
- if (direction == up) inv.ox = -10
- return inv
 end
 
-function manage_aim_direction(direction)
+function gformalisedposition(p)
+ return p-64<0 and 0 or p-64
+end
+
+function manage_direction(direction)
  direction = direction or none
- local inv = {
-  h = false,
-  v = false
- }
+ local inv = {}
+ inv.h = false
+ inv.v = false
+
  if (direction == left) then
   inv.h = true
   inv.v = false
  end
+
  if (direction == down) then
   inv.h = false
   inv.v = true
@@ -572,33 +611,37 @@ function manage_aim_direction(direction)
  return inv
 end
 
-function draw_border_on_caracter(anim, x, y, c)
-	for i=1, 16 do
-		pal(i, c)
+function highlight(anim,x,y,c,direction)
+	for i=1,16 do
+		pal(i,c)
  end
- spr(anim.f, x,   y+1, 1, 2, anim.flip, false)
- spr(anim.f, x,   y-1, 1, 2, anim.flip, false)
- spr(anim.f, x-1, y,   1, 2, anim.flip, false)
- spr(anim.f, x+1, y,   1, 2, anim.flip, false)
+ spr(anim.f,x,y+1,1,2,anim.fy,false)
+ spr(anim.f,x,y-1,1,2,anim.fy,false)
+ spr(anim.f,x-1,y,1,2,anim.fy,false)
+ spr(anim.f,x+1,y,1,2,anim.fy,false)
  pal()
- spr(anim.f, x,   y,   1, 2, anim.flip, false)
+ spr(anim.f,x,y,1,2,anim.fy,false)
 end
 
 -- collisions
 
-function get_box(a)
- return {
-  x1 = a.x + a.box.x1,
-  y1 = a.y + a.box.y1,
-  x2 = a.x + a.box.x2,
-  y2 = a.y + a.box.y2
- }
+function gbox(a)
+ local box = {}
+ box.x1 = a.x + a.box.x1
+ box.y1 = a.y + a.box.y1
+ box.x2 = a.x + a.box.x2
+ box.y2 = a.y + a.box.y2
+ return box
 end
 
-function check_collisions(a, b)
+function checkitems()
+
+end
+
+function checkcollisions(a,b)
  if(a == b or a.tag == b.tag) return false
- local box_a = get_box(a)
- local box_b = get_box(b)
+ local box_a = gbox(a)
+ local box_b = gbox(b)
  if (box_a.x1 > box_b.x2 or
      box_a.y1 > box_b.y2 or
      box_b.x1 > box_a.x2 or
@@ -613,42 +656,42 @@ function is_dead(a)
 end
 
 function is_game_done()
- return g_ennemies_left <= 0
+ return ennemies_left <= 0
 end
 
 function check_actor_health(damaged_actor)
  if (is_dead(damaged_actor)) then
-  if (damaged_actor.tag == ennemy) g_ennemies_left -= 1
-  dfx_disapearance(damaged_actor.x, damaged_actor.y)
+  if (damaged_actor.tag == ennemy) ennemies_left -= 1
+  dfx_disapearance(damaged_actor.x,damaged_actor.y)
   screenshake(5)
-  del(g_actors, damaged_actor)
+  del(actors,damaged_actor)
  end
 end
 
-function controls_collisions()
- for a in all(g_actors) do
-  for b in all(g_actors) do
-   if (check_collisions(a, b)) then
+function collisions()
+ for a in all(actors) do
+  for b in all(actors) do
+   if (checkcollisions(a,b)) then
     local damaged_actor = a
     if (a.tag == bullet and b.tag ~= bullet) then
      b.health -= a.dmg
      damaged_actor = b
-     make_particles(b, 10, 5)
-     del(g_actors, a)
+     make_particles(b,10,5)
+     del(actors,a)
     elseif (b.tag == bullet and a.tag ~= bullet) then
      a.health -= b.dmg
-     make_particles(a, 10, 5)
-     del(g_actors, b)
-    end -- collision from bullet
+     make_particles(a,10,5)
+     del(actors,b)
+    end
     check_actor_health(damaged_actor)
-   end -- if collision
+   end
   end
  end
 end
 
 function rnd_color(colors)
  local rndv = flr(rnd(1000))
- for m=1 ,#colors do
+ for m=1,#colors do
   if (rndv >= 100/m+1) return colors[m]
  end
  return colors[1]
@@ -662,100 +705,101 @@ function _draw()
 end
 
 function draw_particles()
-	for part in all(g_particles) do
+	for part in all(particles) do
 		pset(part.x, part.y, part.c)
 		part.x += part.dx
 		part.y += part.dy
 		part.f += 1
-		if (part.f > part.maxf or is_of_limit(part.x, part.y)) then
-			del(g_particles, part)
+		if (part.f > part.maxf or is_of_limit(part.x,part.y)) then
+			del(particles, part)
 		end
 	end
 end
 
 function draw_explosions()
-	for e in all(g_explosions) do
-  circfill(e.x, e.y, e.r, e.c)
+	for e in all(explosions) do
+  circfill(e.x,e.y,e.r,e.c)
   e.r -= 0.5
   if (e.r < 4) e.c += 1
   if (e.r < 2) e.c += 1
-  if (e.r <= 0) del(g_explosions, e)
+  if (e.r <= 0) del(explosions, e)
 	end
 end
 
 function draw_thunders()
- for t in all(g_thunders) do
+ for t in all(thunders) do
   for xy in all(t.pos) do
-   pset(xy.x, xy.y, t.c)
+   pset(xy.x,xy.y,t.c)
   end
-  for nt=1, 10 do
+  for nt=1,10 do
    t.x += (rnd(2)-1)
    t.y += 1
    t.h -= 1
-   add(t.pos ,{x = t.x, y=t.y})
+   add(t.pos,{x=t.x,y=t.y})
   end
-  if (flr(rnd(t.p)) == 0) dfx_thunder(t.x, t.y, t.p+2, t.h)
-  if (t.h < -10) del(g_thunders, t)
+  if (flr(rnd(t.p)) == 0) dfx_thunder(t.x,t.y,t.p+2,t.h)
+  if (t.h < -10) del(thunders,t)
  end
 end
 
-function draw_waterfalls()
- for s in all(g_showers) do
+function draw_showers()
+ for s in all(showers) do
   for xy in all(s.pos) do
    if (xy.time > 0) then
-    pset(xy.x, xy.y, rnd_color({s.c, 7}))
+    pset(xy.x,xy.y,rnd_color({s.c,7}))
     xy.time -= 1
    end
   end
-  for i=1, 3 do
+  for i=1,3 do
    if (s.h < 5) s.p +=1
    s.y += 1
    s.h -= 1
-   for r=s.x-(s.p/2), s.x+(s.p/2)do
-    add(s.pos, {x = r, y= s.y, time=5})
+   for r=s.x-(s.p/2),s.x+(s.p/2)do
+    add(s.pos, {x=r,y=s.y,time=5})
    end
   end
-  if (s.h < 0) del(g_showers, s)
+  if (s.h < 0) del(showers,s)
  end
 end
 
-function draw_skills(bx, by)
- draw_item_shape(bx-10, by+7, 55, g_p.cdfx, g_p.weapon.cdfx)
- draw_item_shape(bx+18, by+7, g_p.weapon.animv, g_p.cd, g_p.weapon.cd)
+function draw_skills(bx,by)
+ draw_item_shape(bx-10,by+7,55,p.cdfx,p.weapon.cdfx)
+ draw_item_shape(bx+18,by+7,p.weapon.animv,p.cd, p.weapon.cd)
 end
 
 function draw_actors()
- for a in all(g_actors) do
+ for a in all(actors) do
   if (a.tag == player or a.tag == ennemy) then
-   draw_border_on_caracter(anim_player(a), a.x, a.y, black)
-   draw_weapon(a,manage_weapon_direction(a.d))
+   draw_weapon(a)
+   highlight(anim_player(a),a.x,a.y,black,2)
   else
-   local inv = manage_aim_direction(a.d)
-   spr(a.s, a.x, a.y, 1, 1, inv.h, inv.v)
+   local inv = manage_direction(a.d)
+   spr(a.s,a.x,a.y,1,1,inv.h,inv.v)
   end
  end
 end
 
-function draw_weapon(a,f)
- spr(a.weapon.spr, a.x + a.weapon.ox + f.ox, a.y - a.weapon.oy + f.oy, 1, 1, f.h, f.v)
+function draw_weapon(a)
+ spr(a.weapon.spr,a.x+a.weapon.ox,a.y-a.weapon.oy)
 end
 
 function draw_hud()
- local bx = g_fp.x+60
- local by = g_fp.y+108
- draw_life(bx, by)
- draw_skills(bx, by)
+ local bx = fp.x+60
+ local by = fp.y+108
+ print(ctime.s,fp.x,fp.y,light_gray)
+ draw_life(bx,by)
+ draw_skills(bx,by)
 end
 
-function draw_life(bx, by)
- local offsetlife = #spr_life - flr(((g_p.health * #spr_life) / l_player))
- for y = 1 , #spr_life do
-  for x = 1 , #spr_life[y] do
+function draw_life(bx,by)
+ local offsetlife=#spr_life-flr(((p.health*#spr_life)/life.player))
+ for y=1,#spr_life do
+  for x=1,#spr_life[y] do
    if (spr_life[y][x] ~= black) then
     if (offsetlife >= y and spr_life[y][x] == red) then
-     pset(bx + x, by + y, light_gray)
+     pset(bx+x,by+y,light_gray)
     else
-     pset(bx + x, by + y, spr_life[y][x])
+     pset(bx+x,by+y,spr_life[y][x])
     end
    end
   end
@@ -763,57 +807,59 @@ function draw_life(bx, by)
 end
 
 function draw_menu()
- map(0, 48, 0, 0, 16, 16)
- print("sophia quest", 35, 75, white)
- print("press x+c", 50, 90, white)
+ map(0,48,0,0,16,16)
+ print("press x+c",50,90,white)
 end
 
-function draw_inventory(x, y)
- if (g_open_inv) then
-  rectfill(x, y, x + 48, y + 128, dark_blue)
-  line(x, y, x, y + 128, light_gray)
-  local tx = x + 7
-  local ty = y + 10
-  for i = 1 ,#g_items do
-   draw_item_shape(tx, ty, g_items[i].spr)
-   print(g_items[i].name, tx + 12, ty - 2, white)
-   if (g_selected_item == i) then
-    spr(58, tx - 7, ty - 2)
+function draw_inventory(x,y)
+ if (open_inv) then
+  rectfill(x,y,x+48,y+128,dark_blue)
+  line(x,y,x,y+128,light_gray)
+  tx = x+7
+  ty = y+10
+  for i=1,#items do
+   draw_item_shape(tx,ty,items[i].spr)
+   print(items[i].name,tx+12,ty-2,white)
+   if (selected_item == i) then
+    spr(58,tx-7,ty-2)
    end
    ty += 12
   end
  end
 end
 
-function draw_item_shape(x, y, s, cd, max)
- local cd = cd or 0
- local max = max or 1
- rectfill(x - 2, y - 5,  x + 9, y + 5, white)
+function draw_item_shape(x,y,s,cd,max)
+ cd = cd or 0
+ max = max or 1
+ rectfill(x-2,y-5,x+9,y+5,white)
  local curcd = ceil((cd*8)/max)
- rectfill(x - 2, y - 5 + curcd, x + 9, y + 5, light_gray)
- line(x - 2, y - 5, x - 2, y + 5, dark_gray)
- line(x - 2, y - 5, x + 9, y - 5, dark_gray)
- line(x + 9, y - 5, x + 9, y + 5, dark_gray)
- line(x + 9, y + 5, x - 2, y + 5, dark_gray)
- spr(s, x, y - 4)
+ rectfill(x-2,y-5+curcd,x+9,y+5,light_gray)
+ line(x-2,y-5,x-2,y+5,dark_gray)
+ line(x-2,y-5,x+9,y-5,dark_gray)
+ line(x+9,y-5,x+9,y+5,dark_gray)
+ line(x+9,y+5,x-2,y+5,dark_gray)
+ spr(s,x,y-4)
+end
+
+function draw_item_cd(x,y,s,cd,max)
+
 end
 
 function draw_game()
  cls()
- map(0, 0, 0, 0, 48, 48)
- g_fp = follow_player()
+ map(0,0,0,0,48,48)
+ fp = follow_player()
 
- set_camera()
-
+ scamera()
  draw_particles()
  draw_explosions()
  draw_thunders()
  draw_actors()
- draw_waterfalls()
+ draw_showers()
  draw_hud()
- draw_inventory(g_fp.x+80, g_fp.y)
+ draw_inventory(fp.x+80,fp.y)
 
- debug(g_fp.x+10, g_fp.y+10)
+ debug(fp.x+10,fp.y+10)
 end
 
 -- update
@@ -822,15 +868,16 @@ function update_menu()
  if (btn(fire1) and btn(fire2)) then
   _update = update_game
   _draw = draw_game
-  g_p.cd = 10
+  p.cd = 10
  end
 end
 
 function update_game()
- if (g_open_inv == false) then
-  controls_ennemies()
-  controls_player()
-  controls_collisions()
+ if (open_inv == false) then
+  move_actors()
+  controls()
+  collisions()
+  time_manager()
  else
   wait_inventory_close()
   controls_menu()
@@ -839,153 +886,111 @@ function update_game()
 end
 -- camera
 
-function follow_player(ofx, ofy)
- local ofx = ofx or 0
- local ofy = ofy or 0
- return {
-  x = (get_formalised_position(g_p.x)) + ofx,
-  y = (get_formalised_position(g_p.y)) + ofy
- }
+function follow_player(ofx,ofy)
+ ofx = ofx or 0
+ ofy = ofy or 0
+ local pos = {}
+ pos.x = (gformalisedposition(p.x))+ofx
+ pos.y = (gformalisedposition(p.y))+ofy
+ return pos
 end
 
-function set_camera()
- g_scr.x = get_formalised_position(g_p.x)
- g_scr.y = get_formalised_position(g_p.y)
- if (g_scr.shake > 0) then
-  g_scr.x += (rnd(2)-1)*g_scr.intensity
-  g_scr.y += (rnd(2)-1)*g_scr.intensity
-  g_scr.shake -= 1
+function scamera()
+ scr.x = gformalisedposition(p.x)
+ scr.y = gformalisedposition(p.y)
+ if (scr.shake > 0) then
+  scr.x += (rnd(2)-1)*scr.intensity
+  scr.y += (rnd(2)-1)*scr.intensity
+  scr.shake -= 1
  end
- camera(g_scr.x, g_scr.y)
+ camera(scr.x,scr.y)
 end
 
-function reset_camera()
-  camera(0, 0)
+function rcamera()
+  camera(0,0)
 end
 
 function check_game_state()
- if (is_dead(g_p) or is_game_done()) then
+ if (is_dead(p) or is_game_done()) then
   cls()
-  g_actors = {}
-  g_particles = {}
-  g_explosions = {}
-  g_items = {}
+  actors={}
+  particles={}
+  explosions={}
+  items={}
   make_game()
-  reset_camera()
+  rcamera()
   _draw = draw_menu
   _update = update_menu
  end
 end
 
 function screenshake(n)
- g_scr.shake = n
+ scr.shake = n
 end
-
--- sprites
-
-spr_life = {
- {0, 0, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 0, 0},
- {0, 5, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 5, 0},
- {5, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 5},
- {5, 8, 8, 7, 7, 8, 8, 8, 8, 8, 8, 8, 8, 5},
- {5, 8, 8, 7, 7, 8, 8, 8, 8, 8, 8, 8, 8, 5},
- {5, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 5},
- {5, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 5},
- {5, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 5},
- {5, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 5},
- {5, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 5},
- {5, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 5},
- {5, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 5},
- {0, 5, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 5, 0},
- {0, 0, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 0, 0}
-}
-
--- map items positions
-
-map_items = {
- {
-  name = "heal_potion",
-   spr = 118,
-   pos = {
-   {x = 9, y = 4},
-   {x = 17, y = 16},
-   {x = 25, y = 14},
-   {x = 21, y = 7},
-   {x = 25, y = 10}
-  }
- }
-}
 
 -- debug
 
-function log(tab,text)
- if(tab < 0 or tab > #g_dbg) return
- g_dbg[tab] = text
-end
-
-function debug(x, y)
- for i=1,#g_dbg do
-  print(g_dbg[i], x, y+(6*i), red)
- end
+function debug(x,y)
+  print(dbg,x,y,red)
 end
 
 __gfx__
-5557755555555555003b0b0061771166000000006066666666666606005555555555555555555500333336633366666336663333cccccccc0000000000000000
-55577555777777770bbbb0b3617171660cc7ccc00000000000000000556666666666666666666655336665566655556665556663cccccccc0000000000000000
-5557755555555555b03bbbbb617711660c7cccc06066666666666606555555555555555555555555366766556676665666666556ccc77ccc0000000000000000
-55577555555555550bbb3b30617171660cccccc06066666666666606576566656565656566656675656611661661161166116756cccccccc0000000000000000
-55577555777777770b3bb3bb617711660cccccc060666666666666065756565656665666565656756561cc11c11cc1cc11cc1656cccccccc0000000000000000
-5557755555555555bbb3bbb0611111660cccc7c060666666666666065766656665656565656665753661ccccccccccccccc16656cccccccc0000000000000000
-555775555555555503bb3bbb017171000ccc7cc0606666666666660657565656665666565656567536561cccccccccccccc16566c77ccc7c0000000000000000
-5557755577777777003bbb30617771660cccccc0606666666666660657656665656565656665667536561ccccccccccccccc1663cccccccc0000000000000000
-151515155555555555555555611111660c5555c060666666666666065766566656665666566656753661cccccccccccccccc1663ccca91cc0000000000000000
-060606065555555555555555617771660c7cccc060666666666666065765656565656565656565756561cccccccccccccccc1663caaaa81c0000000000000000
-060606065555555555555555617111660cccccc0606666666666660657566656665666566656667565761cccccccccccccc16656aa990aa10000000000000000
-060606067777775555555555611771660cccccc0606666666666660657656565656565656565657566661cccccccccccccc16756aa990aa10000000000000000
-060606067777775555555555617771660cccccc060666666666666065766566656665666566656753661cccccccccccccccc1653caaaa81c0000000000000000
-060606065555555555555555666566660ccc7cc060666666666666065765656565656565656565756551ccccccccccccccc16663ccca91cc0000000000000000
-060606065555555555555555000500000cc7ccc0000000000000000057566656665666566656667565661cccccccccccccc16566cccccccc0000000000000000
-060606065555555555555555666566660cccccc0606666666666660657656565656565656565657536661ccccccccccccccc1666cccccccc0000000000000000
-33333333333333333333333333333bbbbbb3333333333bbbbbb3333357565656566656665656567536761ccccccccccccccc1663566656660000000000000000
-3333333333333b33333883333333bbbbbbbbb3333333bbbbbbbbb33357666566656565656566657536661cccccccccccccc16663656565650000000000000000
-33333333333b3b3333899833333bbb2bb2bbbb33333bbb8bb8bbbb335756565656566656565656756661ccccccccccccccc16666665666560000000000000000
-3333333333333333389aa98333bb2bbbbbb2bbb333bb8bbbbbb8bbb35765666565656565666566756651cc11c11cc11cc11c1666656565650000000000000000
-3333333333333333b89aa98b3bbbbbbbbbbbbbb33bbbbbbbbbbbbbb3575656565666566656565675365611661661166116616763566656660000000000000000
-333333333b3333b3bb8998bb3b2bbb2bb2bbb2bb3b8bbb8bb8bbb8bb555555555555555555555555365566666566675665566563656565650000000000000000
-333333333b3333b33bb88bb3bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb566666666666666666666665366556666656665666566566665666560000000000000000
-3333333333333333333bb3333bb2b444bbbb2bb33bb8b444bbbb8bb3055555555555555555555550333666333663366636633663656565650000000000000000
-3333333333333333333333333bbbbb4bbbbbbbb33bbbbb4bbbbbbbb300000000333ee333366666630c0000000000000000000000000000000000000000000000
-3333333333333a333223223333b3b44bb44b3b3333b3b44bb44b3b330aaaaaa033a22a33355dd5530cc000005555555500000000000000000000000000000000
-333333333333a9a332e2e2333b3bbb44b4bbb3b33b3bbb44b4bbb3b30a9999a03a8aa8a3355d5d530ccc00000000000000000000000000000000000000000000
-3333333333333a3332eee233b3bbbb4444bbbb3bb3bbbb4444bbbb3b0a9889a0e2a88a2e355565d30cccc0005555555500000000000000000000000000000000
-3333333333333333b2eee2b33333b344443b33333333b344443b33330a9889a0e2a88a2e35565dd30ccc10000000000000000000000000000000000000000000
-3333333333833333bb2e2bb3333333444433333333333344443333330a9999a03a8aa8a3316555530cc100005555555500000000000000000000000000000000
-33333333382833333bbbbb33333334444443333333333444444333330aaaaaa033a22a333c1555530c1000000000000000000000000000000000000000000000
-333333333383333333bbb3333333344444433333333334444443333300000000333ee33335555553010000005555555500000000000000000000000000000000
-11111111111111111111111111111111000000000000000043444444444344444444444400c55100000000000000000000000000000000000000000000566500
-11ccccccc1ccccccc1cccc11c155551c0787787007177170444434344444443444444344000c5510000000000000000000000000000000000005805805688650
-1c0cccccc1ccccccc1ccc0c1c556655c0a8aa8a0061661604444444443444444434444440000c51000000000000000000000000000000c000000000056899865
-1cc0ccccc1ccccccc1cc0cc1c166661c00000000000000004344444444444444444443440000c510000880000000000070000050ccccccc005800000689aa986
-1ccc1111111111111111ccc1116666110e8aa8e00d1661d04444433444434444444444440000c5100008980000055800074444551111111c00005800689aa986
-1ccc11ccccccc1cccc11ccc1c166661c0e8aa8e00d1661d044433bbb34b344b3334443440000c510000880000000000070000050ccccccc00000000056899865
-11111c0cccccc1ccc0c1ccc1c166661c0e8888e00d1111d044444bbbb3bbb3bbbb344444000c551000000000000000000000000000000c000058005805688650
-1ccc1cc1111111111cc1ccc1116666110000000000000000434434bbbbbbbbbbbb44444400c55100000000000000000000000000000000000000000000566500
-1ccc1cc1666666661cc1ccc1666666660000000000000000443444bbbbbbbbbbbb44444400000000000000000000000000050000000c00000080800000566500
-1ccc1cc1666666661cc11111666666660737737007577570443443bbbbbbbbbbbb3443440111111000000000000000000055500000ccc0000050500005688650
-1ccc1111666666661cc1ccc1666666660b3bb3b0095995903444443bbbbbbbbbb3444444155555510008000000080000000400000cc1cc000000000056899865
-1ccc1cc1666666661cc1ccc16666666600000000000000004444444bbbbbbbbbb444344455cccc5500898000000500000004000000c1c00000080800689aa986
-1ccc1cc1666666661cc1ccc166666666063bb36004599540434344bbbbbbbbbbbb4444345c0000c500888000000500000004000000c1c00008050500689aa986
-1ccc1cc1666666661111ccc166666666063bb36004599540444443bbbbbbbbbbbb344444c000000c00000000000000000007000000c1c0000500000056899865
-11111cc1666666661cc1ccc16666666606333360045555403444443bbbbbbbbbb34443440000000000000000000000000070700000c1c0000000800005688650
-1ccc1cc1666666661cc1ccc16666666600000000000000004443444bbbbbbbbbb44343440000000000000000000000000000000000c1c0000000500000566500
-1ccc1cc1111111111cc1ccc1666666660000000000000000444344bbbbbbbbbbbb44444400001000000800000000000000004000000080000000000000888000
-1ccc1c0ccc1cccccc0c11111666666660000000000000000444343bbb3bb33bbbb344344000d10000082800000000000000d0400000880000000000000888000
-1ccc11cccc1ccccccc11ccc1666666660000000000000000434434333433443333444444000d10000048000000008000000d00400555551100008000008d8000
-1ccc1111111111111111ccc1666666660000000000000000444444444434444444344344000d10000004000000555590000d00400555551105555a55008d8000
-1cc0cc1ccccccc1ccccc0cc1666666660000000000000000444444444444434444444444000d10000040000000dd0000000d004000dd000000dd0aa0008d8000
-1c0ccc1ccccccc1cccccc0c1666666660000000000000000333444444444443443444444000d10000004000000d00000000d040000d0000000d00aa000ddd000
-11cccc1ccccccc1ccccccc11666666660000000000000000444444344344444444434444000d00000004000000000000000040000000000000000000000d0000
-111111111111111111111111666666660000000000000000444434444444434444444443000500000004000000000000000000000000000000000000000d0000
+0000000055555555333b3b33517711550000000057557557a555555a005555555555555555555500333336633366666336663333cccccccc0000000000000000
+00000000777777773bbbb3b3617171660cc7ccc057557557a55555a5556666666666666666666655336665566655556665556663cccccccc0000000000000000
+0070070055555555b33bbbbb617711660c7cccc057557557a5555a55555555555555555555555555366766556676665666666556ccc77ccc0000000000000000
+00077000555555553bbb3b33517171550cccccc057557557a555a555576566656565656566656675656611661661161166116756cccccccc0000000000000000
+00077000777777773b3bb3bb617711650cccccc057557557a55a55555756565656665666565656756561cc11c11cc1cc11cc1656cccccccc0000000000000000
+0070070055555555bbb3bbb3611111650cccc7c057557557a5a555555766656665656565656665753661ccccccccccccccc16656cccccccc0000000000000000
+000000005555555533bb3bbb617171650ccc7cc057557557aa55555557565656665666565656567536561cccccccccccccc16566c77ccc7c0000000000000000
+000000007777777733344433517771550cccccc057557557a555555557656665656565656665667536561ccccccccccccccc1663cccccccc0000000000000000
+151515155555555555555555511111550c5555c055577555555755555766566656665666566656753661cccccccccccccccc1663ccca91cc0000000000000000
+060606065555555555555555617771660c7cccc055577555555755555765656565656565656565756561cccccccccccccccc1663caaaa81c0000000000000000
+060606065555555555555555617111660cccccc0555775555557555557566656665666566656667565761cccccccccccccc16656aa990aa10000000000000000
+060606067777775555555555511771550cccccc0555775555557555557656565656565656565657566661cccccccccccccc16756aa990aa10000000000000000
+060606067777775555555555617771650cccccc055577555555755555766566656665666566656753661cccccccccccccccc1653caaaa81c0000000000000000
+060606065555555555555555666066650ccc7cc055577555555755555765656565656565656565756551ccccccccccccccc16663ccca91cc0000000000000000
+060606065555555555555555666066650cc7ccc0555775555557555557566656665666566656667565661cccccccccccccc16566cccccccc0000000000000000
+060606065555555555555555555055550cccccc0555555555557555557656565656565656565657536661ccccccccccccccc1666cccccccc0000000000000000
+33333333333333333333333333333bbbbbb3333333333bbbbbb3333357565656566656665656567536761ccccccccccccccc16635666566657557557a555555a
+3333333333333b33333883333333bbbbbbbbb3333333bbbbbbbbb33357666566656565656566657536661cccccccccccccc166636565656557557557a55555a5
+33333333333b3b3333899833333bbb2bb2bbbb33333bbb8bb8bbbb335756565656566656565656756661ccccccccccccccc166666656665657557557a5555a55
+3333333333333333389aa98333bb2bbbbbb2bbb333bb8bbbbbb8bbb35765666565656565666566756651cc11c11cc11cc11c16666565656557557557a555a555
+3333333333333333b89aa98b3bbbbbbbbbbbbbb33bbbbbbbbbbbbbb35756565656665666565656753656116616611661166167635666566657557557a55a5555
+333333333b3333b3bb8998bb3b2bbb2bb2bbb2bb3b8bbb8bb8bbb8bb5555555555555555555555553655666665666756655665636565656557557557a5a55555
+333333333b3333b33bb88bb3bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb5666666666666666666666653665566666566656665665666656665657557557aa555555
+3333333333333333333bb3333bb2b444bbbb2bb33bb8b444bbbb8bb30555555555555555555555503336663336633666366336636565656557557557a5555555
+3333333333333333333333333bbbbb4bbbbbbbb33bbbbb4bbbbbbbb300000000333ee333366666630c0000000000000044444444606666065557755555575555
+3333333333333a333223223333b3b44bb44b3b3333b3b44bb44b3b330aaaaaa033a22a33355dd5530cc000005555555544444554000000005557755555575555
+333333333333a9a332e2e2333b3bbb44b4bbb3b33b3bbb44b4bbb3b30a9999a03a8aa8a3355d5d530ccc00000000000044444444606666065557755555575555
+3333333333333a3332eee233b3bbbb4444bbbb3bb3bbbb4444bbbb3b0a9889a0e2a88a2e355565d30cccc0005555555544444444606666065557755555575555
+3333333333333333b2eee2b33333b344443b33333333b344443b33330a9889a0e2a88a2e35565dd30ccc10000000000044554454606666065557755555575555
+3333333333833333bb2e2bb3333333444433333333333344443333330a9999a03a8aa8a3316555530cc100005555555545554444606666065557755555575555
+33333333382833333bbbbb33333334444443333333333444444333330aaaaaa033a22a333c1555530c1000000000000044444444000000005557755555575555
+333333333383333333bbb3333333344444433333333334444443333300000000333ee33335555553010000005555555544444444606666065555555555575555
+55555555555555555555555511111111000000000000000043444444444344444444444400c55100000000000000000000000000000000000000000000566500
+556666666566666665666655615555160787787007177170444434344444443444444344000c5510000000000000000000000000000000000005805805688650
+560666666566666665666065655665560a8aa8a0061661604444444443444444434444440000c51000000000000000000000000000000c000000000056899865
+5660666665666666656606656166661600000000000000004344444444444444444443440000c510000880000000000070000050ccccccc005800000689aa986
+566655555555555555556665116666110e8aa8e00d1661d04444433444434444444444440000c5100008980000055800074444551111111c00005800689aa986
+566655666666656666556665616666160e8aa8e00d1661d044433bbb34b344b3334443440000c510000880000000000070000050ccccccc00000000056899865
+555556066666656660656665616666160e8888e00d1111d044444bbbb3bbb3bbbb344444000c551000000000000000000000000000000c000058005805688650
+566656655555555556656665116666110000000000000000434434bbbbbbbbbbbb44444400c55100000000000000000000000000000000000000000000566500
+566656656666666656656665666666660000000000000000443444bbbbbbbbbbbb44444400000000000000000000000000050000000c00000080800000566500
+566656656666666656655555666666660737737007577570443443bbbbbbbbbbbb3443440111111000000000000000000055500000ccc0000050500005688650
+566655556666666656656665666666660b3bb3b0095995903444443bbbbbbbbbb3444444155555510008000000080000000400000cc1cc000000000056899865
+5666566566666666566566656666666600000000000000004444444bbbbbbbbbb444344455cccc5500898000000500000004000000c1c00000080800689aa986
+56665665666666665665666566666666063bb36004599540434344bbbbbbbbbbbb4444345c0000c500888000000500000004000000c1c00008050500689aa986
+56665665666666665555666566666666063bb36004599540444443bbbbbbbbbbbb344444c000000c00000000000000000007000000c1c0000500000056899865
+5555566566666666566566656666666606333360045555403444443bbbbbbbbbb34443440000000000000000000000000070700000c1c0000000800005688650
+5666566566666666566566656666666600000000000000004443444bbbbbbbbbb44343440000000000000000000000000000000000c1c0000000500000566500
+566656655555555556656665666666660000000000000000444344bbbbbbbbbbbb44444400001000000800000000000000004000000080000000000000888000
+566656066656666660655555666666660000000000000000444343bbb3bb33bbbb344344000c10000082800000000000000d0400000880000000000000888000
+566655666656666666556665666666660000000000000000434434333433443333444444000c10000048000000008000000d00400555551100008000008d8000
+566655555555555555556665666666660000000000000000444444444434444444344344000c10000004000000555590000d00400555551105555a55008d8000
+566066566666665666660665666666660000000000000000444444444444434444444444000c10000040000000dd0000000d004000dd000000dd0aa0008d8000
+560666566666665666666065666666660000000000000000333444444444443443444444000c10000004000000d00000000d040000d0000000d00aa000ddd000
+556666566666665666666655666666660000000000000000444444344344444444434444000c00000004000000000000000040000000000000000000000d0000
+555555555555555555555555666666660000000000000000444434444444434444444443000500000004000000000000000000000000000000000000000d0000
 11111111111111111111111111111111000000000000000033344333333443330000000000000000000000000000000000000000000000000000000000000000
 11111111111111111111111111111111000000000000000033d44d3333d44d330000000000000000000000000000000000000000000000000000000000000000
 11111111111111111111111111111111000000000000000033d22d3333d11d330000000000000000000000000000000000000000000000000000000000000000
@@ -1062,37 +1067,37 @@ __gff__
 0000000080808000000000000000000000000000808080000000000000000000a00000008080800000000000000000000000000080808000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
 __map__
 4647474747474747474747474747474747474747474747474747474747474748000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
-5635363221202025262021322023242020202222222222222020202020232458000002020202020202020000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
-5626203232222235362220202033342020202220202020202020322031333458000015161516150315160000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
-5636212020312220202020203231202020202120232420203232202020202058000015161516151315160000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
-5622202324312020202020202031312020202120333420203220222020312058000012121212121212120000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
-562020333425260a0b0b0b0b0c20203120202120202039203232322032203158000011111111111111110000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
-562020212135391a1b1b1b1b1c20223120202121202020203232322220202058000012121212121212120000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
-562022213220201a0d1b1d1b1c20202221212120202020202232222020382058000005060506050605060000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
-562022202020201a0d1b1b0d1c20202221202220200a0b0c2020202020203258000010101010101010100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
-562324312020201a1b1b1b1b1c20232420202220201a1b1c2020202023242058000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
-563334202222202a2b2b2b2b2c20333420202220202a2b2c2020202033342058000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
-5620322131202020202020202020232420202121202020202022202020202058000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
-5620322031202132322020222324333420202221212120202022202020203158000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
-5620202221203131313131313334212020222038202039202020202020322058000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
-5625262020252620202025262020202020222020202020202020202032202058000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
-5635362020353620202035362020202020202020232420202020382020202058000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
-5620203239202020312020202022202020202020333420212120202020233158000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
-5620202020203220202032202020202526202020202020212121322020333458000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
-5620202020202020202022202020203536202032202120212120202020202058000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+5635363221202025262021322023242020202222222222222020202020232458000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+5626203232222235362220202033342020202220202020202020322031333458000000000000000000000000000000000000000202215252121512505000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+5636212020312220202020203231202020202120232420203232202020202058000000000000000000000000000000000000000202215252121512505000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+5622202324312020202020202031312020202120333420203220222020312058000000000000000000000000000000000000000202215252121512505000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+562020333425260a0b0b0b0b0c20203120202120202039203232322032203158000000000000000000000000000000000000000202215252123e12505000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+562020212135391a1b1b1b1b1c20223120202121202020203232322220202058000000000000000000000000000000000000000202215252123e12505000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+562022213220201a0d1b1d1b1c20202221212120202020202232222020382058000000000000000000000202020202020202020202215252123e12505000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+562022202020201a0d1b1b0d1c20202221202220200a0b0c2020202020203258000000000000000000000202020202020202020202215252123e1250500000000000001f1f0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+562324312020201a1b1b1b1b1c20232420202220201a1b1c2020202023242058000000000000000000002121212121212121212121215252123e125050000000001f1f1f1f0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+563334202222202a2b2b2b2b2c20333420202220202a2b2c20202020333420580000000000000000000061616161610361616161616162522e2e2e506061616161616161616100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+56203221312020202020202020202324202021212020202020222020202020580000000000000000000061616161611361616161616161622e2e2e606161616161616161616100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+5620322031202132322020222324333420202221212120202022202020203158000000000000000000001212122f2f2f2f2f121212120101121212010112121212121212121200000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+5620202221203131313131313334212020222038202039202020202020322058000000000000000000001111111111111111111111110101121212010111111111111111111100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+5625262020252620202025262020202020222020202020202020202032202058000000000000000000001212121212121212121212120101121212010112121212121212121200000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+5635362020353620202035362020202020202020232420202020382020202058000000000000000000004141414141414141414141414141414141414141414141414141414100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+5620203239202020312020202022202020202020333420212120202020233158000000000000000000004141414141414141414141414141414141414141414141414141414100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+56202020202032202020322020202025262020202020202121213220203334580000000000000000000000000000000000000000000000001f1f1f1f1f1f1f1f1f1f1f1f000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+56202020202020202020222020202035362020322021202121202020202020580000000000000000000000000000000000000000000000001f1f1f1f1f1f1f1f1f1f1f1f000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
 5620312020232432202020202526202020202020212020202020202526252658000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
 5620202020333420322020203536200a0b0c2021202121202020203536353658000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
-5620202020202020202020202020201a1b1c2021212020202324202526252658290000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
-5620222032203120202022202020202a2b2c2020202032203334203536353658290000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
-5620222020202020322020252620322020203820312020202020202526252658290000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
-562020200a0b0c20202020353620202020202020313131200a0b0c3536353658290000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
-562020201a1b1c20202020202020202020203120202031311a1d1c25262526586e0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
-562020202a2b2c2022203120202023242020312420202031312b2c35363536586e0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
-56202020202020202020312031203334203231342032202031202020202526586e0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
-56203120202038202020202031202020203220202020202020312020203536586e0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
-56202324232423242324232423242020202020232420202020313120202020586e2800000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
-56203334333433343334333433312031312020333420202020203131202020586e2800000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
-66676767676767676767676767676767676767676767676767676767676767686e6e00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+5620202020202020202020202020201a1b1c2021212020202324202526252658000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+5620222032203120202022202020202a2b2c2020202032203334203536353658000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+5620222020202020322020252620322020203820312020202020202526252658000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+562020200a0b0c20202020353620202020202020313131200a0b0c3536353658000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+562020201a1b1c20202020202020202020203120202031311a1d1c2526252658000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+562020202a2b2c2022203120202023242020312420202031312b2c3536353658000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+5620202020202020202031203120333420323134203220203120202020252658000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+5620312020203820202020203120202020322020202020202031202020353658000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+5620232423242324232423242324202020202023242020202031312020202058000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+5620333433343334333433343331203131202033342020202020313120202058000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+6667676767676767676767676767676767676767676767676767676767676768000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
 __sfx__
 000500000d6600d6400d6300d6200d610010000d1000d1000d1000d1000d1000d1000d1000d1000d1000d1000d1000d1000d1000d1000d1000d10000000316000260008600000000000000000000000000000000
 00040000185601755017540175301651016500165001670013700117001f2001e2001b2001a2001b2001e20000000000000000000000000000000000000000000000000000000000000000000000000000000000
