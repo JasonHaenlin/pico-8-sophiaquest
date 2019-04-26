@@ -81,12 +81,12 @@ function make_weapons()
  make_item("elec",     160, 8, 128, 144, 20, 15, melee,  1,  8, 5, -5, dfx_thunder, 50)
 end
 
-function make_player()
+function make_player(s)
  g_p = make_actor(333, 85, 129, player, l_player, controls_player, draw_characters, up)
  g_p.weapon = g_items[5]
  g_p.anim = stay
- g_p.walk = make_anim(walk, create_direction_frames(162, 130, 162, 130, 163, true, 161, true), 1/5)
- g_p.stay = make_anim(stay, create_direction_frames(130, 130, 130, 130, 131, false, 129, false), 1/5)
+ g_p.walk = make_anim(walk, create_direction_frames(s+33, s+1, s+33, s+1, s+34, true, s+32, true), 1/10)
+ g_p.stay = make_anim(stay, create_direction_frames(s+1, s+1, s+1, s+1, s+2, false, s, false), 1/10)
  g_p.cd = 0
  g_p.cdfx = 0
  g_p.box = {x1 = 0, y1 = 1, x2 = 7, y2 = 14}
@@ -103,9 +103,9 @@ end
 
 function make_game()
  make_weapons()
- make_player()
+ make_player(128)
  make_map_items()
- make_ennemies(nb_of_ennemis, {132})
+ -- make_ennemies(nb_of_ennemis, {131,134,137})
 end
 
 function make_map_items()
