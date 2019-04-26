@@ -15,7 +15,7 @@ f_heal, f_item, f_inv, f_obst = 0, 1, 5, 7
 l_player, l_ennemy, l_boss = 50, 10, 150
 walk, stay = "walk", "stay"
 
-debug_enabled = false
+debug_enabled = true
 
 -- init
 function _init()
@@ -263,10 +263,10 @@ end
 
 function controls_player()
  g_p.anim = walk
- if (is_moving(left))  move(g_p,-1, 0, 0, 6)
- if (is_moving(right)) move(g_p, 1, 0, 6, 6)
+ if (is_moving(left))  move(g_p,-1, 0, 0, 15)
+ if (is_moving(right)) move(g_p, 1, 0, 6, 15)
  if (is_moving(up))    move(g_p, 0,-1, 6, 0)
- if (is_moving(down))  move(g_p, 0, 1, 6, 6)
+ if (is_moving(down))  move(g_p, 0, 1, 6, 15)
  if (is_not_moving())  g_p.anim = stay
  action_player()
 end
@@ -372,10 +372,10 @@ function target_nearest_one(limit)
 end
 
 function move_on(a, go)
- if (go == left)  move(a ,-a.dx, 0, 0, 8)
- if (go == right) move(a, a.dx, 0, 8, 8)
- if (go == up)    move(a, 0 ,-a.dy, 8, 0)
- if (go == down)  move(a, 0, a.dy, 8, 8)
+ if (go == left)  move(a ,-a.dx, 0, 0, 15)
+ if (go == right) move(a, a.dx, 0, 6, 15)
+ if (go == up)    move(a, 0 ,-a.dy, 6, 0)
+ if (go == down)  move(a, 0, a.dy, 6, 15)
  if (go ~= none)  a.d = go
 end
 
@@ -400,27 +400,37 @@ end
 function move(a, x, y, ox, oy)
  local x1 = (a.x + x + (ox * x)) / 8
  local y1 = (a.y + y + (oy * y)) / 8
- local x2 = (a.x + x + ox) / 8
- local y2 = (a.y + y + oy) / 8
- g_cm.x1 = x1 * 8
- g_cm.y1 = y1 * 8
- g_cm.x2 = x2 * 8
- g_cm.y2 = y2 * 8
+ local x2 = x1
+ local y2 = y1
+ if (x ~= 0) y2 = (a.y + y + (ceil(oy/2))) / 8
+ if (y ~= 0) x2 = (a.x + x + (ceil(ox/2))) / 8
+ local x3 = (a.x + x + ox) / 8
+ local y3 = (a.y + y + oy) / 8
  local sp1 = mget(x1, y1)
  local sp2 = mget(x2, y2)
+ local sp3 = mget(x3, y3)
 
- if (fget(sp1, f_obst) == false and fget(sp2, f_obst) == false) then
+ if (not fget(sp2, f_obst)) then
+  if (fget(sp1, f_obst)) then
+  a.x += abs(y)
+  a.y += abs(x)
+  elseif (fget(sp3, f_obst)) then
+  a.x -= abs(y)
+  a.y -= abs(x)
+  else
   a.x += x
   a.y += y
- end
+  end -- check outer obstacles
+ end -- check inner obstacles
+
  if(a.tag == player) then
   if(fget(sp1, f_heal) and a.health < l_player) then
-   pick_item((a.x + x + (ox * x)) / 8 ,(a.y + y + (oy * y)) / 8)
+   pick_item(x1, y1)
    a.health += 10
    if (a.health > l_player) a.healh = l_player
   end
-  if(fget(sp2, f_heal) and a.health < l_player) then
-   pick_item((a.x + x + ox) / 8 ,(a.y + y + oy) / 8)
+  if(fget(sp3, f_heal) and a.health < l_player) then
+   pick_item(x3, y3)
    a.health += 10
    if (a.health > l_player) a.healh = l_player
   end
@@ -940,18 +950,21 @@ function debug_init()
   x1 = 0,
   y1 = 0,
   x2 = 0,
-  y2 = 0
+  y2 = 0,
+  x3 = 0,
+  y3 = 0
  }
 end
 
 function debug()
  debug_collision_matrix()
- debug_hitbox_matrix()
+ -- debug_hitbox_matrix()
  debug_log(g_fp.x+10, g_fp.y+10)
 end
 
 function debug_collision_matrix()
  line(g_cm.x1,g_cm.y1,g_cm.x2,g_cm.y2,pink)
+ line(g_cm.x2,g_cm.y2,g_cm.x3,g_cm.y3,dark_purple)
 end
 
 function debug_hitbox_matrix()
