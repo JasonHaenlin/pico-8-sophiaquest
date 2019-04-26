@@ -17,7 +17,6 @@ walk, stay = "walk", "stay"
 
 debug_enabled = false
 
-
 -- init
 function _init()
  palt()
@@ -50,7 +49,7 @@ end
 
 -- make
 
-function make_actor(x, y, s, tag, health, controller, direction)
+function make_actor(x, y, s, tag, health, controls, draw, direction)
  local actor = {
   tag = tag,
   d = direction or up,
@@ -62,7 +61,8 @@ function make_actor(x, y, s, tag, health, controller, direction)
   dx = 0,
   dy = 0,
   health = health,
-  controller = controller,
+  controls = controls,
+  draw = draw,
   box = {x1 = 0, y1 = 0, x2 = 7, y2 = 7}
  }
  add(g_actors, actor)
@@ -82,7 +82,7 @@ function make_weapons()
 end
 
 function make_player()
- g_p = make_actor(333, 85, 129, player, l_player, controls_player, up)
+ g_p = make_actor(333, 85, 129, player, l_player, controls_player, draw_characters, up)
  g_p.weapon = g_items[5]
  g_p.anim = stay
  g_p.walk = make_anim(walk, create_direction_frames(162, 130, 162, 130, 163, true, 161, true), 1/5)
@@ -121,7 +121,7 @@ function make_ennemies(nb, aspr)
  for s in all(aspr) do
   for i=1, nb/#aspr do
    local a = g_good_spot(248, 248)
-   local e = make_actor(a.x, a.y, s, ennemy, l_ennemy, controls_ennemies, up)
+   local e = make_actor(a.x, a.y, s, ennemy, l_ennemy, controls_ennemies, draw_characters, up)
    e.weapon = g_items[4]
    e.cd = 50
    e.anim = stay
@@ -273,38 +273,38 @@ function action_ennemies(a, d)
  end
 end
 
-function controls_bullets(a)
-   a.x += a.dx
-   a.y += a.dy
-   if (is_of_limit(a.x, a.y, a.bx, a.by, a.range)) del(g_actors, a)
+function controls_bullets(self)
+   self.x += self.dx
+   self.y += self.dy
+   if (is_of_limit(self.x, self.y, self.bx, self.by, self.range)) del(g_actors, self)
 end
 
-function controls_ennemies(a)
- local dist = check_distance_from_player(a)
+function controls_ennemies(self)
+ local dist = check_distance_from_player(self)
  if(is_player_near(dist)) then
-  a.anim = walk
-  if (dist >= a.weapon.type) then
-   local dir_m = going_forward(a)
-   move_on(a, dir_m)
+  self.anim = walk
+  if (dist >= self.weapon.type) then
+   local dir_m = going_forward(self)
+   move_on(self, dir_m)
   else
-   local dir_m = get_best_direction(a)
-   move_on(a, dir_m)
+   local dir_m = get_best_direction(self)
+   move_on(self, dir_m)
   end -- dist >= weapon type
-  local dir_a = prepare_attack_opportunity(a)
-  a.d = dir_a
-  action_ennemies(a, dir_a)
+  local dir_a = prepare_attack_opportunity(self)
+  self.d = dir_a
+  action_ennemies(self, dir_a)
  else
-   a.anim = stay
+   self.anim = stay
  end -- is player near
 end
 
-function controls_player(a)
- a.anim = walk
- if (is_moving(left))  move(a,-1, 0, 0, 15)
- if (is_moving(right)) move(a, 1, 0, 6, 15)
- if (is_moving(up))    move(a, 0,-1, 6, 0)
- if (is_moving(down))  move(a, 0, 1, 6, 15)
- if (is_not_moving())  a.anim = stay
+function controls_player(self)
+ self.anim = walk
+ if (is_moving(left))  move(self,-1, 0, 0, 15)
+ if (is_moving(right)) move(self, 1, 0, 6, 15)
+ if (is_moving(up))    move(self, 0,-1, 6, 0)
+ if (is_moving(down))  move(self, 0, 1, 6, 15)
+ if (is_not_moving())  self.anim = stay
  action_player()
 end
 
@@ -528,22 +528,22 @@ function shoot(a, d)
  local center = a.weapon.hb / 2
  local b = {}
  if(d == left) then
-  b = make_actor(a.x-6, a.y+4, a.weapon.animh, bullet, immortal_object, controls_bullets, left)
+  b = make_actor(a.x-6, a.y+4, a.weapon.animh, bullet, immortal_object, controls_bullets, draw_bullets, left)
   b.box = {x1 = 0, y1 = 4-center, x2 = 5, y2 = 4+center}
   b.dx = -speed
  end
  if(d == right) then
-  b = make_actor(a.x+6, a.y+4, a.weapon.animh, bullet, immortal_object, controls_bullets, right)
+  b = make_actor(a.x+6, a.y+4, a.weapon.animh, bullet, immortal_object, controls_bullets, draw_bullets, right)
   b.box = {x1 = 3, y1 = 4-center, x2 = 8, y2 = 4+center}
   b.dx = speed
  end
  if(d == up) then
-  b = make_actor(a.x, a.y-8, a.weapon.animv, bullet, immortal_object, controls_bullets, up)
+  b = make_actor(a.x, a.y-8, a.weapon.animv, bullet, immortal_object, controls_bullets, draw_bullets, up)
   b.box = {x1 = 4-center, y1 = 0, x2 = 4+center, y2 = 5}
   b.dy = -speed
  end
  if(d == down) then
-  b = make_actor(a.x, a.y+18, a.weapon.animv, bullet, immortal_object, controls_bullets, down)
+  b = make_actor(a.x, a.y+18, a.weapon.animv, bullet, immortal_object, controls_bullets, draw_bullets, down)
   b.box = {x1 = 4-center, y1 = 3, x2 = 4+center, y2 = 8}
   b.dy = speed
  end
@@ -750,23 +750,19 @@ function draw_skills(bx, by)
  draw_item_shape(bx+18, by+7, g_p.weapon.animv, g_p.cd, g_p.weapon.cd)
 end
 
-function draw_characters()
-
+function draw_characters(self)
+ draw_border_on_entities(anim_player(self), self.x, self.y, black)
+ draw_weapon(self,manage_weapon_direction(self.d))
 end
 
-function draw_bullets()
-
+function draw_bullets(self)
+ local inv = manage_aim_direction(self.d)
+ spr(self.s, self.x, self.y, 1, 1, inv.h, inv.v)
 end
 
 function draw_actors()
  for a in all(g_actors) do
-  if (a.tag == player or a.tag == ennemy) then
-   draw_border_on_entities(anim_player(a), a.x, a.y, black)
-   draw_weapon(a,manage_weapon_direction(a.d))
-  else
-   local inv = manage_aim_direction(a.d)
-   spr(a.s, a.x, a.y, 1, 1, inv.h, inv.v)
-  end
+  a:draw()
  end
 end
 
@@ -862,7 +858,7 @@ end
 
 function update_game()
  if (g_open_inv == false) then
-  controllers_update()
+  controls_update()
   controls_collisions()
  else
   wait_inventory_close()
@@ -871,9 +867,9 @@ function update_game()
  check_game_state()
 end
 
-function controllers_update()
+function controls_update()
  for a in all(g_actors) do
-  a.controller(a)
+  a:controls()
  end
 end
 -- camera
