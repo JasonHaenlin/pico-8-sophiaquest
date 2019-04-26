@@ -10,12 +10,13 @@ player, bullet, ennemy = 0, 1, 2
 immortal_object = 1000
 inf = 1000
 melee, ranged = 1, 20
-nb_of_ennemis = 20
+nb_of_ennemis = 1
 f_heal, f_item, f_inv, f_obst = 0, 1, 5, 7
 l_player, l_ennemy, l_boss = 50, 10, 150
 walk, stay = "walk", "stay"
 
 debug_enabled = false
+
 
 -- init
 function _init()
@@ -49,7 +50,7 @@ end
 
 -- make
 
-function make_actor(x, y, s, tag, health, direction)
+function make_actor(x, y, s, tag, health, controller, direction)
  local actor = {
   tag = tag,
   d = direction or up,
@@ -61,6 +62,7 @@ function make_actor(x, y, s, tag, health, direction)
   dx = 0,
   dy = 0,
   health = health,
+  controller = controller,
   box = {x1 = 0, y1 = 0, x2 = 7, y2 = 7}
  }
  add(g_actors, actor)
@@ -80,7 +82,7 @@ function make_weapons()
 end
 
 function make_player()
- g_p = make_actor(333, 85, 129, player, l_player, up)
+ g_p = make_actor(333, 85, 129, player, l_player, controls_player, up)
  g_p.weapon = g_items[5]
  g_p.anim = stay
  g_p.walk = make_anim(walk, create_direction_frames(162, 130, 162, 130, 163, true, 161, true), 1/5)
@@ -103,7 +105,7 @@ function make_game()
  make_weapons()
  make_player()
  make_map_items()
- -- make_ennemies(nb_of_ennemis, {132})
+ make_ennemies(nb_of_ennemis, {132})
 end
 
 function make_map_items()
@@ -119,7 +121,7 @@ function make_ennemies(nb, aspr)
  for s in all(aspr) do
   for i=1, nb/#aspr do
    local a = g_good_spot(248, 248)
-   local e = make_actor(a.x, a.y, s, ennemy, l_ennemy, up)
+   local e = make_actor(a.x, a.y, s, ennemy, l_ennemy, controls_ennemies, up)
    e.weapon = g_items[4]
    e.cd = 50
    e.anim = stay
@@ -261,15 +263,6 @@ function controls_menu()
  end
 end
 
-function controls_player()
- g_p.anim = walk
- if (is_moving(left))  move(g_p,-1, 0, 0, 15)
- if (is_moving(right)) move(g_p, 1, 0, 6, 15)
- if (is_moving(up))    move(g_p, 0,-1, 6, 0)
- if (is_moving(down))  move(g_p, 0, 1, 6, 15)
- if (is_not_moving())  g_p.anim = stay
- action_player()
-end
 
 function action_ennemies(a, d)
  if (a.tag ~= ennemy) return
@@ -280,32 +273,39 @@ function action_ennemies(a, d)
  end
 end
 
-function controls_ennemies()
- for a in all(g_actors) do
-  if (a.tag == ennemy) then
-   local dist = check_distance_from_player(a)
-   if(is_player_near(dist)) then
-    a.anim = walk
-    if (dist >= a.weapon.type) then
-     local dir_m = going_forward(a)
-     move_on(a, dir_m)
-    else
-     local dir_m = get_best_direction(a)
-     move_on(a, dir_m)
-    end -- dist >= weapon type
-    local dir_a = prepare_attack_opportunity(a)
-    a.d = dir_a
-    action_ennemies(a, dir_a)
-   else
-     a.anim = stay
-   end -- is player near
-  end -- tag is ennemy
-  if (a.tag == bullet) then
+function controls_bullets(a)
    a.x += a.dx
    a.y += a.dy
    if (is_of_limit(a.x, a.y, a.bx, a.by, a.range)) del(g_actors, a)
-  end
- end
+end
+
+function controls_ennemies(a)
+ local dist = check_distance_from_player(a)
+ if(is_player_near(dist)) then
+  a.anim = walk
+  if (dist >= a.weapon.type) then
+   local dir_m = going_forward(a)
+   move_on(a, dir_m)
+  else
+   local dir_m = get_best_direction(a)
+   move_on(a, dir_m)
+  end -- dist >= weapon type
+  local dir_a = prepare_attack_opportunity(a)
+  a.d = dir_a
+  action_ennemies(a, dir_a)
+ else
+   a.anim = stay
+ end -- is player near
+end
+
+function controls_player(a)
+ a.anim = walk
+ if (is_moving(left))  move(a,-1, 0, 0, 15)
+ if (is_moving(right)) move(a, 1, 0, 6, 15)
+ if (is_moving(up))    move(a, 0,-1, 6, 0)
+ if (is_moving(down))  move(a, 0, 1, 6, 15)
+ if (is_not_moving())  a.anim = stay
+ action_player()
 end
 
 function going_forward(a)
@@ -528,22 +528,22 @@ function shoot(a, d)
  local center = a.weapon.hb / 2
  local b = {}
  if(d == left) then
-  b = make_actor(a.x-6, a.y+4, a.weapon.animh, bullet, immortal_object, left)
+  b = make_actor(a.x-6, a.y+4, a.weapon.animh, bullet, immortal_object, controls_bullets, left)
   b.box = {x1 = 0, y1 = 4-center, x2 = 5, y2 = 4+center}
   b.dx = -speed
  end
  if(d == right) then
-  b = make_actor(a.x+6, a.y+4, a.weapon.animh, bullet, immortal_object, right)
+  b = make_actor(a.x+6, a.y+4, a.weapon.animh, bullet, immortal_object, controls_bullets, right)
   b.box = {x1 = 3, y1 = 4-center, x2 = 8, y2 = 4+center}
   b.dx = speed
  end
  if(d == up) then
-  b = make_actor(a.x, a.y-8, a.weapon.animv, bullet, immortal_object, up)
+  b = make_actor(a.x, a.y-8, a.weapon.animv, bullet, immortal_object, controls_bullets, up)
   b.box = {x1 = 4-center, y1 = 0, x2 = 4+center, y2 = 5}
   b.dy = -speed
  end
  if(d == down) then
-  b = make_actor(a.x, a.y+18, a.weapon.animv, bullet, immortal_object, down)
+  b = make_actor(a.x, a.y+18, a.weapon.animv, bullet, immortal_object, controls_bullets, down)
   b.box = {x1 = 4-center, y1 = 3, x2 = 4+center, y2 = 8}
   b.dy = speed
  end
@@ -597,17 +597,17 @@ function manage_aim_direction(direction)
  return inv
 end
 
-function draw_border_on_caracter(anim, x, y, c)
+function draw_border_on_entities(entitie, x, y, c)
 	for i=1, 16 do
 		pal(i, c)
  end
- spr(anim.f, x,   y+1, 1, 2, anim.flip, false)
- spr(anim.f, x,   y-1, 1, 2, anim.flip, false)
- spr(anim.f, x-1, y,   1, 2, anim.flip, false)
- spr(anim.f, x+1, y,   1, 2, anim.flip, false)
+ spr(entitie.f, x,   y+1, 1, 2, entitie.flip, false)
+ spr(entitie.f, x,   y-1, 1, 2, entitie.flip, false)
+ spr(entitie.f, x-1, y,   1, 2, entitie.flip, false)
+ spr(entitie.f, x+1, y,   1, 2, entitie.flip, false)
  pal()
  palt(pink,true)
- spr(anim.f, x,   y,   1, 2, anim.flip, false)
+ spr(entitie.f, x,   y,   1, 2, entitie.flip, false)
 end
 
 -- collisions
@@ -750,10 +750,18 @@ function draw_skills(bx, by)
  draw_item_shape(bx+18, by+7, g_p.weapon.animv, g_p.cd, g_p.weapon.cd)
 end
 
+function draw_characters()
+
+end
+
+function draw_bullets()
+
+end
+
 function draw_actors()
  for a in all(g_actors) do
   if (a.tag == player or a.tag == ennemy) then
-   draw_border_on_caracter(anim_player(a), a.x, a.y, black)
+   draw_border_on_entities(anim_player(a), a.x, a.y, black)
    draw_weapon(a,manage_weapon_direction(a.d))
   else
    local inv = manage_aim_direction(a.d)
@@ -854,14 +862,19 @@ end
 
 function update_game()
  if (g_open_inv == false) then
-  controls_ennemies()
-  controls_player()
+  controllers_update()
   controls_collisions()
  else
   wait_inventory_close()
   controls_menu()
  end
  check_game_state()
+end
+
+function controllers_update()
+ for a in all(g_actors) do
+  a.controller(a)
+ end
 end
 -- camera
 
