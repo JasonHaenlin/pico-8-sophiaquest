@@ -15,7 +15,7 @@ f_heal, f_item, f_inv, f_obst = 0, 1, 5, 7
 l_player, l_ennemy, l_boss = 50, 10, 150
 walk, stay = "walk", "stay"
 
-debug_enabled = true
+debug_enabled = false
 
 -- init
 function _init()
@@ -493,12 +493,16 @@ end
 
 function controls_dialogs(self)
  local a = self.talkto
- if(btnp(fire1) or btnp(fire2)) then
+ if(btnp(fire2)) then
   if(self.talkto.line >= #self.talkto.dialogs) then
    self.control = controls_player
   else
    a.next = true
   end
+ end
+ if(btnp(fire1)) then
+  self.control = controls_player
+  g_p.cd = 20
  end
 end
 
@@ -1448,4 +1452,3 @@ __sfx__
 000500001364013630136200000013640136301362000000136401363013620000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
 __music__
 04 01024344
-
