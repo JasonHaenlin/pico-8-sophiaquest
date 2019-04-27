@@ -6,7 +6,7 @@ __lua__
 -- const
 left, right, up, down, fire1, fire2, none = 0, 1, 2, 3, 4, 5, 6
 black, dark_blue, dark_purple, dark_green, brown, dark_gray, light_gray, white, red, orange, yellow, green, blue, indigo, pink, peach = 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15
-player, bullet, ennemy, item = 0, 1, 2, 3
+player, bullet, ennemy, item, npc = 0, 1, 2, 3, 4
 immortal_object = 1000
 inf = 1000
 melee, ranged = 1, 20
@@ -24,6 +24,7 @@ function _init()
  g_actors = {}
  g_dfx = {}
  g_weapons = {}
+ g_dialogs = {}
 
  g_open_inv=false
  g_selected_item=1
@@ -84,8 +85,9 @@ end
 
 function make_game()
  make_weapons()
- make_player(128)
  make_ennemies(nb_of_ennemis, {134})
+ make_npc(239, 66, 137)
+ make_player(128)
  make_items()
 end
 
@@ -168,16 +170,33 @@ function make_weapons()
  })
 end
 
+function make_npc(x, y, s)
+ local n = make_actor({
+  -- new player char
+  entitie = newentitie(x, y, s, npc, immortal_object, down),
+  -- add a action controller
+  control = controls_npc,
+  -- add a draw controller
+  draw = draw_characters,
+  -- set the hitbox
+  box = {x1 = 0, y1 = 0, x2 = 7, y2 = 14},
+ })
+  -- add animations
+ n.anim = stay
+ n.walk = make_anim(make_walk_anim(s))
+ n.stay = make_anim(make_stay_anim(s))
+end
+
 function make_player(s)
  g_p = make_actor({
   -- new player char
-  entitie = newentitie(333, 85, s, player, l_player),
+  entitie = newentitie(333, 85, s, player, immortal_object),
   -- add a action controller
   control = controls_player,
   -- add a draw controller
   draw = draw_characters,
   -- set the hitbox
-  box = {x1 = 0, y1 = 0, x2 = 7, y2 = 14},
+  box = {x1 = 0, y1 = 10, x2 = 7, y2 = 15},
   -- add weapon
   weapon = g_weapons[1]
  })
@@ -192,7 +211,7 @@ function make_ennemies(nb, aspr)
  for s in all(aspr) do
   for i=1, nb/#aspr do
    local a = g_good_spot(248, 248)
-   e = make_actor({
+   local e = make_actor({
     -- new player char
     entitie = newentitie(a.x, a.y, s, ennemy, l_ennemy, up, {dx = 0.9, dy = 0.9}),
     -- add a action controller
@@ -200,7 +219,7 @@ function make_ennemies(nb, aspr)
     -- add a draw controller
     draw = draw_characters,
     -- set the hitbox
-    box = {x1 = 0, y1 = 0, x2 = 7, y2 = 14},
+    box = {x1 = 0, y1 = 10, x2 = 7, y2 = 15},
     -- add weapon
     weapon = g_weapons[1]
    })
@@ -272,6 +291,10 @@ function make_particles(a, n, c)
  	sfx(1)
  	n -= 1
  end
+end
+
+function make_dialog(x,y,t,d)
+ add(g_dialogs,{x=x,y=y-10,text=t,time=d})
 end
 
 -- draw effect
@@ -352,6 +375,10 @@ function create_direction_frames(fl1, fl2, fr1, fr2, fu, fuflip, fd, fdflip)
  }
 end
 
+function create_dialogs(texts)
+
+end
+
 function controls_menu()
  if (btnp(up) and g_selected_item > 1) then
   g_selected_item -= 1
@@ -382,23 +409,34 @@ function controls_bullets(self)
    if (is_of_limit(self.x, self.y, self.bx, self.by, self.range)) del(g_actors, self)
 end
 
+function controls_npc(self)
+ local dist = check_distance_from_player(self)
+ log(4, dist)
+ if (dist >= 5 and dist < 10) then
+  make_dialog(self.x, self.y, "hey !!", 30)
+ end
+end
+
 function controls_ennemies(self)
  local dist = check_distance_from_player(self)
  if(is_player_near(dist)) then
+  make_dialog(self.x, self.y, "!", 1)
   self.anim = walk
   if (dist >= self.weapon.type) then
    local dir_m = going_forward(self)
    move_on(self, dir_m)
-  else
-   local dir_m = get_best_direction(self)
-   move_on(self, dir_m)
   end -- dist >= weapon type
+ else
+  self.anim = stay
+ end -- is player near
+ log(5, dist)
+ if (dist < self.weapon.type*8.2) then
+  local dir_m = get_best_direction(self)
+  move_on(self, dir_m)
   local dir_a = prepare_attack_opportunity(self)
   self.d = dir_a
   action_ennemies(self, dir_a)
- else
-   self.anim = stay
- end -- is player near
+ end
 end
 
 function controls_player(self)
@@ -482,6 +520,7 @@ function move_on(a, go)
  if (go ~= none)  a.d = go
 end
 
+
 function is_moving(direction)
  if (btn(direction)) then
   g_p.d = direction
@@ -500,18 +539,29 @@ function is_not_moving()
  return false
 end
 
+function touching(x1,y1,w1,h1,x2,y2,w2,h2)
+ return x1+w1 > x2 and
+ x1 < x2+w2 and
+ y1+h1 > y2 and
+ y1 < y2+h2
+end
+
 function move(a, x, y, ox, oy)
- local x1 = (a.x + x + (ox * x)) / 8
- local y1 = (a.y + y + (oy * y)) / 8
+ local x1 = (a.x + x + (ox * x))
+ local y1 = (a.y + y + (oy * y))
  local x2 = x1
  local y2 = y1
- if (x ~= 0) y2 = (a.y + y + (ceil(oy/2))) / 8
- if (y ~= 0) x2 = (a.x + x + (ceil(ox/2))) / 8
- local x3 = (a.x + x + ox) / 8
- local y3 = (a.y + y + oy) / 8
- local sp1 = mget(x1, y1)
- local sp2 = mget(x2, y2)
- local sp3 = mget(x3, y3)
+ if (x ~= 0) y2 = (a.y + y + (ceil(oy/2)))
+ if (y ~= 0) x2 = (a.x + x + (ceil(ox/2)))
+ local x3 = (a.x + x + ox)
+ local y3 = (a.y + y + oy)
+ local sp1 = mget(x1 / 8, y1 / 8)
+ local sp2 = mget(x2 / 8, y2 / 8)
+ local sp3 = mget(x3 / 8, y3 / 8)
+
+ for b in all(g_actors) do
+  if(check_collisions(a, b, x, y)) return
+ end
 
  if (not fget(sp2, f_obst)) then
   if (fget(sp1, f_obst)) then
@@ -579,10 +629,9 @@ end
 
 function g_good_spot(xmax, ymax)
  local a = {
-  x = 0,
-  y = 0
+  x = rnd(xmax),
+  y = rnd(ymax)
  }
- local f = f_obst
  while(fget(mget(a.x / 8 ,(a.y) / 8), f_obst)) do
   a.x = rnd(xmax)
   a.y = rnd(ymax)
@@ -761,14 +810,16 @@ function get_box(a)
  }
 end
 
-function check_collisions(a, b)
+function check_collisions(a, b, newx, newy)
+ local newx = newx or 0
+ local newy = newy or 0
  if(a == b or a.tag == b.tag) return false
  local box_a = get_box(a)
  local box_b = get_box(b)
- if (box_a.x1 > box_b.x2 or
-     box_a.y1 > box_b.y2 or
-     box_b.x1 > box_a.x2 or
-     box_b.y1 > box_a.y2 ) then
+ if (box_a.x1 + newx > box_b.x2 or
+     box_a.y1 + newy > box_b.y2 or
+     box_b.x1 > box_a.x2 + newx or
+     box_b.y1 > box_a.y2 + newy ) then
   return false
  end
  return true
@@ -795,21 +846,27 @@ function controls_collisions()
  for a in all(g_actors) do
   for b in all(g_actors) do
    if (check_collisions(a, b)) then
-    local damaged_actor = a
     if (a.tag == bullet and b.tag ~= bullet) then
      b.health -= a.dmg
-     damaged_actor = b
+     local damaged_actor = b
      make_particles(b, 10, 5)
      del(g_actors, a)
-    elseif (b.tag == bullet and a.tag ~= bullet) then
-     a.health -= b.dmg
-     make_particles(a, 10, 5)
-     del(g_actors, b)
+     check_actor_health(damaged_actor)
     end -- collision from bullet
-    check_actor_health(damaged_actor)
    end -- if collision
   end
  end
+end
+
+function printoutline(t,x,y,c)
+  -- draw the outline
+  for xoff=-1,1 do
+    for yoff=-1,1 do
+      print(t,x+xoff,y+yoff,0)
+    end
+  end
+  --draw the text
+  print(t,x,y,c)
 end
 
 function rnd_color(colors)
@@ -884,7 +941,7 @@ end
 
 function draw_characters(self)
  draw_border_on_entities(anim_player(self), self.x, self.y, black)
- draw_weapon(self,manage_weapon_direction(self.d))
+ if(self.tag ~= npc) draw_weapon(self,manage_weapon_direction(self.d))
 end
 
 function draw_bullets(self)
@@ -911,6 +968,14 @@ function draw_dfxs()
   for d in all(g_dfx) do
    d:draw()
   end
+end
+
+function draw_dialogs()
+ for d in all(g_dialogs) do
+  printoutline(d.text,d.x,d.y,white)
+  d.time -= 1
+  if (d.time <= 0) del(g_dialogs,d)
+ end
 end
 
 function draw_hud()
@@ -979,6 +1044,7 @@ function draw_game()
 
  draw_actors()
  draw_dfxs()
+ draw_dialogs()
  draw_hud()
 
 
