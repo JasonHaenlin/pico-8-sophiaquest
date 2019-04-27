@@ -10,12 +10,12 @@ player, bullet, ennemy = 0, 1, 2
 immortal_object = 1000
 inf = 1000
 melee, ranged = 1, 20
-nb_of_ennemis = 1
+nb_of_ennemis = 2
 f_heal, f_item, f_inv, f_obst = 0, 1, 5, 7
 l_player, l_ennemy, l_boss = 50, 10, 150
 walk, stay = "walk", "stay"
 
-debug_enabled = true
+debug_enabled = false
 
 -- init
 function _init()
@@ -23,10 +23,6 @@ function _init()
 
  g_actors = {}
  g_dfx = {}
- g_particles = {}
- g_explosions = {}
- g_thunders = {}
- g_showers = {}
  g_weapons = {}
 
  g_open_inv=false
@@ -46,6 +42,8 @@ function init_screen()
  }
 end
 
+-- new
+
 function newentitie(x, y, sprite, tag, health, direction, mvn)
  return {
   x = x,
@@ -58,7 +56,58 @@ function newentitie(x, y, sprite, tag, health, direction, mvn)
  }
 end
 
+function newdfx(pattern, draw, cd)
+ return {
+  pattern = pattern or function (self) end,
+  draw = draw or function (self) end,
+  cd = cd or 100
+ }
+end
+
+function newweapon(name, sprite, sfx, anim, cd, dmg, type, speed, hitbox, offsetx, offsety)
+ return {
+  name = name,
+  sprite = sprite,
+  sfx = sfx,
+  anim = anim,
+  cd = cd,
+  dmg = dmg,
+  type = type,
+  speed = speed,
+  hitbox = hitbox,
+  offsetx = offsetx,
+  offsety = offsety
+ }
+end
+
 -- make
+
+function make_game()
+ make_weapons()
+ make_player(128)
+ make_ennemies(nb_of_ennemis, {134})
+end
+
+function make_weapon(cmpnttable)
+ local item = {
+  name = cmpnttable.wpm.name,
+  spr = cmpnttable.wpm.sprite,
+  animh = cmpnttable.wpm.anim.h,
+  animv = cmpnttable.wpm.anim.v,
+  cd = cmpnttable.wpm.cd,
+  speed = cmpnttable.wpm.speed,
+  dmg = cmpnttable.wpm.dmg,
+  type = cmpnttable.wpm.type,
+  hb = cmpnttable.wpm.hitbox,
+  ox = cmpnttable.wpm.offsetx,
+  oy = cmpnttable.wpm.offsety,
+  sfx = cmpnttable.wpm.sfx,
+  dfx = cmpnttable.dfx.pattern,
+  draw = cmpnttable.dfx.draw,
+  cdfx = cmpnttable.dfx.cd
+ }
+ add(g_weapons, item)
+end
 
 function make_actor(cmpnttable)
  local actor = {
@@ -87,15 +136,38 @@ function make_actor(cmpnttable)
 end
 
 function make_weapons()
- -- name, spr, sfx, animh, animv, cd, dmg, type, speed, hb, ox, oy, dfx, cdfx
- make_weapon("sword",    105, 4, 73,  89,  15, 7,  melee,  1,  8, 5, -4)
- make_weapon("firewand", 106, 1, 74,  90,  8,  8,  ranged, 3,  3, 5, -4)
- make_weapon("gun",      107, 5, 75,  91,  3,  3,  ranged, 10, 1, 5, -5)
- make_weapon("bow",      108, 3, 76,  92,  6,  5,  ranged, 6,  3, 5,-5)
- make_weapon("secret",   109, 6, 77,  93,  4,  5,  ranged, 5,  1, 5, -5, dfx_shower, 50)
- make_weapon("tatata",   110, 7, 78,  94,  2,  2,  ranged, 10, 1, 5, -5)
- make_weapon("boom",     111, 7, 79,  95,  18, 10, melee,  1,  8, 5, -4)
- make_weapon("elec",     160, 8, 128, 144, 20, 15, melee,  1,  8, 5, -5, dfx_thunder, 50)
+ make_weapon({
+  wpm = newweapon("elec", 104, 8, {h = 72, v = 88}, 20, 15, melee, 2, 8, 5, -5),
+  dfx = newdfx(dfx_thunder, draw_thunder, 100)
+ })
+ make_weapon({
+  wpm = newweapon("sword", 105, 4, {h = 73, v = 89}, 15, 7, melee, 2, 8, 5, -4),
+  dfx = newdfx()
+ })
+ make_weapon({
+  wpm = newweapon("firewand", 106, 1, {h = 74, v = 90}, 8, 8, ranged, 3, 3, 5, -4),
+  dfx = newdfx()
+ })
+ make_weapon({
+  wpm = newweapon("gun", 107, 5, {h = 75, v = 91}, 3, 3, ranged, 10, 2, 5, -5),
+  dfx = newdfx()
+ })
+ make_weapon({
+  wpm = newweapon("bow", 108, 3, {h = 76, v = 92}, 6, 5, ranged, 6, 3, 5, -5),
+  dfx = newdfx()
+ })
+ make_weapon({
+  wpm = newweapon("secret", 109, 6, {h = 77, v = 93}, 4, 5, ranged, 5, 1, 5, -5),
+  dfx = newdfx(dfx_waterfall, draw_waterfall, 100)
+ })
+ make_weapon({
+  wpm = newweapon("tatata", 110, 7, {h = 78, v = 94}, 2, 2, ranged, 10, 1, 5, -5),
+  dfx = newdfx()
+ })
+ make_weapon({
+  wpm = newweapon("boom", 111, 8, {h = 79, v = 95}, 18, 10, melee, 2, 8, 5, -4),
+  dfx = newdfx(dfx_explosion, draw_explosion, 100)
+ })
 end
 
 function make_player(s)
@@ -109,12 +181,38 @@ function make_player(s)
   -- set the hitbox
   box = {x1 = 0, y1 = 0, x2 = 7, y2 = 14},
   -- add weapon
-  weapon = g_weapons[5]
+  weapon = g_weapons[1]
  })
  -- add animations
  g_p.anim = stay
  g_p.walk = make_anim(make_walk_anim(s))
  g_p.stay = make_anim(make_stay_anim(s))
+end
+
+function make_ennemies(nb, aspr)
+ g_ennemies_left = 0
+ for s in all(aspr) do
+  for i=1, nb/#aspr do
+   local a = g_good_spot(248, 248)
+   e = make_actor({
+    -- new player char
+    entitie = newentitie(a.x, a.y, s, ennemy, l_ennemy, up, {dx = 0.9, dy = 0.9}),
+    -- add a action controller
+    control = controls_ennemies,
+    -- add a draw controller
+    draw = draw_characters,
+    -- set the hitbox
+    box = {x1 = 0, y1 = 0, x2 = 7, y2 = 14},
+    -- add weapon
+    weapon = g_weapons[1]
+   })
+   -- add animations
+   e.anim = stay
+   e.walk = make_anim(make_walk_anim(s))
+   e.stay = make_anim(make_stay_anim(s))
+   g_ennemies_left += 1
+  end
+ end
 end
 
 function make_walk_anim(s)
@@ -142,98 +240,35 @@ function make_anim(anim)
  }
 end
 
-function make_game()
- make_weapons()
- make_player(128)
- make_ennemies(nb_of_ennemis, {134})
-end
-
-function make_ennemies(nb, aspr)
- g_ennemies_left = 0
- for s in all(aspr) do
-  for i=1, nb/#aspr do
-   local a = g_good_spot(248, 248)
-   e = make_actor({
-    -- new player char
-    entitie = newentitie(a.x, a.y, s, ennemy, l_ennemy, up, {dx = 0.9, dy = 0.9}),
-    -- add a action controller
-    control = controls_ennemies,
-    -- add a draw controller
-    draw = draw_characters,
-    -- set the hitbox
-    box = {x1 = 0, y1 = 0, x2 = 7, y2 = 14},
-    -- add weapon
-    weapon = g_weapons[2]
-   })
-   -- add animations
-   e.anim = stay
-   e.walk = make_anim(make_walk_anim(s))
-   e.stay = make_anim(make_stay_anim(s))
-   g_ennemies_left += 1
-  end
- end
-end
-
 function make_particles(a, n, c)
  local c = c or 8
 	while (n > 0) do
- 	part = {}
- 	part.x = a.x+4
- 	part.y = a.y+4
- 	part.c = flr(rnd(3)+c)
- 	part.dx = (rnd(2)-1)*2
- 	part.dy = (rnd(2)-1)*2
- 	part.f = 0
- 	part.maxf = 15
- 	add(g_particles, part)
+ 	part = {
+   x = a.x+4,
+   y = a.y+4,
+   c = flr(rnd(3)+c),
+   dx = (rnd(2)-1)*2,
+   dy = (rnd(2)-1)*2,
+   f = 0,
+   maxf = 15,
+   draw = draw_particles
+  }
+ 	add(g_dfx, part)
  	sfx(1)
  	n -= 1
  end
 end
 
-function make_weapon(name, spr, sfx, animh, animv, cd, dmg, type, speed, hb, ox, oy, dfx)
- local item = {
-  name = name,
-  spr = spr,
-  animh = animh,
-  animv = animv,
-  cd = cd,
-  speed = speed,
-  dmg = dmg,
-  type = type,
-  hb = hb,
-  ox = ox,
-  oy = oy,
-  sfx = sfx,
-  -- dfx = dfx,
-  dfx = dfx or function (x, y, p, h) end,
-  cdfx = cdfx or 20
- }
- add(g_weapons, item)
- return item
-end
-
-function make_dfx(x,y,amplitude,height,pattern,draw)
- local dfx = {
-  x = x,
-  y = y,
-  a = amplitude,
-  h = height,
-  pattern = pattern,
-  draw = draw
- }
- add(g_dfx, dfx)
-end
-
 -- draw effect
 
-function dfx_explosion(x, y, a, h)
+function dfx_explosion(x, y, a, h, draw)
 	while (a > 0) do
 		local explo = {
    x = x+(rnd(2)-1)*10,
    y = y+(rnd(2)-1)*10,
    r = 4 + rnd(4),
-   c = 8
+   c = 8,
+   draw = draw
   }
 		add(g_explosions, explo)
 		sfx(0)
@@ -241,8 +276,7 @@ function dfx_explosion(x, y, a, h)
 	end
 end
 
-function dfx_thunder(x, y, p, h)
- if (#g_thunders > 100) return
+function dfx_thunder(x, y, p, h, draw)
  local xt = x + (rnd(10)-5)
  local thunder = {
   x = xt,
@@ -250,41 +284,43 @@ function dfx_thunder(x, y, p, h)
   pos = {{x = xt, y = g_fp.y}},
   c = 10,
   p = p,
-  h = h or 50
+  h = h or 50,
+  draw = draw
  }
- add(g_thunders, thunder)
+ add(g_dfx, thunder)
  sfx(8)
  return thunder
 end
 
-function dfx_shower(x, y, p, h)
-  if (#g_showers > 100) return {pos = {}}
+function dfx_waterfall(x, y, p, h, draw)
   local shower = {
    x = x,
    y = y-30,
    pos = {},
    c = 12,
    p = p+5,
-   h = 30
+   h = 30,
+   draw = draw
   }
   for r=x-(p/2), x+(p/2)do
    add(shower.pos, {x = r, y= shower.y, time=5})
   end
-  add(g_showers, shower)
-  -- sfx(8)
+  add(g_dfx, shower)
+  sfx(8)
   return shower
 end
 
-function dfx_disapearance(x, y, a, h)
+function dfx_disapearance(x, y, a, h, draw)
  local a = a or flr((rnd(5)+1))
 	while (a > 0) do
 		disa = {
    x = x+(rnd(2)-1)*5,
    y = y+(rnd(2)-1)*5,
    r = 2 + rnd(4),
-   c = 5
+   c = 5,
+   draw = draw
   }
-		add(g_explosions, disa)
+		add(g_dfx, disa)
 		sfx(10)
 		a -= 1
 	end
@@ -493,7 +529,7 @@ function action_player()
    g_p.cdfx = g_p.weapon.cdfx
    local target = target_nearest_one(50)
    if (target.x ~= nil) then
-    g_p.weapon.dfx(target.x, target.y, 3, abs(g_fp.y - target.y))
+    g_p.weapon.dfx(target.x, target.y, 3, abs(g_fp.y - target.y), g_p.weapon.draw)
     target.health -= 10
     check_actor_health(target)
    else
@@ -738,7 +774,7 @@ end
 function check_actor_health(damaged_actor)
  if (is_dead(damaged_actor)) then
   if (damaged_actor.tag == ennemy) g_ennemies_left -= 1
-  dfx_disapearance(damaged_actor.x, damaged_actor.y)
+  dfx_disapearance(damaged_actor.x, damaged_actor.y, flr((rnd(5)+1)), nil, draw_explosion)
   screenshake(5)
   del(g_actors, damaged_actor)
  end
@@ -780,62 +816,54 @@ function _draw()
  draw_menu()
 end
 
-function draw_particles()
-	for part in all(g_particles) do
-		pset(part.x, part.y, part.c)
-		part.x += part.dx
-		part.y += part.dy
-		part.f += 1
-		if (part.f > part.maxf or is_of_limit(part.x, part.y)) then
-			del(g_particles, part)
-		end
-	end
-end
-
-function draw_explosions()
-	for e in all(g_explosions) do
-  circfill(e.x, e.y, e.r, e.c)
-  e.r -= 0.5
-  if (e.r < 4) e.c += 1
-  if (e.r < 2) e.c += 1
-  if (e.r <= 0) del(g_explosions, e)
-	end
-end
-
-function draw_thunders()
- for t in all(g_thunders) do
-  for xy in all(t.pos) do
-   pset(xy.x, xy.y, t.c)
-  end
-  for nt=1, 10 do
-   t.x += (rnd(2)-1)
-   t.y += 1
-   t.h -= 1
-   add(t.pos ,{x = t.x, y=t.y})
-  end
-  if (flr(rnd(t.p)) == 0) dfx_thunder(t.x, t.y, t.p+2, t.h)
-  if (t.h < -10) del(g_thunders, t)
+function draw_particles(self)
+ pset(self.x, self.y, self.c)
+ self.x += self.dx
+ self.y += self.dy
+ self.f += 1
+ if (self.f > self.maxf or is_of_limit(self.x, self.y)) then
+  del(g_dfx, self)
  end
 end
 
-function draw_waterfalls()
- for s in all(g_showers) do
-  for xy in all(s.pos) do
-   if (xy.time > 0) then
-    pset(xy.x, xy.y, rnd_color({s.c, 7}))
-    xy.time -= 1
-   end
-  end
-  for i=1, 3 do
-   if (s.h < 5) s.p +=1
-   s.y += 1
-   s.h -= 1
-   for r=s.x-(s.p/2), s.x+(s.p/2)do
-    add(s.pos, {x = r, y= s.y, time=5})
-   end
-  end
-  if (s.h < 0) del(g_showers, s)
+function draw_explosion(self)
+ circfill(self.x, self.y, self.r, self.c)
+ self.r -= 0.5
+ if (self.r < 4) self.c += 1
+ if (self.r < 2) self.c += 1
+ if (self.r <= 0) del(g_dfx, self)
+end
+
+function draw_thunder(self)
+ for xy in all(self.pos) do
+  pset(xy.x, xy.y, self.c)
  end
+ for nt=1, 10 do
+  self.x += (rnd(2)-1)
+  self.y += 1
+  self.h -= 1
+  add(self.pos ,{x = self.x, y=self.y})
+ end
+ if (flr(rnd(self.p)) == 0) dfx_thunder(self.x, self.y, self.p+2, self.h, self.draw)
+ if (self.h < -10) del(g_dfx, self)
+end
+
+function draw_waterfall(self)
+ for xy in all(self.pos) do
+  if (xy.time > 0) then
+   pset(xy.x, xy.y, rnd_color({self.c, 7}))
+   xy.time -= 1
+  end
+ end
+ for i=1, 3 do
+  if (self.h < 5) self.p +=1
+  self.y += 1
+  self.h -= 1
+  for r=s.x-(self.p/2), self.x+(self.p/2)do
+   add(self.pos, {x = r, y= self.y, time=5})
+  end
+ end
+ if (self.h < 0) del(g_dfx, self)
 end
 
 function draw_skills(bx, by)
@@ -942,12 +970,10 @@ function draw_game()
  set_camera()
 
  draw_items()
- draw_particles()
- draw_explosions()
- draw_thunders()
  draw_actors()
- draw_waterfalls()
+ draw_dfxs()
  draw_hud()
+
  log(1,g_p.x..":"..g_p.y)
  if(debug_enabled) debug()
 end
@@ -1144,7 +1170,6 @@ __gfx__
 3333333333833333bb282bb3333333444433333333333344443333330a9999a03a8aa8a331655553ecc1eeee5555555545554444eeeeeeeeeeeeeeeeeeeeeeee
 33333333382833333bbbbb33333334444443333333333444444333330aaaaaa033a22a333c155553ec1eeeee0000000044444444eeeeeeeeeeeeeeeeeeeeeeee
 333333333383333333bbb3333333344444433333333334444443333300000000333ee33335555553e1eeeeee5555555544444444eeeeeeeeeeeeeeeeeeeeeeee
-<<<<<<< HEAD
 000000000000000000000000111111115555555555555555eeeeeeeeeeeeeeeeeeee99eeeec551eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee5665ee
 07770777777777077777777061555516558aaaaaaaaaa855eeeeeeeeeeeeeee99eee9eeeeeec551eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee58e58e568865e
 07660666666666066666667065566556588aaaaaaaaaa885eeeeeeeeeeeeeeee9eee9eeeeeeec51eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeceeeeeeeeee56899865
@@ -1177,40 +1202,6 @@ ee8aa8eeed1661dee63bb36ee459954eeeeeeeeeeeeeeeee3d8888d33dccccd3eeeeeeeeeeeeeeee
 ee8aa8eeed1661dee63bb36ee459954eeeeeeeeeeeeeeeee3d8888d33dccccd3eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
 ee8888eeed1111dee633336ee455554eeeeeeeeeeeeeeeee3d8888d33dccccd3eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
 eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee33dddd3333dddd33eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
-=======
-555555555555555555555555111111115555555555555555eeeeeeeeeeeeeeeeeeee99eeeec551eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee5665ee
-56666666656666666566666561555516558aaaaaaaaaa855eeeeeeeeeeeeeee99eee9eeeeeec551eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee58e58e568865e
-56666666656666666566666565566556588aaaaaaaaaa885eeeeeeeeeeeeeeee9eee9eeeeeeec51eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeceeeeeeeeee56899865
-56666666656666666566666561666616aaaaaaaaaaaaaaaaeeeeeeeeeeeeeeee99eeeeeeeeeec51eeee88eeeeeeeeeee7eeeee5ecccccccee58eeeee689aa986
-56665555555555555555666511666611aaa0000000000aaaeeeeeeeeeeeeeeeee99eeeeeeeeec51eeee898eeeee558eee74444551111111ceeee58ee689aa986
-56665666666665666665666561666616aa000000000000aaeeeeeeeeeeeeeeeeeeee999eeeeec51eeee88eeeeeeeeeee7eeeee5eccccccceeeeeeeee56899865
-55555666666665666665666561666616aa000000000000aaeeeeeeeeeeeeeeee99eeeeeeeeec551eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeceeee58ee58e568865e
-56665665555555555665666511666611aaa0000000000aaaeeeeeeeeeeeeeeeeeeeeeeeeeec551eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee5665ee
-56665665666666665665666566666666a0aaaaaaaaaaaa0aeeeeeeeeeeeeeeeeeeee99eeeeeeeeeeeeeeeeeeeeeeeeeeeee5eeeeeeeceeeeee8e8eeeee5665ee
-56665665666666665665555566666666a00aaaaaaaaaa00aeeeeeeeeeeeeeee99eee9eeee111111eeeeeeeeeeeeeeeeeee555eeeeeccceeeee5e5eeee568865e
-56665555666666665665666566666666aaaaaaaaaaaaaaaaeeeeeeeeeeeeeeee9eee9eee15555551eee8eeeeeee8eeeeeee4eeeeecc1cceeeeeeeeee56899865
-56665665666666665665666566666666a00aaaaaaaaaa00aeeeeeeeeeeeeeeee99eeeeee55cccc55ee898eeeeee5eeeeeee4eeeeeec1ceeeeee8e8ee689aa986
-56665665666666665665666566666666a00aaaaaaaaaa00aeeeeeeeeeeeeeeeee99eeeee5ceeeec5ee888eeeeee5eeeeeee4eeeeeec1ceeee8e5e5ee689aa986
-56665665666666665555666566666666a0aaaaaaaaaaaa0aeeeeeeeeeeeeeeeeeeee999eceeeeeeceeeeeeeeeeeeeeeeeee7eeeeeec1ceeee5eeeeee56899865
-55555665666666665665666566666666aaaaaaaaaaaaaaaaeeeeeeeeeeeeeeee99eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee7e7eeeeec1ceeeeeee8eeee568865e
-56665665666666665665666566666666aaa0000000000aaaeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeec1ceeeeeee5eeeee5665ee
-56665665555555555665666566666666aa000000000000aaeeeeeeeeeeeeeeeeeeeeeeeeeeee1eeeeee8eeeeeeeeeeeeeeee4eeeeeee8eeeeeeeeeeeee888eee
-56665666665666666665555566666666aa000000000000aaeeeeeeeeeeeeeeeeeee99eeeeeec1eeeee828eeeeeeeeeeeeeede4eeeee88eeeeeeeeeeeee888eee
-56665666665666666665666566666666aa000000000000aaeeeeeeeeeeeeeeeeeee9e9eeeeec1eeeee48eeeeeeee8eeeeeedee4ee5555511eeee8eeeee8d8eee
-56665555555555555555666566666666aaa0000000000aaaeeeeeeeeeeeeeeeeeeee5e9eeeec1eeeeee4eeeeee55559eeeedee4ee5555511e5555a55ee8d8eee
-56666656666666566666666566666666aaaaaaaaaaaaaaaaeeeeeeeeeeeeeeeeeee5e99eeeec1eeeee4eeeeeeeddeeeeeeedee4eeeddeeeeeeddeaaeee8d8eee
-56666656666666566666666566666666aaaaaaaaaaaaaaaaeeeeeeeeeeeeeeeee95eeeeeeeec1eeeeee4eeeeeedeeeeeeeede4eeeedeeeeeeedeeaaeeedddeee
-56666656666666566666666566666666566aaaaaaaaaa665eeeeeeeeeeeeeeeeea9eeeeeeeeceeeeeee4eeeeeeeeeeeeeeee4eeeeeeeeeeeeeeeeeeeeeedeeee
-555555555555555555555555666666665566aaaaaaaa6655eeeeeeeeeeeeeeeeeeeeeeeeeee5eeeeeee4eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeedeeee
-eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee44eeeeee44eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
-e787787ee717717ee737737ee757757eeeeeeeeeeeeeeeeeeed44deeeed44deeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
-ea8aa8aee616616eeb3bb3bee959959eeeeeeeeeeeeeeeeeeed22deeeed11deeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
-eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeed6666deed6666deeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
-ee8aa8eeed1661dee63bb36ee459954eeeeeeeeeeeeeeeeeed8888deedccccdeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
-ee8aa8eeed1661dee63bb36ee459954eeeeeeeeeeeeeeeeeed8888deedccccdeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
-ee8888eeed1111dee633336ee455554eeeeeeeeeeeeeeeeeed8888deedccccdeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
-eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeddddeeeeddddeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
->>>>>>> refactor the make_actor
 eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
 eccccccceccccceecccccccee166661eee11166ee111111ee88888c8ee8888ee88888c8ee55f555eeee5555ee55ff55ee444444eee44444ee111111eeeeeeeee
 cccccccccccccccecccccccce161161eee11161ee114411e88888888ee88888e8882888ee55ff55eee55555ee5f5ff5ee444444eee44444ee114411eeeeeeeee
