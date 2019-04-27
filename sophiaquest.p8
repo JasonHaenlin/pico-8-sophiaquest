@@ -10,7 +10,7 @@ player, bullet, ennemy = 0, 1, 2
 immortal_object = 1000
 inf = 1000
 melee, ranged = 1, 20
-nb_of_ennemis = 1
+nb_of_ennemis = 2
 f_heal, f_item, f_inv, f_obst = 0, 1, 5, 7
 l_player, l_ennemy, l_boss = 50, 10, 150
 walk, stay = "walk", "stay"
@@ -19,16 +19,11 @@ debug_enabled = false
 
 -- init
 function _init()
- palt()
- palt(pink,true)
  debug_init()
 
  g_actors = {}
- g_particles = {}
- g_explosions = {}
- g_thunders = {}
- g_showers = {}
- g_items = {}
+ g_dfx = {}
+ g_weapons = {}
 
  g_open_inv=false
  g_selected_item=1
@@ -47,73 +42,151 @@ function init_screen()
  }
 end
 
--- make
+-- new
 
-function make_actor(x, y, s, tag, health, controls, draw, direction)
- local actor = {
-  tag = tag,
-  d = direction or up,
-  bx = x,
-  by = y,
+function newentitie(x, y, sprite, tag, health, direction, mvn)
+ return {
   x = x,
   y = y,
-  s = s,
-  dx = 0,
-  dy = 0,
+  s = sprite,
+  tag = tag,
   health = health,
-  controls = controls,
-  draw = draw,
-  box = {x1 = 0, y1 = 0, x2 = 7, y2 = 7}
+  direction = direction or up,
+  mvn = mvn or {}
  }
- add(g_actors, actor)
- return actor
 end
 
-function make_weapons()
- -- name, spr, sfx, animh, animv, cd, dmg, type, speed, hb, ox, oy, dfx, cdfx
- make_item("sword",    105, 4, 73,  89,  15, 7,  melee,  1,  8, 5, -4)
- make_item("firewand", 106, 1, 74,  90,  8,  8,  ranged, 3,  3, 5, -4)
- make_item("gun",      107, 5, 75,  91,  3,  3,  ranged, 10, 1, 5, -5)
- make_item("bow",      108, 3, 76,  92,  6,  5,  ranged, 6,  3, 5,-5)
- make_item("secret",   109, 6, 77,  93,  4,  5,  ranged, 5,  1, 5, -5, dfx_shower, 50)
- make_item("tatata",   110, 7, 78,  94,  2,  2,  ranged, 10, 1, 5, -5)
- make_item("boom",     111, 7, 79,  95,  18, 10, melee,  1,  8, 5, -4)
- make_item("elec",     160, 8, 128, 144, 20, 15, melee,  1,  8, 5, -5, dfx_thunder, 50)
-end
-
-function make_player(s)
- g_p = make_actor(333, 85, 129, player, l_player, controls_player, draw_characters, up)
- g_p.weapon = g_items[5]
- g_p.anim = stay
- g_p.walk = make_anim(walk, create_direction_frames(s+33, s+1, s+33, s+1, s+34, true, s+32, true), 1/10)
- g_p.stay = make_anim(stay, create_direction_frames(s+1, s+1, s+1, s+1, s+2, false, s, false), 1/10)
- g_p.cd = 0
- g_p.cdfx = 0
- g_p.box = {x1 = 0, y1 = 1, x2 = 7, y2 = 14}
-end
-
-function make_anim(name, frames, spd)
+function newdfx(pattern, draw, cd)
  return {
-  time = 0,
-  anim = name,
-  spd = spd,
-  f = frames
+  pattern = pattern or function (self) end,
+  draw = draw or function (self) end,
+  cd = cd or 100
  }
 end
+
+function newweapon(name, sprite, sfx, anim, cd, dmg, type, speed, hitbox, offsetx, offsety)
+ return {
+  name = name,
+  sprite = sprite,
+  sfx = sfx,
+  anim = anim,
+  cd = cd,
+  dmg = dmg,
+  type = type,
+  speed = speed,
+  hitbox = hitbox,
+  offsetx = offsetx,
+  offsety = offsety
+ }
+end
+
+-- make
 
 function make_game()
  make_weapons()
  make_player(128)
- make_map_items()
- -- make_ennemies(nb_of_ennemis, {131,134,137})
+ make_ennemies(nb_of_ennemis, {134})
 end
 
-function make_map_items()
- for o in all(map_items) do
-  for p in all(o.pos) do
-   mset(g_p.x, g_p.y, o.spr)
-  end
- end
+function make_weapon(cmpnttable)
+ local item = {
+  name = cmpnttable.wpm.name,
+  spr = cmpnttable.wpm.sprite,
+  animh = cmpnttable.wpm.anim.h,
+  animv = cmpnttable.wpm.anim.v,
+  cd = cmpnttable.wpm.cd,
+  speed = cmpnttable.wpm.speed,
+  dmg = cmpnttable.wpm.dmg,
+  type = cmpnttable.wpm.type,
+  hb = cmpnttable.wpm.hitbox,
+  ox = cmpnttable.wpm.offsetx,
+  oy = cmpnttable.wpm.offsety,
+  sfx = cmpnttable.wpm.sfx,
+  dfx = cmpnttable.dfx.pattern,
+  draw = cmpnttable.dfx.draw,
+  cdfx = cmpnttable.dfx.cd
+ }
+ add(g_weapons, item)
+end
+
+function make_actor(cmpnttable)
+ local actor = {
+  tag = cmpnttable.entitie.tag,
+  d = cmpnttable.entitie.direction or none,
+  bx = cmpnttable.entitie.x,
+  by = cmpnttable.entitie.y,
+  x = cmpnttable.entitie.x,
+  y = cmpnttable.entitie.y,
+  s = cmpnttable.entitie.s,
+  health = cmpnttable.entitie.health,
+  control = cmpnttable.control,
+  draw = cmpnttable.draw,
+  weapon = cmpnttable.weapon or nil,
+  box = cmpnttable.box,
+  dx = cmpnttable.entitie.mvn.dx or 0,
+  dy = cmpnttable.entitie.mvn.dy or 0,
+  cd = 0,
+  cdfx = 0
+ }
+ log(2,actor.dx.." "..actor.dy)
+ log(3,actor.s)
+ add(g_actors, actor)
+ log(4,#g_actors)
+ return actor
+end
+
+function make_weapons()
+ make_weapon({
+  wpm = newweapon("elec", 104, 8, {h = 72, v = 88}, 20, 15, melee, 2, 8, 5, -5),
+  dfx = newdfx(dfx_thunder, draw_thunder, 100)
+ })
+ make_weapon({
+  wpm = newweapon("sword", 105, 4, {h = 73, v = 89}, 15, 7, melee, 2, 8, 5, -4),
+  dfx = newdfx()
+ })
+ make_weapon({
+  wpm = newweapon("firewand", 106, 1, {h = 74, v = 90}, 8, 8, ranged, 3, 3, 5, -4),
+  dfx = newdfx()
+ })
+ make_weapon({
+  wpm = newweapon("gun", 107, 5, {h = 75, v = 91}, 3, 3, ranged, 10, 2, 5, -5),
+  dfx = newdfx()
+ })
+ make_weapon({
+  wpm = newweapon("bow", 108, 3, {h = 76, v = 92}, 6, 5, ranged, 6, 3, 5, -5),
+  dfx = newdfx()
+ })
+ make_weapon({
+  wpm = newweapon("secret", 109, 6, {h = 77, v = 93}, 4, 5, ranged, 5, 1, 5, -5),
+  dfx = newdfx(dfx_waterfall, draw_waterfall, 100)
+ })
+ make_weapon({
+  wpm = newweapon("tatata", 110, 7, {h = 78, v = 94}, 2, 2, ranged, 10, 1, 5, -5),
+  dfx = newdfx()
+ })
+ make_weapon({
+  wpm = newweapon("boom", 111, 8, {h = 79, v = 95}, 18, 10, melee, 2, 8, 5, -4),
+  dfx = newdfx(dfx_explosion, draw_explosion, 100)
+ })
+end
+
+function make_player(s)
+ g_p = make_actor({
+  -- new player char
+  entitie = newentitie(333, 85, s, player, l_player),
+  -- add a action controller
+  control = controls_player,
+  -- add a draw controller
+  draw = draw_characters,
+  -- set the hitbox
+  box = {x1 = 0, y1 = 0, x2 = 7, y2 = 14},
+  -- add weapon
+  weapon = g_weapons[1]
+ })
+ -- add animations
+ g_p.anim = stay
+ g_p.walk = make_anim(make_walk_anim(s))
+ g_p.stay = make_anim(make_stay_anim(s))
 end
 
 function make_ennemies(nb, aspr)
@@ -121,67 +194,81 @@ function make_ennemies(nb, aspr)
  for s in all(aspr) do
   for i=1, nb/#aspr do
    local a = g_good_spot(248, 248)
-   local e = make_actor(a.x, a.y, s, ennemy, l_ennemy, controls_ennemies, draw_characters, up)
-   e.weapon = g_items[4]
-   e.cd = 50
+   e = make_actor({
+    -- new player char
+    entitie = newentitie(a.x, a.y, s, ennemy, l_ennemy, up, {dx = 0.9, dy = 0.9}),
+    -- add a action controller
+    control = controls_ennemies,
+    -- add a draw controller
+    draw = draw_characters,
+    -- set the hitbox
+    box = {x1 = 0, y1 = 0, x2 = 7, y2 = 14},
+    -- add weapon
+    weapon = g_weapons[1]
+   })
+   -- add animations
    e.anim = stay
-   e.walk = make_anim(walk, create_direction_frames(s+33, s+1, s+33, s+1, s+34, true, s+32, true), 1/10)
-   e.stay = make_anim(stay, create_direction_frames(s+1, s+1, s+1, s+1, s+2, false, s, false), 1/10)
-   e.dx = 0.9
-   e.dy = 0.9
-   e.box = {x1 = 0, y1 = 1, x2 = 7, y2 = 14}
+   e.walk = make_anim(make_walk_anim(s))
+   e.stay = make_anim(make_stay_anim(s))
    g_ennemies_left += 1
   end
  end
 end
 
+function make_walk_anim(s)
+ return {
+  name = walk,
+  frames = create_direction_frames(s+33, s+1, s+33, s+1, s+34, true, s+32, true),
+  speed = 1/10
+ }
+end
+
+function make_stay_anim(s)
+ return {
+  name = stay,
+  frames = create_direction_frames(s+1, s+1, s+1, s+1, s+2, false, s, false),
+  speed = 1/10
+ }
+end
+
+function make_anim(anim)
+ return {
+  time = 0,
+  anim = anim.name,
+  spd = anim.speed,
+  f = anim.frames
+ }
+end
+
 function make_particles(a, n, c)
  local c = c or 8
 	while (n > 0) do
- 	part = {}
- 	part.x = a.x+4
- 	part.y = a.y+4
- 	part.c = flr(rnd(3)+c)
- 	part.dx = (rnd(2)-1)*2
- 	part.dy = (rnd(2)-1)*2
- 	part.f = 0
- 	part.maxf = 15
- 	add(g_particles, part)
+ 	part = {
+   x = a.x+4,
+   y = a.y+4,
+   c = flr(rnd(3)+c),
+   dx = (rnd(2)-1)*2,
+   dy = (rnd(2)-1)*2,
+   f = 0,
+   maxf = 15,
+   draw = draw_particles
+  }
+ 	add(g_dfx, part)
  	sfx(1)
  	n -= 1
  end
 end
 
-function make_item(name, spr, sfx, animh, animv, cd, dmg, type, speed, hb, ox, oy, dfx, cdfx)
- local item = {
-  name = name,
-  spr = spr,
-  animh = animh,
-  animv = animv,
-  cd = cd,
-  speed = speed,
-  dmg = dmg,
-  type = type,
-  hb = hb,
-  ox = ox,
-  oy = oy,
-  sfx = sfx,
-  dfx = dfx or function (x, y, p, h) end,
-  cdfx = cdfx or 20
- }
- add(g_items, item)
- return item
-end
-
 -- draw effect
 
-function dfx_explosion(x, y, a, h)
+function dfx_explosion(x, y, a, h, draw)
 	while (a > 0) do
 		local explo = {
    x = x+(rnd(2)-1)*10,
    y = y+(rnd(2)-1)*10,
    r = 4 + rnd(4),
-   c = 8
+   c = 8,
+   draw = draw
   }
 		add(g_explosions, explo)
 		sfx(0)
@@ -189,8 +276,7 @@ function dfx_explosion(x, y, a, h)
 	end
 end
 
-function dfx_thunder(x, y, p, h)
- if (#g_thunders > 100) return
+function dfx_thunder(x, y, p, h, draw)
  local xt = x + (rnd(10)-5)
  local thunder = {
   x = xt,
@@ -198,41 +284,43 @@ function dfx_thunder(x, y, p, h)
   pos = {{x = xt, y = g_fp.y}},
   c = 10,
   p = p,
-  h = h or 50
+  h = h or 50,
+  draw = draw
  }
- add(g_thunders, thunder)
+ add(g_dfx, thunder)
  sfx(8)
  return thunder
 end
 
-function dfx_shower(x, y, p, h)
-  if (#g_showers > 100) return {pos = {}}
+function dfx_waterfall(x, y, p, h, draw)
   local shower = {
    x = x,
    y = y-30,
    pos = {},
    c = 12,
    p = p+5,
-   h = 30
+   h = 30,
+   draw = draw
   }
   for r=x-(p/2), x+(p/2)do
    add(shower.pos, {x = r, y= shower.y, time=5})
   end
-  add(g_showers, shower)
-  -- sfx(8)
+  add(g_dfx, shower)
+  sfx(8)
   return shower
 end
 
-function dfx_disapearance(x, y, a, h)
+function dfx_disapearance(x, y, a, h, draw)
  local a = a or flr((rnd(5)+1))
 	while (a > 0) do
 		disa = {
    x = x+(rnd(2)-1)*5,
    y = y+(rnd(2)-1)*5,
    r = 2 + rnd(4),
-   c = 5
+   c = 5,
+   draw = draw
   }
-		add(g_explosions, disa)
+		add(g_dfx, disa)
 		sfx(10)
 		a -= 1
 	end
@@ -253,11 +341,11 @@ function controls_menu()
  if (btnp(up) and g_selected_item > 1) then
   g_selected_item -= 1
  end
- if (btnp(down) and g_selected_item < #g_items) then
+ if (btnp(down) and g_selected_item < #g_weapons) then
   g_selected_item += 1
  end
  if (btnp(fire1)) then
-  g_p.weapon = g_items[g_selected_item]
+  g_p.weapon = g_weapons[g_selected_item]
   g_open_inv = false
   g_p.cd = 10
  end
@@ -422,19 +510,6 @@ function move(a, x, y, ox, oy)
   a.y += y
   end -- check outer obstacles
  end -- check inner obstacles
-
- if(a.tag == player) then
-  if(fget(sp1, f_heal) and a.health < l_player) then
-   pick_item(x1, y1)
-   a.health += 10
-   if (a.health > l_player) a.healh = l_player
-  end
-  if(fget(sp3, f_heal) and a.health < l_player) then
-   pick_item(x3, y3)
-   a.health += 10
-   if (a.health > l_player) a.healh = l_player
-  end
- end
 end
 
 -- action
@@ -454,7 +529,7 @@ function action_player()
    g_p.cdfx = g_p.weapon.cdfx
    local target = target_nearest_one(50)
    if (target.x ~= nil) then
-    g_p.weapon.dfx(target.x, target.y, 3, abs(g_fp.y - target.y))
+    g_p.weapon.dfx(target.x, target.y, 3, abs(g_fp.y - target.y), g_p.weapon.draw)
     target.health -= 10
     check_actor_health(target)
    else
@@ -464,10 +539,6 @@ function action_player()
  end -- fire 2 button triggered
 end
 
-function pick_item(x, y)
- sfx(2)
- mset(x, y, 32)
-end
 
 function wait_inventory_close()
  if (btnp(fire2)) then
@@ -528,30 +599,88 @@ function shoot(a, d)
  local center = a.weapon.hb / 2
  local b = {}
  if(d == left) then
-  b = make_actor(a.x-6, a.y+4, a.weapon.animh, bullet, immortal_object, controls_bullets, draw_bullets, left)
-  b.box = {x1 = 0, y1 = 4-center, x2 = 5, y2 = 4+center}
-  b.dx = -speed
+  fire({
+   -- new bullet
+   x = a.x-6,
+   y = a.y+4,
+   s = a.weapon.animh,
+   dmg = a.weapon.dmg,
+   type = a.weapon.type,
+   -- add hitbox
+   box = {x1 = 0, y1 = 4-center, x2 = 5, y2 = 4 + center},
+   -- set the speed
+   mvn = {dx = -speed, dy = 0},
+   -- set the direction
+   direction = left
+  })
  end
  if(d == right) then
-  b = make_actor(a.x+6, a.y+4, a.weapon.animh, bullet, immortal_object, controls_bullets, draw_bullets, right)
-  b.box = {x1 = 3, y1 = 4-center, x2 = 8, y2 = 4+center}
-  b.dx = speed
+  fire({
+   -- new bullet
+   x = a.x+6,
+   y = a.y+4,
+   s = a.weapon.animh,
+   dmg = a.weapon.dmg,
+   type = a.weapon.type,
+   -- add hitbox
+   box = {x1 = 0, y1 = 4 - center, x2 = 5, y2 = 4 + center},
+   -- set the speed
+   mvn = {dx = speed, dy = 0},
+   -- set the direction
+   direction = right
+  })
  end
  if(d == up) then
-  b = make_actor(a.x, a.y-8, a.weapon.animv, bullet, immortal_object, controls_bullets, draw_bullets, up)
-  b.box = {x1 = 4-center, y1 = 0, x2 = 4+center, y2 = 5}
-  b.dy = -speed
+  fire({
+   -- new bullet
+   x = a.x,
+   y = a.y-8,
+   s = a.weapon.animv,
+   dmg = a.weapon.dmg,
+   type = a.weapon.type,
+   -- add hitbox
+   box = {x1 = 4 - center, y1 = 0, x2 = 4 + center, y2 = 5},
+   -- set the speed
+   mvn = {dx = 0, dy = -speed},
+   -- set the direction
+   direction = up
+  })
  end
  if(d == down) then
-  b = make_actor(a.x, a.y+18, a.weapon.animv, bullet, immortal_object, controls_bullets, draw_bullets, down)
-  b.box = {x1 = 4-center, y1 = 3, x2 = 4+center, y2 = 8}
-  b.dy = speed
+  fire({
+   -- new bullet
+   x = a.x,
+   y = a.y+18,
+   s = a.weapon.animv,
+   dmg = a.weapon.dmg,
+   type = a.weapon.type,
+   -- add hitbox
+   box = {x1 = 4 - center, y1 = 3, x2 = 4 + center, y2 = 8},
+   -- set the speed
+   mvn = {dx = 0, dy = speed},
+   -- set the direction
+   direction = down
+  })
  end
- b.dmg = a.weapon.dmg
  if (d ~= none or a.tag == player) then
   sfx(a.weapon.sfx)
  end
- if (a.weapon.type == melee) then
+
+end
+
+function fire(en)
+ local b = make_actor({
+  -- new player char
+  entitie = newentitie(en.x, en.y, en.s, bullet, immortal_object, en.direction, en.mvn),
+  -- add a action controller
+  control = controls_bullets,
+  -- add a draw controller
+  draw = draw_bullets,
+  -- set the hitbox
+  box = en.box,
+ })
+ b.dmg = en.dmg
+ if (en.type == melee) then
   b.range = 5
  else
   b.range = 128
@@ -645,7 +774,7 @@ end
 function check_actor_health(damaged_actor)
  if (is_dead(damaged_actor)) then
   if (damaged_actor.tag == ennemy) g_ennemies_left -= 1
-  dfx_disapearance(damaged_actor.x, damaged_actor.y)
+  dfx_disapearance(damaged_actor.x, damaged_actor.y, flr((rnd(5)+1)), nil, draw_explosion)
   screenshake(5)
   del(g_actors, damaged_actor)
  end
@@ -687,62 +816,54 @@ function _draw()
  draw_menu()
 end
 
-function draw_particles()
-	for part in all(g_particles) do
-		pset(part.x, part.y, part.c)
-		part.x += part.dx
-		part.y += part.dy
-		part.f += 1
-		if (part.f > part.maxf or is_of_limit(part.x, part.y)) then
-			del(g_particles, part)
-		end
-	end
-end
-
-function draw_explosions()
-	for e in all(g_explosions) do
-  circfill(e.x, e.y, e.r, e.c)
-  e.r -= 0.5
-  if (e.r < 4) e.c += 1
-  if (e.r < 2) e.c += 1
-  if (e.r <= 0) del(g_explosions, e)
-	end
-end
-
-function draw_thunders()
- for t in all(g_thunders) do
-  for xy in all(t.pos) do
-   pset(xy.x, xy.y, t.c)
-  end
-  for nt=1, 10 do
-   t.x += (rnd(2)-1)
-   t.y += 1
-   t.h -= 1
-   add(t.pos ,{x = t.x, y=t.y})
-  end
-  if (flr(rnd(t.p)) == 0) dfx_thunder(t.x, t.y, t.p+2, t.h)
-  if (t.h < -10) del(g_thunders, t)
+function draw_particles(self)
+ pset(self.x, self.y, self.c)
+ self.x += self.dx
+ self.y += self.dy
+ self.f += 1
+ if (self.f > self.maxf or is_of_limit(self.x, self.y)) then
+  del(g_dfx, self)
  end
 end
 
-function draw_waterfalls()
- for s in all(g_showers) do
-  for xy in all(s.pos) do
-   if (xy.time > 0) then
-    pset(xy.x, xy.y, rnd_color({s.c, 7}))
-    xy.time -= 1
-   end
-  end
-  for i=1, 3 do
-   if (s.h < 5) s.p +=1
-   s.y += 1
-   s.h -= 1
-   for r=s.x-(s.p/2), s.x+(s.p/2)do
-    add(s.pos, {x = r, y= s.y, time=5})
-   end
-  end
-  if (s.h < 0) del(g_showers, s)
+function draw_explosion(self)
+ circfill(self.x, self.y, self.r, self.c)
+ self.r -= 0.5
+ if (self.r < 4) self.c += 1
+ if (self.r < 2) self.c += 1
+ if (self.r <= 0) del(g_dfx, self)
+end
+
+function draw_thunder(self)
+ for xy in all(self.pos) do
+  pset(xy.x, xy.y, self.c)
  end
+ for nt=1, 10 do
+  self.x += (rnd(2)-1)
+  self.y += 1
+  self.h -= 1
+  add(self.pos ,{x = self.x, y=self.y})
+ end
+ if (flr(rnd(self.p)) == 0) dfx_thunder(self.x, self.y, self.p+2, self.h, self.draw)
+ if (self.h < -10) del(g_dfx, self)
+end
+
+function draw_waterfall(self)
+ for xy in all(self.pos) do
+  if (xy.time > 0) then
+   pset(xy.x, xy.y, rnd_color({self.c, 7}))
+   xy.time -= 1
+  end
+ end
+ for i=1, 3 do
+  if (self.h < 5) self.p +=1
+  self.y += 1
+  self.h -= 1
+  for r=s.x-(self.p/2), self.x+(self.p/2)do
+   add(self.pos, {x = r, y= self.y, time=5})
+  end
+ end
+ if (self.h < 0) del(g_dfx, self)
 end
 
 function draw_skills(bx, by)
@@ -766,15 +887,20 @@ function draw_actors()
  end
 end
 
+function draw_dfxs()
+  for d in all(g_dfx) do
+   d:draw()
+  end
+end
+
 function draw_weapon(a,f)
  spr(a.weapon.spr, a.x + a.weapon.ox + f.ox, a.y - a.weapon.oy + f.oy, 1, 1, f.h, f.v)
 end
 
 function draw_hud()
- local bx = g_fp.x+60
- local by = g_fp.y+108
- draw_life(bx, by)
- draw_skills(bx, by)
+ draw_life(g_fp.x+60, g_fp.y+108)
+ draw_skills(g_fp.x+60, g_fp.y+108)
+ draw_inventory(g_fp.x+80, g_fp.y)
 end
 
 function draw_life(bx, by)
@@ -804,13 +930,21 @@ function draw_inventory(x, y)
   line(x, y, x, y + 128, light_gray)
   local tx = x + 7
   local ty = y + 10
-  for i = 1 ,#g_items do
-   draw_item_shape(tx, ty, g_items[i].spr)
-   print(g_items[i].name, tx + 12, ty - 2, white)
+  for i = 1 ,#g_weapons do
+   draw_item_shape(tx, ty, g_weapons[i].spr)
+   print(g_weapons[i].name, tx + 12, ty - 2, white)
    if (g_selected_item == i) then
     spr(58, tx - 7, ty - 2)
    end
    ty += 12
+  end
+ end
+end
+
+function draw_items()
+ for i in all(g_map_items) do
+  for p in all(i.pos) do
+   spr(i.spr,p.x,p.y)
   end
  end
 end
@@ -835,14 +969,12 @@ function draw_game()
 
  set_camera()
 
- draw_particles()
- draw_explosions()
- draw_thunders()
+ draw_items()
  draw_actors()
- draw_waterfalls()
+ draw_dfxs()
  draw_hud()
- draw_inventory(g_fp.x+80, g_fp.y)
 
+ log(1,g_p.x..":"..g_p.y)
  if(debug_enabled) debug()
 end
 
@@ -869,7 +1001,7 @@ end
 
 function controls_update()
  for a in all(g_actors) do
-  a:controls()
+  a:control()
  end
 end
 -- camera
@@ -904,7 +1036,7 @@ function check_game_state()
   g_actors = {}
   g_particles = {}
   g_explosions = {}
-  g_items = {}
+  g_weapons = {}
   make_game()
   reset_camera()
   _draw = draw_menu
@@ -937,16 +1069,26 @@ spr_life = {
 
 -- map items positions
 
-map_items = {
+g_map_items = {
  {
   name = "heal_potion",
-   spr = 118,
-   pos = {
-   {x = 9, y = 4},
-   {x = 17, y = 16},
-   {x = 25, y = 14},
-   {x = 21, y = 7},
-   {x = 25, y = 10}
+  spr = 118,
+  pos = {
+   {x = 201, y = 113},
+   {x = 20, y = 18},
+   {x = 6, y = 27},
+   {x = 7, y = 27},
+   {x = 29, y = 2}
+  }
+ },
+ {
+  name = "safe",
+  spr = 113,
+  pos = {
+   {x = 11, y = 10},
+   {x = 12, y = 10  },
+   {x = 19, y = 31},
+   {x = 16, y = 31}
   }
  }
 }
