@@ -15,7 +15,7 @@ f_heal, f_item, f_inv, f_obst = 0, 1, 5, 7
 l_player, l_ennemy, l_boss = 50, 10, 150
 walk, stay = "walk", "stay"
 
-debug_enabled = true
+debug_enabled = false
 
 -- init
 function _init()
@@ -190,7 +190,7 @@ end
 function make_player(s)
  g_p = make_actor({
   -- new player char
-  entitie = newentitie(333, 85, s, player, immortal_object),
+  entitie = newentitie(333, 85, s, player, l_player),
   -- add a action controller
   control = controls_player,
   -- add a draw controller
@@ -539,42 +539,33 @@ function is_not_moving()
  return false
 end
 
-function touching(x1,y1,w1,h1,x2,y2,w2,h2)
- return x1+w1 > x2 and
- x1 < x2+w2 and
- y1+h1 > y2 and
- y1 < y2+h2
-end
-
 function move(a, x, y, ox, oy)
  local x1 = (a.x + x + (ox * x))
- local y1 = (a.y + y + (oy * y))
- local x2 = x1
- local y2 = y1
- if (x ~= 0) y2 = (a.y + y + (ceil(oy/2)))
- if (y ~= 0) x2 = (a.x + x + (ceil(ox/2)))
- local x3 = (a.x + x + ox)
- local y3 = (a.y + y + oy)
+ local y1 = max(a.box.y1 + a.y, a.y + y + ((oy/2) * y) + oy/2)
+ local x2 = (a.x + x + ox)
+ local y2 = max(a.box.y1 + a.y, a.y + y + oy)
  local sp1 = mget(x1 / 8, y1 / 8)
  local sp2 = mget(x2 / 8, y2 / 8)
- local sp3 = mget(x3 / 8, y3 / 8)
 
  for b in all(g_actors) do
   if(check_collisions(a, b, x, y)) return
  end
 
- if (not fget(sp2, f_obst)) then
-  if (fget(sp1, f_obst)) then
+ g_cm.x1 = x1
+ g_cm.x2 = x2
+ g_cm.y1 = y1
+ g_cm.y2 = y2
+
+ if (fget(sp1, f_obst)) then
   a.x += abs(y)
   a.y += abs(x)
-  elseif (fget(sp3, f_obst)) then
+ elseif (fget(sp2, f_obst)) then
   a.x -= abs(y)
   a.y -= abs(x)
-  else
+ else
   a.x += x
   a.y += y
-  end -- check outer obstacles
- end -- check inner obstacles
+ end -- check obstacles onn map
 end
 
 -- action
@@ -1169,9 +1160,7 @@ function debug_init()
   x1 = 0,
   y1 = 0,
   x2 = 0,
-  y2 = 0,
-  x3 = 0,
-  y3 = 0
+  y2 = 0
  }
 end
 
@@ -1183,7 +1172,6 @@ end
 
 function debug_collision_matrix()
  line(g_cm.x1,g_cm.y1,g_cm.x2,g_cm.y2,pink)
- line(g_cm.x2,g_cm.y2,g_cm.x3,g_cm.y3,dark_purple)
 end
 
 function debug_hitbox_matrix()
