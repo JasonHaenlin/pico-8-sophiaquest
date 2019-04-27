@@ -6,7 +6,7 @@ __lua__
 -- const
 left, right, up, down, fire1, fire2, none = 0, 1, 2, 3, 4, 5, 6
 black, dark_blue, dark_purple, dark_green, brown, dark_gray, light_gray, white, red, orange, yellow, green, blue, indigo, pink, peach = 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15
-player, bullet, ennemy = 0, 1, 2
+player, bullet, ennemy, item = 0, 1, 2, 3
 immortal_object = 1000
 inf = 1000
 melee, ranged = 1, 20
@@ -15,7 +15,7 @@ f_heal, f_item, f_inv, f_obst = 0, 1, 5, 7
 l_player, l_ennemy, l_boss = 50, 10, 150
 walk, stay = "walk", "stay"
 
-debug_enabled = false
+debug_enabled = true
 
 -- init
 function _init()
@@ -50,7 +50,7 @@ function newentitie(x, y, sprite, tag, health, direction, mvn)
   y = y,
   s = sprite,
   tag = tag,
-  health = health,
+  health = health or immortal_object,
   direction = direction or up,
   mvn = mvn or {}
  }
@@ -86,6 +86,7 @@ function make_game()
  make_weapons()
  make_player(128)
  make_ennemies(nb_of_ennemis, {134})
+ make_items()
 end
 
 function make_weapon(cmpnttable)
@@ -128,10 +129,7 @@ function make_actor(cmpnttable)
   cd = 0,
   cdfx = 0
  }
- log(2,actor.dx.." "..actor.dy)
- log(3,actor.s)
  add(g_actors, actor)
- log(4,#g_actors)
  return actor
 end
 
@@ -213,6 +211,23 @@ function make_ennemies(nb, aspr)
    g_ennemies_left += 1
   end
  end
+end
+
+function make_items()
+  for i in all(g_map_items) do
+    for p in all(i.pos) do
+      make_actor({
+      -- new player char
+      entitie = newentitie(p.x, p.y, i.spr, item),
+      -- add a action controller
+      control = function (self) end,
+      -- add a draw controller
+      draw = draw_item,
+      -- set the hitbox
+      box = {x1 = 0, y1 = 0, x2 = 7, y2 = 7},
+      })
+    end
+  end
 end
 
 function make_walk_anim(s)
@@ -687,10 +702,6 @@ function fire(en)
  end
 end
 
-function get_formalised_position(a)
- return a - 64 < 0 and 0 or a - 64
-end
-
 function manage_weapon_direction(direction)
  direction = direction or none
  local inv = {
@@ -881,6 +892,15 @@ function draw_bullets(self)
  spr(self.s, self.x, self.y, 1, 1, inv.h, inv.v)
 end
 
+function draw_weapon(a,f)
+ spr(a.weapon.spr, a.x + a.weapon.ox + f.ox, a.y - a.weapon.oy + f.oy, 1, 1, f.h, f.v)
+end
+
+function draw_item(self)
+  spr(self.s,self.x,self.y)
+  log(2,self.x..":"..self.y)
+end
+
 function draw_actors()
  for a in all(g_actors) do
   a:draw()
@@ -891,10 +911,6 @@ function draw_dfxs()
   for d in all(g_dfx) do
    d:draw()
   end
-end
-
-function draw_weapon(a,f)
- spr(a.weapon.spr, a.x + a.weapon.ox + f.ox, a.y - a.weapon.oy + f.oy, 1, 1, f.h, f.v)
 end
 
 function draw_hud()
@@ -941,14 +957,6 @@ function draw_inventory(x, y)
  end
 end
 
-function draw_items()
- for i in all(g_map_items) do
-  for p in all(i.pos) do
-   spr(i.spr,p.x,p.y)
-  end
- end
-end
-
 function draw_item_shape(x, y, s, cd, max)
  local cd = cd or 0
  local max = max or 1
@@ -965,14 +973,14 @@ end
 function draw_game()
  cls()
  map(0, 0, 0, 0, 48, 48)
- g_fp = follow_player()
+ follow_player()
 
  set_camera()
 
- draw_items()
  draw_actors()
  draw_dfxs()
  draw_hud()
+
 
  log(1,g_p.x..":"..g_p.y)
  if(debug_enabled) debug()
@@ -1006,18 +1014,26 @@ function controls_update()
 end
 -- camera
 
-function follow_player(ofx, ofy)
- local ofx = ofx or 0
- local ofy = ofy or 0
- return {
-  x = (get_formalised_position(g_p.x)) + ofx,
-  y = (get_formalised_position(g_p.y)) + ofy
+function get_formalised_position(a, cam)
+ return a - 64 < 0 and 0 or a - 64
+end
+
+function lerp(a,b,t)
+ return (1-t)*a + t*b
+end
+
+function follow_player()
+ g_fp = {
+  x = get_formalised_position(g_p.x),
+  y = get_formalised_position(g_p.y)
  }
 end
 
 function set_camera()
- g_scr.x = get_formalised_position(g_p.x)
- g_scr.y = get_formalised_position(g_p.y)
+ reset_camera()
+ g_scr.x = max(0,lerp(g_scr.x,g_p.x-64,0.3))
+ g_scr.y = max(0,lerp(g_scr.y,g_p.y-64,0.3))
+ log(3, g_scr.x..":"..g_scr.y)
  if (g_scr.shake > 0) then
   g_scr.x += (rnd(2)-1)*g_scr.intensity
   g_scr.y += (rnd(2)-1)*g_scr.intensity
@@ -1074,21 +1090,7 @@ g_map_items = {
   name = "heal_potion",
   spr = 118,
   pos = {
-   {x = 201, y = 113},
-   {x = 20, y = 18},
-   {x = 6, y = 27},
-   {x = 7, y = 27},
-   {x = 29, y = 2}
-  }
- },
- {
-  name = "safe",
-  spr = 113,
-  pos = {
-   {x = 11, y = 10},
-   {x = 12, y = 10  },
-   {x = 19, y = 31},
-   {x = 16, y = 31}
+   {x = 201, y = 113}
   }
  }
 }
