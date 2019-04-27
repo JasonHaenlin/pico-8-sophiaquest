@@ -15,7 +15,7 @@ f_heal, f_item, f_inv, f_obst = 0, 1, 5, 7
 l_player, l_ennemy, l_boss = 50, 10, 150
 walk, stay = "walk", "stay"
 
-debug_enabled = false
+debug_enabled = true
 
 -- init
 function _init()
@@ -87,7 +87,7 @@ function make_game()
  make_weapons()
  make_ennemies(nb_of_ennemis, {134})
  make_npc(239, 66, 137)
- make_player(128)
+ make_player(40, 40, 128)
  make_items()
 end
 
@@ -187,10 +187,10 @@ function make_npc(x, y, s)
  n.stay = make_anim(make_stay_anim(s))
 end
 
-function make_player(s)
+function make_player(x, y, s)
  g_p = make_actor({
   -- new player char
-  entitie = newentitie(333, 85, s, player, l_player),
+  entitie = newentitie(x, y, s, player, l_player),
   -- add a action controller
   control = controls_player,
   -- add a draw controller
@@ -410,7 +410,7 @@ function controls_bullets(self)
 end
 
 function controls_npc(self)
- local dist = check_distance_from_player(self)
+ local dist = distance(self)
  log(4, dist)
  if (dist >= 5 and dist < 10) then
   make_dialog(self.x, self.y, "hey !!", 30)
@@ -418,7 +418,7 @@ function controls_npc(self)
 end
 
 function controls_ennemies(self)
- local dist = check_distance_from_player(self)
+ local dist = distance(self)
  if(is_player_near(dist)) then
   make_dialog(self.x, self.y, "!", 1)
   self.anim = walk
@@ -460,7 +460,13 @@ function going_forward(a)
  end
 end
 
-function check_distance_from_player(a)
+function sqr(x) return x*x end
+
+function distance_test(a)
+ return sqrt(sqr(a.x - g_p.x)+sqr(a.y - g_p.y))
+end
+
+function distance(a)
  local rx = a.x - g_p.x
  local ry = a.y - g_p.y
  return (abs(rx) + abs(ry)) / 2
@@ -500,14 +506,14 @@ function target_nearest_one(limit)
  local target = {x = inf , y=inf}
  for a in all(g_actors) do
   if(a.tag == ennemy) then
-   if((rx+ry)/2 > check_distance_from_player(a)) then
+   if(distance(target) > distance(a)) then
     rx = abs(a.x-g_p.x)
     ry = abs(a.y-g_p.y)
     target = a
    end -- check distance from player
   end -- tag is ennemy
  end -- for all actors
- if (check_distance_from_player(target) > limit) return {}
+ if (distance(target) > limit) return {}
  return target
 end
 
@@ -688,12 +694,12 @@ function shoot(a, d)
   fire({
    -- new bullet
    x = a.x,
-   y = a.y-8,
+   y = a.y-7,
    s = a.weapon.animv,
    dmg = a.weapon.dmg,
    type = a.weapon.type,
    -- add hitbox
-   box = {x1 = 4 - center, y1 = 0, x2 = 4 + center, y2 = 5},
+   box = {x1 = 4 - center, y1 = 0, x2 = 4 + center, y2 = 8},
    -- set the speed
    mvn = {dx = 0, dy = -speed},
    -- set the direction
@@ -704,7 +710,7 @@ function shoot(a, d)
   fire({
    -- new bullet
    x = a.x,
-   y = a.y+18,
+   y = a.y+17,
    s = a.weapon.animv,
    dmg = a.weapon.dmg,
    type = a.weapon.type,
@@ -1038,7 +1044,6 @@ function draw_game()
  draw_dialogs()
  draw_hud()
 
- log(7, g_scr.x..":"..g_scr.y)
  log(1, g_p.x..":"..g_p.y)
  if(debug_enabled) debug()
 end
@@ -1092,8 +1097,9 @@ function set_camera()
  g_scr.y = max(0,lerp(g_scr.y,g_p.y-64,0.3))
  log(3, g_scr.x..":"..g_scr.y)
  if (g_scr.shake > 0) then
-  g_scr.x += (rnd(2)-1)*g_scr.intensity
-  g_scr.y += (rnd(2)-1)*g_scr.intensity
+  local a = rnd(1)
+  g_scr.x += cos(a)*g_scr.intensity
+  g_scr.y += sin(a)*g_scr.intensity
   g_scr.shake -= 1
  end
  camera(g_scr.x, g_scr.y)
@@ -1106,10 +1112,12 @@ end
 function check_game_state()
  if (is_dead(g_p) or is_game_done()) then
   cls()
+
   g_actors = {}
-  g_particles = {}
-  g_explosions = {}
+  g_dfx = {}
   g_weapons = {}
+  g_dialogs = {}
+
   make_game()
   reset_camera()
   _draw = draw_menu
