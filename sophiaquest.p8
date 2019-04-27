@@ -196,7 +196,7 @@ function make_player(s)
   -- add a draw controller
   draw = draw_characters,
   -- set the hitbox
-  box = {x1 = 0, y1 = 10, x2 = 7, y2 = 15},
+  box = {x1 = 0, y1 = 7, x2 = 7, y2 = 15},
   -- add weapon
   weapon = g_weapons[1]
  })
@@ -219,7 +219,7 @@ function make_ennemies(nb, aspr)
     -- add a draw controller
     draw = draw_characters,
     -- set the hitbox
-    box = {x1 = 0, y1 = 10, x2 = 7, y2 = 15},
+    box = {x1 = 0, y1 = 7, x2 = 7, y2 = 15},
     -- add weapon
     weapon = g_weapons[1]
    })
@@ -426,17 +426,16 @@ function controls_ennemies(self)
    local dir_m = going_forward(self)
    move_on(self, dir_m)
   end -- dist >= weapon type
- else
-  self.anim = stay
- end -- is player near
- log(5, dist)
- if (dist < self.weapon.type*8.2) then
+ elseif (dist < self.weapon.type*8.2) then
   local dir_m = get_best_direction(self)
   move_on(self, dir_m)
   local dir_a = prepare_attack_opportunity(self)
   self.d = dir_a
   action_ennemies(self, dir_a)
- end
+  log(5, dist)
+ else
+  self.anim = stay
+ end -- is player near
 end
 
 function controls_player(self)
@@ -1027,9 +1026,10 @@ function draw_item_shape(x, y, s, cd, max)
 end
 
 function draw_game()
- cls()
- map(0, 0, 0, 0, 48, 48)
  follow_player()
+
+ cls()
+ map()
 
  set_camera()
 
@@ -1038,8 +1038,8 @@ function draw_game()
  draw_dialogs()
  draw_hud()
 
-
- log(1,g_p.x..":"..g_p.y)
+ log(7, g_scr.x..":"..g_scr.y)
+ log(1, g_p.x..":"..g_p.y)
  if(debug_enabled) debug()
 end
 
