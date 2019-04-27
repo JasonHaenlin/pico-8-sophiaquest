@@ -7,8 +7,8 @@ __lua__
 left, right, up, down, fire1, fire2, none = 0, 1, 2, 3, 4, 5, 6
 black, dark_blue, dark_purple, dark_green, brown, dark_gray, light_gray, white, red, orange, yellow, green, blue, indigo, pink, peach = 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15
 player, bullet, ennemy, item, npc = 0, 1, 2, 3, 4
-immortal_object = 1000
-inf = 1000
+immortal_object = 10000
+inf = 10000
 melee, ranged = 1, 20
 nb_of_ennemis = 2
 f_heal, f_item, f_inv, f_obst = 0, 1, 5, 7
@@ -81,13 +81,65 @@ function newweapon(name, sprite, sfx, anim, cd, dmg, type, speed, hitbox, offset
  }
 end
 
+function newdialog(text, trigger)
+ return {
+  text = text,
+  is_triggered = to_trigger,
+  base_triggered = trigger.type,
+  arg = trigger.arg
+ }
+end
+
+-- trigger
+
+function trigger(arg, type)
+ return {
+  arg = arg,
+  type = type
+ }
+end
+
+function to_trigger(self)
+ local next = false
+ local hint = false
+ if (self.actor) then
+  next = self.actor.next
+  if(self.actor.hint) then
+   del(g_dialogs,self)
+   return
+  end
+ end
+ if(not self:base_triggered() and not next) return
+ del(g_dialogs,self)
+
+ if(not self.actor) return
+ self.actor.line += 1
+ self.actor.talking = true
+ if(self.actor.line >= #self.actor.dialogs) then
+  self.actor.talking = false
+  self.actor.hint = true
+  self.actor.line = 1
+  g_p.control = controls_player
+ end -- reset dialogs
+
+end
+
+function trig_time(self)
+ self.arg -= 1
+ return self.arg <= 0
+end
+
+function trig_btn(self)
+ return btnp(self.arg)
+end
+
 -- make
 
 function make_game()
  make_weapons()
  make_ennemies(nb_of_ennemis, {134})
- make_npc(239, 66, 137)
- make_player(128)
+ make_all_npc()
+ make_player(128, 70, 128)
  make_items()
 end
 
@@ -170,6 +222,19 @@ function make_weapons()
  })
 end
 
+function make_all_npc()
+  local npc = {}
+  npc = make_npc(200, 66, 137)
+  npc:create_dialogs({
+   newdialog("hey1 ❎",trigger(200, trig_time)),
+   newdialog("hey2 ❎",trigger(200, trig_time)),
+   newdialog("hey3 ❎",trigger(200, trig_time)),
+   newdialog("hey4 ❎",trigger(200, trig_time)),
+   newdialog("hey5 ❎",trigger(200, trig_time)),
+   newdialog("hey6 ❎",trigger(200, trig_time)),
+  })
+end
+
 function make_npc(x, y, s)
  local n = make_actor({
   -- new player char
@@ -185,18 +250,21 @@ function make_npc(x, y, s)
  n.anim = stay
  n.walk = make_anim(make_walk_anim(s))
  n.stay = make_anim(make_stay_anim(s))
+ -- dialogs creation
+ n.create_dialogs = create_dialogs
+ return n
 end
 
-function make_player(s)
+function make_player(x, y, s)
  g_p = make_actor({
   -- new player char
-  entitie = newentitie(333, 85, s, player, l_player),
+  entitie = newentitie(x, y, s, player, l_player),
   -- add a action controller
   control = controls_player,
   -- add a draw controller
   draw = draw_characters,
   -- set the hitbox
-  box = {x1 = 0, y1 = 10, x2 = 7, y2 = 15},
+  box = {x1 = 0, y1 = 7, x2 = 7, y2 = 15},
   -- add weapon
   weapon = g_weapons[1]
  })
@@ -219,7 +287,7 @@ function make_ennemies(nb, aspr)
     -- add a draw controller
     draw = draw_characters,
     -- set the hitbox
-    box = {x1 = 0, y1 = 10, x2 = 7, y2 = 15},
+    box = {x1 = 0, y1 = 7, x2 = 7, y2 = 15},
     -- add weapon
     weapon = g_weapons[1]
    })
@@ -247,6 +315,16 @@ function make_items()
       })
     end
   end
+end
+
+function create_dialogs(self, dialogs)
+ self.line = 1
+ self.talking = false
+ self.hint = true
+ self.dialogs = {}
+ for d in all(dialogs) do
+  add(self.dialogs,d)
+ end
 end
 
 function make_walk_anim(s)
@@ -293,8 +371,22 @@ function make_particles(a, n, c)
  end
 end
 
-function make_dialog(x,y,t,d)
- add(g_dialogs,{x=x,y=y-10,text=t,time=d})
+function make_dialog(self, di)
+ local di = di or self.dialogs[self.line]
+ local nd = {
+  x = self.x,
+  y = self.y-10,
+  text = di.text,
+  is_triggered = di.is_triggered,
+  base_triggered = di.base_triggered,
+  arg = di.arg,
+ }
+ if (self.talking) then
+  nd.actor = self
+  self.talking = false
+  self.next = false
+ end
+ add(g_dialogs, nd)
 end
 
 -- draw effect
@@ -355,7 +447,7 @@ function dfx_disapearance(x, y, a, h, draw)
    x = x+(rnd(2)-1)*5,
    y = y+(rnd(2)-1)*5,
    r = 2 + rnd(4),
-   c = 5,
+   c = flr(rnd(9)+6),
    draw = draw
   }
 		add(g_dfx, disa)
@@ -375,10 +467,6 @@ function create_direction_frames(fl1, fl2, fr1, fr2, fu, fuflip, fd, fdflip)
  }
 end
 
-function create_dialogs(texts)
-
-end
-
 function controls_menu()
  if (btnp(up) and g_selected_item > 1) then
   g_selected_item -= 1
@@ -393,6 +481,13 @@ function controls_menu()
  end
 end
 
+function hint(self)
+ make_dialog(self, newdialog("❎", trigger(5, trig_time)))
+end
+
+function warning(self)
+ make_dialog(self, newdialog("!", trigger(1, trig_time)))
+end
 
 function action_ennemies(a, d)
  if (a.tag ~= ennemy) return
@@ -403,6 +498,22 @@ function action_ennemies(a, d)
  end
 end
 
+function controls_dialogs(self)
+ local a = self.talkto
+ if(btnp(fire2)) then
+  if(self.talkto.line >= #self.talkto.dialogs) then
+   self.control = controls_player
+  else
+   a.next = true
+  end
+ end
+ if(btnp(fire1)) then
+  self.control = controls_player
+  self.talkto.hint = true
+  g_p.cd = 20
+ end
+end
+
 function controls_bullets(self)
    self.x += self.dx
    self.y += self.dy
@@ -410,33 +521,31 @@ function controls_bullets(self)
 end
 
 function controls_npc(self)
- local dist = check_distance_from_player(self)
- log(4, dist)
+ local dist = distance(self)
  if (dist >= 5 and dist < 10) then
-  make_dialog(self.x, self.y, "hey !!", 30)
+  if(self.talking) make_dialog(self)
+  if (self.hint) hint(self)
  end
 end
 
 function controls_ennemies(self)
- local dist = check_distance_from_player(self)
+ local dist = distance(self)
  if(is_player_near(dist)) then
-  make_dialog(self.x, self.y, "!", 1)
+  warning(self)
   self.anim = walk
   if (dist >= self.weapon.type) then
    local dir_m = going_forward(self)
    move_on(self, dir_m)
   end -- dist >= weapon type
- else
-  self.anim = stay
- end -- is player near
- log(5, dist)
- if (dist < self.weapon.type*8.2) then
+ elseif (dist < self.weapon.type*8.2) then
   local dir_m = get_best_direction(self)
   move_on(self, dir_m)
   local dir_a = prepare_attack_opportunity(self)
   self.d = dir_a
   action_ennemies(self, dir_a)
- end
+ else
+  self.anim = stay
+ end -- is player near
 end
 
 function controls_player(self)
@@ -461,7 +570,14 @@ function going_forward(a)
  end
 end
 
-function check_distance_from_player(a)
+function sqr(x) return x*x end
+
+function distance_test(a)
+ return sqrt(sqr(a.x - g_p.x)+sqr(a.y - g_p.y))
+end
+
+function distance(a)
+ if(not a) return inf
  local rx = a.x - g_p.x
  local ry = a.y - g_p.y
  return (abs(rx) + abs(ry)) / 2
@@ -490,25 +606,21 @@ function prepare_attack_opportunity(a, d)
  end
 end
 
-function is_player_near(gap)
- return gap <= 30 and gap > 8
+function is_player_near(gap, lim)
+ local lim = lim or 30
+ return gap <= lim and gap > 8
 end
 
 function target_nearest_one(limit)
  limit = limit or inf
- local rx = inf
- local ry = inf
- local target = {x = inf , y=inf}
+ local target = {npc = nil, enn = nil}
  for a in all(g_actors) do
-  if(a.tag == ennemy) then
-   if((rx+ry)/2 > check_distance_from_player(a)) then
-    rx = abs(a.x-g_p.x)
-    ry = abs(a.y-g_p.y)
-    target = a
-   end -- check distance from player
-  end -- tag is ennemy
+  local dist = distance(a)
+  if(a.tag == ennemy and distance(target.enn) > dist) target.enn = a
+  if(a.tag == npc and distance(target.npc) > dist) target.npc = a
  end -- for all actors
- if (check_distance_from_player(target) > limit) return {}
+ if (distance(target.enn) > limit) target.enn = nil
+ if (distance(target.npc) > limit) target.npc = nil
  return target
 end
 
@@ -578,16 +690,17 @@ function action_player()
  end
  if (g_p.cdfx > 0) g_p.cdfx -= 1
  if (btnp(fire2)) then
-  sp = mget(g_p.x / 8 ,(g_p.y - 1) / 8)
-  if (fget(sp, f_inv)) then
+  if (fget(mget(g_p.x / 8 ,(g_p.y - 1) / 8), f_inv)) then
    g_open_inv = true
-  elseif (g_p.cdfx == 0) then
-   g_p.cdfx = g_p.weapon.cdfx
-   local target = target_nearest_one(50)
-   if (target.x ~= nil) then
-    g_p.weapon.dfx(target.x, target.y, 3, abs(g_fp.y - target.y), g_p.weapon.draw)
-    target.health -= 10
-    check_actor_health(target)
+  else
+  local target = target_nearest_one(30)
+   if (target.enn ~= nil and g_p.cdfx == 0) then
+    g_p.cdfx = g_p.weapon.cdfx
+    g_p.weapon.dfx(target.enn.x, target.enn.y, 3, abs(g_fp.y - target.enn.y), g_p.weapon.draw)
+    target.enn.health -= 10
+    check_actor_health(target.enn)
+   elseif (target.npc ~= nil and distance(target.npc) < 10) then
+    begin_dialog(target.npc)
    else
     sfx(9)
    end -- is target present
@@ -595,11 +708,17 @@ function action_player()
  end -- fire 2 button triggered
 end
 
-
 function wait_inventory_close()
  if (btnp(fire2)) then
   g_open_inv = false;
  end
+end
+
+function begin_dialog(a)
+ g_p.talkto = a
+ a.talking = true
+ a.hint = false
+ g_p.control = controls_dialogs
 end
 
 function anim_state(a, f)
@@ -689,12 +808,12 @@ function shoot(a, d)
   fire({
    -- new bullet
    x = a.x,
-   y = a.y-8,
+   y = a.y-7,
    s = a.weapon.animv,
    dmg = a.weapon.dmg,
    type = a.weapon.type,
    -- add hitbox
-   box = {x1 = 4 - center, y1 = 0, x2 = 4 + center, y2 = 5},
+   box = {x1 = 4 - center, y1 = 0, x2 = 4 + center, y2 = 8},
    -- set the speed
    mvn = {dx = 0, dy = -speed},
    -- set the direction
@@ -705,7 +824,7 @@ function shoot(a, d)
   fire({
    -- new bullet
    x = a.x,
-   y = a.y+18,
+   y = a.y+17,
    s = a.weapon.animv,
    dmg = a.weapon.dmg,
    type = a.weapon.type,
@@ -946,7 +1065,6 @@ end
 
 function draw_item(self)
   spr(self.s,self.x,self.y)
-  log(2,self.x..":"..self.y)
 end
 
 function draw_actors()
@@ -964,8 +1082,7 @@ end
 function draw_dialogs()
  for d in all(g_dialogs) do
   printoutline(d.text,d.x,d.y,white)
-  d.time -= 1
-  if (d.time <= 0) del(g_dialogs,d)
+  d:is_triggered()
  end
 end
 
@@ -1027,9 +1144,10 @@ function draw_item_shape(x, y, s, cd, max)
 end
 
 function draw_game()
- cls()
- map(0, 0, 0, 0, 48, 48)
  follow_player()
+
+ cls()
+ map()
 
  set_camera()
 
@@ -1038,8 +1156,7 @@ function draw_game()
  draw_dialogs()
  draw_hud()
 
-
- log(1,g_p.x..":"..g_p.y)
+ log(1, g_p.x..":"..g_p.y)
  if(debug_enabled) debug()
 end
 
@@ -1088,12 +1205,13 @@ end
 
 function set_camera()
  reset_camera()
- g_scr.x = max(0,lerp(g_scr.x,g_p.x-64,0.3))
- g_scr.y = max(0,lerp(g_scr.y,g_p.y-64,0.3))
- log(3, g_scr.x..":"..g_scr.y)
+ g_scr.x = max(0,lerp(g_scr.x,g_p.x-64,0.4))
+ g_scr.y = max(0,lerp(g_scr.y,g_p.y-64,0.4))
+ log(2, g_scr.x..":"..g_scr.y)
  if (g_scr.shake > 0) then
-  g_scr.x += (rnd(2)-1)*g_scr.intensity
-  g_scr.y += (rnd(2)-1)*g_scr.intensity
+  local a = rnd(1)
+  g_scr.x += cos(a)*g_scr.intensity
+  g_scr.y += sin(a)*g_scr.intensity
   g_scr.shake -= 1
  end
  camera(g_scr.x, g_scr.y)
@@ -1106,10 +1224,12 @@ end
 function check_game_state()
  if (is_dead(g_p) or is_game_done()) then
   cls()
+
   g_actors = {}
-  g_particles = {}
-  g_explosions = {}
+  g_dfx = {}
   g_weapons = {}
+  g_dialogs = {}
+
   make_game()
   reset_camera()
   _draw = draw_menu
@@ -1367,4 +1487,3 @@ __sfx__
 000500001364013630136200000013640136301362000000136401363013620000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
 __music__
 04 01024344
-
