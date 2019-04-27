@@ -101,7 +101,14 @@ end
 
 function to_trigger(self)
  local next = false
- if (self.actor) next = self.actor.next
+ local hint = false
+ if (self.actor) then
+  next = self.actor.next
+  if(self.actor.hint) then
+   del(g_dialogs,self)
+   return
+  end
+ end
  if(not self:base_triggered() and not next) return
  del(g_dialogs,self)
 
@@ -502,6 +509,7 @@ function controls_dialogs(self)
  end
  if(btnp(fire1)) then
   self.control = controls_player
+  self.talkto.hint = true
   g_p.cd = 20
  end
 end
