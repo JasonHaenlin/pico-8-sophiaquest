@@ -118,7 +118,6 @@ function to_trigger(self)
 end
 
 function trig_time(self)
- log(5,self.arg)
  self.arg -= 1
  return self.arg <= 0
 end
@@ -494,7 +493,6 @@ end
 
 function controls_dialogs(self)
  local a = self.talkto
- log(10, a.dialogs[a.line].text)
  if(btnp(fire1) or btnp(fire2)) then
   if(self.talkto.line >= #self.talkto.dialogs) then
    self.control = controls_player
@@ -512,8 +510,6 @@ end
 
 function controls_npc(self)
  local dist = distance(self)
- log(7, self.talking)
- log(8, self.hint)
  if (dist >= 5 and dist < 10) then
   if(self.talking) make_dialog(self)
   if (self.hint) hint(self)
@@ -569,6 +565,7 @@ function distance_test(a)
 end
 
 function distance(a)
+ if(not a) return inf
  local rx = a.x - g_p.x
  local ry = a.y - g_p.y
  return (abs(rx) + abs(ry)) / 2
@@ -604,19 +601,14 @@ end
 
 function target_nearest_one(limit)
  limit = limit or inf
- local rx = inf
- local ry = inf
- local target = {x = inf , y=inf}
+ local target = {npc = nil, enn = nil}
  for a in all(g_actors) do
-  if(a.tag == ennemy or a.tag == npc) then
-   if(distance(target) > distance(a)) then
-    rx = abs(a.x-g_p.x)
-    ry = abs(a.y-g_p.y)
-    target = a
-   end -- check distance from player
-  end -- tag is ennemy
+  local dist = distance(a)
+  if(a.tag == ennemy and distance(target.enn) > dist) target.enn = a
+  if(a.tag == npc and distance(target.npc) > dist) target.npc = a
  end -- for all actors
- if (distance(target) > limit) return {}
+ if (distance(target.enn) > limit) target.enn = nil
+ if (distance(target.npc) > limit) target.npc = nil
  return target
 end
 
@@ -690,15 +682,13 @@ function action_player()
    g_open_inv = true
   else
   local target = target_nearest_one(30)
-   if (target.x ~= nil) then
-    if (target.tag == ennemy and g_p.cdfx == 0) then
-     g_p.cdfx = g_p.weapon.cdfx
-     g_p.weapon.dfx(target.x, target.y, 3, abs(g_fp.y - target.y), g_p.weapon.draw)
-     target.health -= 10
-     check_actor_health(target)
-    elseif (target.tag == npc and distance(target) < 10) then
-     begin_dialog(target)
-    end -- check target actor tag
+   if (target.enn ~= nil and g_p.cdfx == 0) then
+    g_p.cdfx = g_p.weapon.cdfx
+    g_p.weapon.dfx(target.enn.x, target.enn.y, 3, abs(g_fp.y - target.enn.y), g_p.weapon.draw)
+    target.enn.health -= 10
+    check_actor_health(target.enn)
+   elseif (target.npc ~= nil and distance(target.npc) < 10) then
+    begin_dialog(target.npc)
    else
     sfx(9)
    end -- is target present
