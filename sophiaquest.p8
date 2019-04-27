@@ -15,20 +15,19 @@ f_heal, f_item, f_inv, f_obst = 0, 1, 5, 7
 l_player, l_ennemy, l_boss = 50, 10, 150
 walk, stay = "walk", "stay"
 
-debug_enabled = false
+debug_enabled = true
 
 -- init
 function _init()
- palt()
- palt(pink,true)
  debug_init()
 
  g_actors = {}
+ g_dfx = {}
  g_particles = {}
  g_explosions = {}
  g_thunders = {}
  g_showers = {}
- g_items = {}
+ g_weapons = {}
 
  g_open_inv=false
  g_selected_item=1
@@ -47,73 +46,106 @@ function init_screen()
  }
 end
 
--- make
-
-function make_actor(x, y, s, tag, health, controls, draw, direction)
- local actor = {
-  tag = tag,
-  d = direction or up,
-  bx = x,
-  by = y,
+function newentitie(x, y, sprite, tag, health, direction, mvn)
+ return {
   x = x,
   y = y,
-  s = s,
-  dx = 0,
-  dy = 0,
+  s = sprite,
+  tag = tag,
   health = health,
-  controls = controls,
-  draw = draw,
-  box = {x1 = 0, y1 = 0, x2 = 7, y2 = 7}
+  direction = direction or up,
+  mvn = mvn or {}
  }
+end
+
+-- make
+
+function make_actor(cmpnttable)
+ local actor = {
+  tag = cmpnttable.entitie.tag,
+  d = cmpnttable.entitie.direction or none,
+  bx = cmpnttable.entitie.x,
+  by = cmpnttable.entitie.y,
+  x = cmpnttable.entitie.x,
+  y = cmpnttable.entitie.y,
+  s = cmpnttable.entitie.s,
+  health = cmpnttable.entitie.health,
+  control = cmpnttable.control,
+  draw = cmpnttable.draw,
+  weapon = cmpnttable.weapon or nil,
+  box = cmpnttable.box,
+  dx = cmpnttable.entitie.mvn.dx or 0,
+  dy = cmpnttable.entitie.mvn.dy or 0,
+  cd = 0,
+  cdfx = 0
+ }
+ log(2,actor.dx.." "..actor.dy)
+ log(3,actor.s)
  add(g_actors, actor)
+ log(4,#g_actors)
  return actor
 end
 
 function make_weapons()
  -- name, spr, sfx, animh, animv, cd, dmg, type, speed, hb, ox, oy, dfx, cdfx
- make_item("sword",    105, 4, 73,  89,  15, 7,  melee,  1,  8, 5, -4)
- make_item("firewand", 106, 1, 74,  90,  8,  8,  ranged, 3,  3, 5, -4)
- make_item("gun",      107, 5, 75,  91,  3,  3,  ranged, 10, 1, 5, -5)
- make_item("bow",      108, 3, 76,  92,  6,  5,  ranged, 6,  3, 5,-5)
- make_item("secret",   109, 6, 77,  93,  4,  5,  ranged, 5,  1, 5, -5, dfx_shower, 50)
- make_item("tatata",   110, 7, 78,  94,  2,  2,  ranged, 10, 1, 5, -5)
- make_item("boom",     111, 7, 79,  95,  18, 10, melee,  1,  8, 5, -4)
- make_item("elec",     160, 8, 128, 144, 20, 15, melee,  1,  8, 5, -5, dfx_thunder, 50)
+ make_weapon("sword",    105, 4, 73,  89,  15, 7,  melee,  1,  8, 5, -4)
+ make_weapon("firewand", 106, 1, 74,  90,  8,  8,  ranged, 3,  3, 5, -4)
+ make_weapon("gun",      107, 5, 75,  91,  3,  3,  ranged, 10, 1, 5, -5)
+ make_weapon("bow",      108, 3, 76,  92,  6,  5,  ranged, 6,  3, 5,-5)
+ make_weapon("secret",   109, 6, 77,  93,  4,  5,  ranged, 5,  1, 5, -5, dfx_shower, 50)
+ make_weapon("tatata",   110, 7, 78,  94,  2,  2,  ranged, 10, 1, 5, -5)
+ make_weapon("boom",     111, 7, 79,  95,  18, 10, melee,  1,  8, 5, -4)
+ make_weapon("elec",     160, 8, 128, 144, 20, 15, melee,  1,  8, 5, -5, dfx_thunder, 50)
 end
 
 function make_player(s)
- g_p = make_actor(333, 85, 129, player, l_player, controls_player, draw_characters, up)
- g_p.weapon = g_items[5]
+ g_p = make_actor({
+  -- new player char
+  entitie = newentitie(333, 85, s, player, l_player),
+  -- add a action controller
+  control = controls_player,
+  -- add a draw controller
+  draw = draw_characters,
+  -- set the hitbox
+  box = {x1 = 0, y1 = 0, x2 = 7, y2 = 14},
+  -- add weapon
+  weapon = g_weapons[5]
+ })
+ -- add animations
  g_p.anim = stay
- g_p.walk = make_anim(walk, create_direction_frames(s+33, s+1, s+33, s+1, s+34, true, s+32, true), 1/10)
- g_p.stay = make_anim(stay, create_direction_frames(s+1, s+1, s+1, s+1, s+2, false, s, false), 1/10)
- g_p.cd = 0
- g_p.cdfx = 0
- g_p.box = {x1 = 0, y1 = 1, x2 = 7, y2 = 14}
+ g_p.walk = make_anim(make_walk_anim(s))
+ g_p.stay = make_anim(make_stay_anim(s))
 end
 
-function make_anim(name, frames, spd)
+function make_walk_anim(s)
+ return {
+  name = walk,
+  frames = create_direction_frames(s+33, s+1, s+33, s+1, s+34, true, s+32, true),
+  speed = 1/10
+ }
+end
+
+function make_stay_anim(s)
+ return {
+  name = stay,
+  frames = create_direction_frames(s+1, s+1, s+1, s+1, s+2, false, s, false),
+  speed = 1/10
+ }
+end
+
+function make_anim(anim)
  return {
   time = 0,
-  anim = name,
-  spd = spd,
-  f = frames
+  anim = anim.name,
+  spd = anim.speed,
+  f = anim.frames
  }
 end
 
 function make_game()
  make_weapons()
  make_player(128)
- make_map_items()
- -- make_ennemies(nb_of_ennemis, {131,134,137})
-end
-
-function make_map_items()
- for o in all(map_items) do
-  for p in all(o.pos) do
-   mset(g_p.x, g_p.y, o.spr)
-  end
- end
+ make_ennemies(nb_of_ennemis, {134})
 end
 
 function make_ennemies(nb, aspr)
@@ -121,15 +153,22 @@ function make_ennemies(nb, aspr)
  for s in all(aspr) do
   for i=1, nb/#aspr do
    local a = g_good_spot(248, 248)
-   local e = make_actor(a.x, a.y, s, ennemy, l_ennemy, controls_ennemies, draw_characters, up)
-   e.weapon = g_items[4]
-   e.cd = 50
+   e = make_actor({
+    -- new player char
+    entitie = newentitie(a.x, a.y, s, ennemy, l_ennemy, up, {dx = 0.9, dy = 0.9}),
+    -- add a action controller
+    control = controls_ennemies,
+    -- add a draw controller
+    draw = draw_characters,
+    -- set the hitbox
+    box = {x1 = 0, y1 = 0, x2 = 7, y2 = 14},
+    -- add weapon
+    weapon = g_weapons[2]
+   })
+   -- add animations
    e.anim = stay
-   e.walk = make_anim(walk, create_direction_frames(s+33, s+1, s+33, s+1, s+34, true, s+32, true), 1/10)
-   e.stay = make_anim(stay, create_direction_frames(s+1, s+1, s+1, s+1, s+2, false, s, false), 1/10)
-   e.dx = 0.9
-   e.dy = 0.9
-   e.box = {x1 = 0, y1 = 1, x2 = 7, y2 = 14}
+   e.walk = make_anim(make_walk_anim(s))
+   e.stay = make_anim(make_stay_anim(s))
    g_ennemies_left += 1
   end
  end
@@ -152,7 +191,7 @@ function make_particles(a, n, c)
  end
 end
 
-function make_item(name, spr, sfx, animh, animv, cd, dmg, type, speed, hb, ox, oy, dfx, cdfx)
+function make_weapon(name, spr, sfx, animh, animv, cd, dmg, type, speed, hb, ox, oy, dfx)
  local item = {
   name = name,
   spr = spr,
@@ -166,11 +205,24 @@ function make_item(name, spr, sfx, animh, animv, cd, dmg, type, speed, hb, ox, o
   ox = ox,
   oy = oy,
   sfx = sfx,
+  -- dfx = dfx,
   dfx = dfx or function (x, y, p, h) end,
   cdfx = cdfx or 20
  }
- add(g_items, item)
+ add(g_weapons, item)
  return item
+end
+
+function make_dfx(x,y,amplitude,height,pattern,draw)
+ local dfx = {
+  x = x,
+  y = y,
+  a = amplitude,
+  h = height,
+  pattern = pattern,
+  draw = draw
+ }
+ add(g_dfx, dfx)
 end
 
 -- draw effect
@@ -253,11 +305,11 @@ function controls_menu()
  if (btnp(up) and g_selected_item > 1) then
   g_selected_item -= 1
  end
- if (btnp(down) and g_selected_item < #g_items) then
+ if (btnp(down) and g_selected_item < #g_weapons) then
   g_selected_item += 1
  end
  if (btnp(fire1)) then
-  g_p.weapon = g_items[g_selected_item]
+  g_p.weapon = g_weapons[g_selected_item]
   g_open_inv = false
   g_p.cd = 10
  end
@@ -422,19 +474,6 @@ function move(a, x, y, ox, oy)
   a.y += y
   end -- check outer obstacles
  end -- check inner obstacles
-
- if(a.tag == player) then
-  if(fget(sp1, f_heal) and a.health < l_player) then
-   pick_item(x1, y1)
-   a.health += 10
-   if (a.health > l_player) a.healh = l_player
-  end
-  if(fget(sp3, f_heal) and a.health < l_player) then
-   pick_item(x3, y3)
-   a.health += 10
-   if (a.health > l_player) a.healh = l_player
-  end
- end
 end
 
 -- action
@@ -464,10 +503,6 @@ function action_player()
  end -- fire 2 button triggered
 end
 
-function pick_item(x, y)
- sfx(2)
- mset(x, y, 32)
-end
 
 function wait_inventory_close()
  if (btnp(fire2)) then
@@ -528,30 +563,88 @@ function shoot(a, d)
  local center = a.weapon.hb / 2
  local b = {}
  if(d == left) then
-  b = make_actor(a.x-6, a.y+4, a.weapon.animh, bullet, immortal_object, controls_bullets, draw_bullets, left)
-  b.box = {x1 = 0, y1 = 4-center, x2 = 5, y2 = 4+center}
-  b.dx = -speed
+  fire({
+   -- new bullet
+   x = a.x-6,
+   y = a.y+4,
+   s = a.weapon.animh,
+   dmg = a.weapon.dmg,
+   type = a.weapon.type,
+   -- add hitbox
+   box = {x1 = 0, y1 = 4-center, x2 = 5, y2 = 4 + center},
+   -- set the speed
+   mvn = {dx = -speed, dy = 0},
+   -- set the direction
+   direction = left
+  })
  end
  if(d == right) then
-  b = make_actor(a.x+6, a.y+4, a.weapon.animh, bullet, immortal_object, controls_bullets, draw_bullets, right)
-  b.box = {x1 = 3, y1 = 4-center, x2 = 8, y2 = 4+center}
-  b.dx = speed
+  fire({
+   -- new bullet
+   x = a.x+6,
+   y = a.y+4,
+   s = a.weapon.animh,
+   dmg = a.weapon.dmg,
+   type = a.weapon.type,
+   -- add hitbox
+   box = {x1 = 0, y1 = 4 - center, x2 = 5, y2 = 4 + center},
+   -- set the speed
+   mvn = {dx = speed, dy = 0},
+   -- set the direction
+   direction = right
+  })
  end
  if(d == up) then
-  b = make_actor(a.x, a.y-8, a.weapon.animv, bullet, immortal_object, controls_bullets, draw_bullets, up)
-  b.box = {x1 = 4-center, y1 = 0, x2 = 4+center, y2 = 5}
-  b.dy = -speed
+  fire({
+   -- new bullet
+   x = a.x,
+   y = a.y-8,
+   s = a.weapon.animv,
+   dmg = a.weapon.dmg,
+   type = a.weapon.type,
+   -- add hitbox
+   box = {x1 = 4 - center, y1 = 0, x2 = 4 + center, y2 = 5},
+   -- set the speed
+   mvn = {dx = 0, dy = -speed},
+   -- set the direction
+   direction = up
+  })
  end
  if(d == down) then
-  b = make_actor(a.x, a.y+18, a.weapon.animv, bullet, immortal_object, controls_bullets, draw_bullets, down)
-  b.box = {x1 = 4-center, y1 = 3, x2 = 4+center, y2 = 8}
-  b.dy = speed
+  fire({
+   -- new bullet
+   x = a.x,
+   y = a.y+18,
+   s = a.weapon.animv,
+   dmg = a.weapon.dmg,
+   type = a.weapon.type,
+   -- add hitbox
+   box = {x1 = 4 - center, y1 = 3, x2 = 4 + center, y2 = 8},
+   -- set the speed
+   mvn = {dx = 0, dy = speed},
+   -- set the direction
+   direction = down
+  })
  end
- b.dmg = a.weapon.dmg
  if (d ~= none or a.tag == player) then
   sfx(a.weapon.sfx)
  end
- if (a.weapon.type == melee) then
+
+end
+
+function fire(en)
+ local b = make_actor({
+  -- new player char
+  entitie = newentitie(en.x, en.y, en.s, bullet, immortal_object, en.direction, en.mvn),
+  -- add a action controller
+  control = controls_bullets,
+  -- add a draw controller
+  draw = draw_bullets,
+  -- set the hitbox
+  box = en.box,
+ })
+ b.dmg = en.dmg
+ if (en.type == melee) then
   b.range = 5
  else
   b.range = 128
@@ -766,15 +859,20 @@ function draw_actors()
  end
 end
 
+function draw_dfxs()
+  for d in all(g_dfx) do
+   d:draw()
+  end
+end
+
 function draw_weapon(a,f)
  spr(a.weapon.spr, a.x + a.weapon.ox + f.ox, a.y - a.weapon.oy + f.oy, 1, 1, f.h, f.v)
 end
 
 function draw_hud()
- local bx = g_fp.x+60
- local by = g_fp.y+108
- draw_life(bx, by)
- draw_skills(bx, by)
+ draw_life(g_fp.x+60, g_fp.y+108)
+ draw_skills(g_fp.x+60, g_fp.y+108)
+ draw_inventory(g_fp.x+80, g_fp.y)
 end
 
 function draw_life(bx, by)
@@ -804,13 +902,21 @@ function draw_inventory(x, y)
   line(x, y, x, y + 128, light_gray)
   local tx = x + 7
   local ty = y + 10
-  for i = 1 ,#g_items do
-   draw_item_shape(tx, ty, g_items[i].spr)
-   print(g_items[i].name, tx + 12, ty - 2, white)
+  for i = 1 ,#g_weapons do
+   draw_item_shape(tx, ty, g_weapons[i].spr)
+   print(g_weapons[i].name, tx + 12, ty - 2, white)
    if (g_selected_item == i) then
     spr(58, tx - 7, ty - 2)
    end
    ty += 12
+  end
+ end
+end
+
+function draw_items()
+ for i in all(g_map_items) do
+  for p in all(i.pos) do
+   spr(i.spr,p.x,p.y)
   end
  end
 end
@@ -835,14 +941,14 @@ function draw_game()
 
  set_camera()
 
+ draw_items()
  draw_particles()
  draw_explosions()
  draw_thunders()
  draw_actors()
  draw_waterfalls()
  draw_hud()
- draw_inventory(g_fp.x+80, g_fp.y)
-
+ log(1,g_p.x..":"..g_p.y)
  if(debug_enabled) debug()
 end
 
@@ -869,7 +975,7 @@ end
 
 function controls_update()
  for a in all(g_actors) do
-  a:controls()
+  a:control()
  end
 end
 -- camera
@@ -904,7 +1010,7 @@ function check_game_state()
   g_actors = {}
   g_particles = {}
   g_explosions = {}
-  g_items = {}
+  g_weapons = {}
   make_game()
   reset_camera()
   _draw = draw_menu
@@ -937,16 +1043,26 @@ spr_life = {
 
 -- map items positions
 
-map_items = {
+g_map_items = {
  {
   name = "heal_potion",
-   spr = 118,
-   pos = {
-   {x = 9, y = 4},
-   {x = 17, y = 16},
-   {x = 25, y = 14},
-   {x = 21, y = 7},
-   {x = 25, y = 10}
+  spr = 118,
+  pos = {
+   {x = 201, y = 113},
+   {x = 20, y = 18},
+   {x = 6, y = 27},
+   {x = 7, y = 27},
+   {x = 29, y = 2}
+  }
+ },
+ {
+  name = "safe",
+  spr = 113,
+  pos = {
+   {x = 11, y = 10},
+   {x = 12, y = 10  },
+   {x = 19, y = 31},
+   {x = 16, y = 31}
   }
  }
 }
@@ -1028,6 +1144,7 @@ __gfx__
 3333333333833333bb282bb3333333444433333333333344443333330a9999a03a8aa8a331655553ecc1eeee5555555545554444eeeeeeeeeeeeeeeeeeeeeeee
 33333333382833333bbbbb33333334444443333333333444444333330aaaaaa033a22a333c155553ec1eeeee0000000044444444eeeeeeeeeeeeeeeeeeeeeeee
 333333333383333333bbb3333333344444433333333334444443333300000000333ee33335555553e1eeeeee5555555544444444eeeeeeeeeeeeeeeeeeeeeeee
+<<<<<<< HEAD
 000000000000000000000000111111115555555555555555eeeeeeeeeeeeeeeeeeee99eeeec551eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee5665ee
 07770777777777077777777061555516558aaaaaaaaaa855eeeeeeeeeeeeeee99eee9eeeeeec551eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee58e58e568865e
 07660666666666066666667065566556588aaaaaaaaaa885eeeeeeeeeeeeeeee9eee9eeeeeeec51eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeceeeeeeeeee56899865
@@ -1060,6 +1177,40 @@ ee8aa8eeed1661dee63bb36ee459954eeeeeeeeeeeeeeeee3d8888d33dccccd3eeeeeeeeeeeeeeee
 ee8aa8eeed1661dee63bb36ee459954eeeeeeeeeeeeeeeee3d8888d33dccccd3eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
 ee8888eeed1111dee633336ee455554eeeeeeeeeeeeeeeee3d8888d33dccccd3eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
 eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee33dddd3333dddd33eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
+=======
+555555555555555555555555111111115555555555555555eeeeeeeeeeeeeeeeeeee99eeeec551eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee5665ee
+56666666656666666566666561555516558aaaaaaaaaa855eeeeeeeeeeeeeee99eee9eeeeeec551eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee58e58e568865e
+56666666656666666566666565566556588aaaaaaaaaa885eeeeeeeeeeeeeeee9eee9eeeeeeec51eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeceeeeeeeeee56899865
+56666666656666666566666561666616aaaaaaaaaaaaaaaaeeeeeeeeeeeeeeee99eeeeeeeeeec51eeee88eeeeeeeeeee7eeeee5ecccccccee58eeeee689aa986
+56665555555555555555666511666611aaa0000000000aaaeeeeeeeeeeeeeeeee99eeeeeeeeec51eeee898eeeee558eee74444551111111ceeee58ee689aa986
+56665666666665666665666561666616aa000000000000aaeeeeeeeeeeeeeeeeeeee999eeeeec51eeee88eeeeeeeeeee7eeeee5eccccccceeeeeeeee56899865
+55555666666665666665666561666616aa000000000000aaeeeeeeeeeeeeeeee99eeeeeeeeec551eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeceeee58ee58e568865e
+56665665555555555665666511666611aaa0000000000aaaeeeeeeeeeeeeeeeeeeeeeeeeeec551eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee5665ee
+56665665666666665665666566666666a0aaaaaaaaaaaa0aeeeeeeeeeeeeeeeeeeee99eeeeeeeeeeeeeeeeeeeeeeeeeeeee5eeeeeeeceeeeee8e8eeeee5665ee
+56665665666666665665555566666666a00aaaaaaaaaa00aeeeeeeeeeeeeeee99eee9eeee111111eeeeeeeeeeeeeeeeeee555eeeeeccceeeee5e5eeee568865e
+56665555666666665665666566666666aaaaaaaaaaaaaaaaeeeeeeeeeeeeeeee9eee9eee15555551eee8eeeeeee8eeeeeee4eeeeecc1cceeeeeeeeee56899865
+56665665666666665665666566666666a00aaaaaaaaaa00aeeeeeeeeeeeeeeee99eeeeee55cccc55ee898eeeeee5eeeeeee4eeeeeec1ceeeeee8e8ee689aa986
+56665665666666665665666566666666a00aaaaaaaaaa00aeeeeeeeeeeeeeeeee99eeeee5ceeeec5ee888eeeeee5eeeeeee4eeeeeec1ceeee8e5e5ee689aa986
+56665665666666665555666566666666a0aaaaaaaaaaaa0aeeeeeeeeeeeeeeeeeeee999eceeeeeeceeeeeeeeeeeeeeeeeee7eeeeeec1ceeee5eeeeee56899865
+55555665666666665665666566666666aaaaaaaaaaaaaaaaeeeeeeeeeeeeeeee99eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee7e7eeeeec1ceeeeeee8eeee568865e
+56665665666666665665666566666666aaa0000000000aaaeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeec1ceeeeeee5eeeee5665ee
+56665665555555555665666566666666aa000000000000aaeeeeeeeeeeeeeeeeeeeeeeeeeeee1eeeeee8eeeeeeeeeeeeeeee4eeeeeee8eeeeeeeeeeeee888eee
+56665666665666666665555566666666aa000000000000aaeeeeeeeeeeeeeeeeeee99eeeeeec1eeeee828eeeeeeeeeeeeeede4eeeee88eeeeeeeeeeeee888eee
+56665666665666666665666566666666aa000000000000aaeeeeeeeeeeeeeeeeeee9e9eeeeec1eeeee48eeeeeeee8eeeeeedee4ee5555511eeee8eeeee8d8eee
+56665555555555555555666566666666aaa0000000000aaaeeeeeeeeeeeeeeeeeeee5e9eeeec1eeeeee4eeeeee55559eeeedee4ee5555511e5555a55ee8d8eee
+56666656666666566666666566666666aaaaaaaaaaaaaaaaeeeeeeeeeeeeeeeeeee5e99eeeec1eeeee4eeeeeeeddeeeeeeedee4eeeddeeeeeeddeaaeee8d8eee
+56666656666666566666666566666666aaaaaaaaaaaaaaaaeeeeeeeeeeeeeeeee95eeeeeeeec1eeeeee4eeeeeedeeeeeeeede4eeeedeeeeeeedeeaaeeedddeee
+56666656666666566666666566666666566aaaaaaaaaa665eeeeeeeeeeeeeeeeea9eeeeeeeeceeeeeee4eeeeeeeeeeeeeeee4eeeeeeeeeeeeeeeeeeeeeedeeee
+555555555555555555555555666666665566aaaaaaaa6655eeeeeeeeeeeeeeeeeeeeeeeeeee5eeeeeee4eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeedeeee
+eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee44eeeeee44eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
+e787787ee717717ee737737ee757757eeeeeeeeeeeeeeeeeeed44deeeed44deeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
+ea8aa8aee616616eeb3bb3bee959959eeeeeeeeeeeeeeeeeeed22deeeed11deeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
+eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeed6666deed6666deeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
+ee8aa8eeed1661dee63bb36ee459954eeeeeeeeeeeeeeeeeed8888deedccccdeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
+ee8aa8eeed1661dee63bb36ee459954eeeeeeeeeeeeeeeeeed8888deedccccdeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
+ee8888eeed1111dee633336ee455554eeeeeeeeeeeeeeeeeed8888deedccccdeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
+eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeddddeeeeddddeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
+>>>>>>> refactor the make_actor
 eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
 eccccccceccccceecccccccee166661eee11166ee111111ee88888c8ee8888ee88888c8ee55f555eeee5555ee55ff55ee444444eee44444ee111111eeeeeeeee
 cccccccccccccccecccccccce161161eee11161ee114411e88888888ee88888e8882888ee55ff55eee55555ee5f5ff5ee444444eee44444ee114411eeeeeeeee
