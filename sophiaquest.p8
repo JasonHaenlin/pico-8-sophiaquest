@@ -15,7 +15,7 @@ f_heal, f_item, f_inv, f_obst = 0, 1, 5, 7
 l_player, l_ennemy, l_boss = 50, 10, 150
 walk, stay = "walk", "stay"
 
-debug_enabled = false
+debug_enabled = true
 
 -- init
 function _init()
@@ -25,7 +25,7 @@ function _init()
  g_dfx = {}
  g_weapons = {}
  g_dialogs = {}
-
+ set_map_delimiter(8, 8, 225, 125)
  g_open_inv=false
  g_selected_item=1
  g_ennemies_left=1
@@ -750,13 +750,11 @@ function g_good_spot(xmax, ymax)
 end
 
 function is_of_limit(x, y, bx, by, r)
- local fpx = get_formalised_position(g_p.x);
- local fpy = get_formalised_position(g_p.y);
  local bx = bx or x
  local by = by or y
  local r = r or 1
- if (x < fpx or x >= fpx + 128 or
-		y < fpy or y >= fpy + 128) then
+ if (x < g_fp.x or x >= g_fp.x + 128 or
+		y < g_fp.y or y >= g_fp.y + 128) then
 		return true
  end
  if (x < bx - r or x >= bx + r or
@@ -1187,9 +1185,8 @@ function controls_update()
  end
 end
 -- camera
-
-function get_formalised_position(a, cam)
- return a - 64 < 0 and 0 or a - 64
+function get_formalised_position(mina, maxa, a)
+ return max(mina, min(maxa, a-64))
 end
 
 function lerp(a,b,t)
@@ -1198,15 +1195,24 @@ end
 
 function follow_player()
  g_fp = {
-  x = get_formalised_position(g_p.x),
-  y = get_formalised_position(g_p.y)
+  x = get_formalised_position(g_map.x1, g_map.x2, g_p.x),
+  y = get_formalised_position(g_map.y1, g_map.y2, g_p.y)
+ }
+end
+
+function set_map_delimiter(x1,y1,x2,y2)
+ g_map = {
+  x1 = x1,
+  y1 = y1,
+  x2 = x2,
+  y2 = y2
  }
 end
 
 function set_camera()
  reset_camera()
- g_scr.x = max(0,lerp(g_scr.x,g_p.x-64,0.4))
- g_scr.y = max(0,lerp(g_scr.y,g_p.y-64,0.4))
+ g_scr.x = max(g_map.x1,min(g_map.x2,lerp(g_scr.x,g_p.x-64,0.4)))
+ g_scr.y = max(g_map.y1,min(g_map.y2,lerp(g_scr.y,g_p.y-64,0.4)))
  log(2, g_scr.x..":"..g_scr.y)
  if (g_scr.shake > 0) then
   local a = rnd(1)
