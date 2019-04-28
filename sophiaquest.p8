@@ -42,7 +42,7 @@ function _init()
 
  _update = update_menu
  init_area()
- init_current_area(2)
+ init_current_area(1)
  init_screen()
  make_game()
 end
@@ -63,71 +63,71 @@ end
 function init_area()
  g_area = {
   {
-   tag = busstop,
+   tag = busstop, -- 1
    name = "cheat",
    map = {x1 = 8, y1 = 8, x2 = inf, y2 = inf},
-   spawn = { x = 45, y = 448 }
+   spawn = { x = 125, y = 70 }
   },
   {
-   tag = busstop,
+   tag = busstop, -- 2
    name = "biot (c)",
    map = {x1 = 8, y1 = 8, x2 = 225, y2 = 125},
    spawn = { x = 125, y = 70 }
   },
   {
-   tag = busstop,
+   tag = busstop, -- 3
    name = "antibes (c)",
-   map = {x1 = 384 , y1 = 8, x2 = 537, y2 = 120},
-   spawn = { x = 528, y = 600 }
+   map = {x1 = 384 , y1 = 8, x2 = 474, y2 = 118},
+   spawn = { x = 528, y = 77 }
   },
   {
-   tag = busstop,
+   tag = busstop, -- 4
    name = "valbonne (c)",
    map = {x1 = 625, y1 = -10, x2 = 688, y2 = -9},
    spawn = { x = 777, y = 53 }
   },
   {
-   tag = room,
+   tag = room, -- 5
    name = "capgemo",
-   map = {x1 = 824, y1 = 8, x2 = 1025, y2 = 65},
-   spawn = { x = 860, y = 175 }
+   map = {x1 = 207, y1 = 387, x2 = 258, y2 = 385},
+   spawn = { x = 245, y = 492 }
   },
   {
-    tag = room,
-    name = "leonardo energie",
-    map = {x1 = 0, y1 = 0, x2 = 0, y2 = 0},
-    spawn = { x = 0, y = 0 }
-   },
-   {
-    tag = room,
-    name = "thelas",
-    map = {x1 = 817, y1 = 8, x2 = 902, y2 = 88},
-    spawn = { x = 873, y = 167 }
-   },
+   tag = room, -- 6
+   name = "leonardo energie",
+   map = {x1 = 399, y1 = 385, x2 = 553, y2 = 385},
+   spawn = { x = 445, y = 494 }
+  },
   {
-   tag = room,
+   tag = room, -- 7
+   name = "thelas",
+   map = {x1 = 822, y1 = 8, x2 = 895, y2 = 72},
+   spawn = { x = 868, y = 180 }
+  },
+  {
+   tag = room, -- 8
    name = "sophiatech batiment est",
-   map = {x1 = 0, y1 = 0, x2 = 0, y2 = 0},
-   spawn = { x = 0, y = 0 }
+   map = {x1 = 605, y1 = 125, x2 = 698, y2 = 125},
+   spawn = { x = 717, y = 227 }
   },
   {
-   tag = room,
+   tag = room, -- 9
    name = "sophiatech batiment ouest",
-   map = {x1 = 0, y1 = 0, x2 = 0, y2 = 0},
-   spawn = { x = 0, y = 0 }
+   map = {x1 = 694, y1 = 384, x2 = 888, y2 = 384},
+   spawn = { x = 660, y = 429 }
   },
   {
-   tag = room,
+   tag = room, -- 10
    name = "sophiatech restaurant",
    map = {x1 = 0, y1 = 0, x2 = 0, y2 = 0},
    spawn = { x = 0, y = 0 }
   },
   {
-    tag = room,
-    name = "carrouffe",
-    map = {x1 = 0, y1 = 0, x2 = 0, y2 = 0},
-    spawn = { x = 0, y = 0 }
-   }
+   tag = room, -- 11
+   name = "carrouffe",
+   map = {x1 = 0, y1 = 0, x2 = 0, y2 = 0},
+   spawn = { x = 0, y = 0 }
+  }
  }
 end
 
@@ -339,15 +339,15 @@ function make_all_npc()
 end
 
 function make_all_tp()
-  make_tp(281, 41, 46, 15, 15, 3, trig_dist_hud,"⬆️") --capgemo
-  make_tp(321, 41, 46, 15, 15, 3, trig_dist_hud,"⬆️") --capgemo
-  make_tp(688, 41, 46, 15, 15, 3, trig_dist_hud,"⬆️") --thelas
-  make_tp(728, 41, 46, 15, 15, 3, trig_dist_hud,"⬆️") --thelas
-  make_tp(696, 41, 46, 15, 15, 3, trig_dist_hud,"⬆️") --thelas
-  make_tp(735, 41, 46, 15, 15, 3, trig_dist_hud,"⬆️") --thelas
-  make_tp(138, 71, 46, 5, 5, 1, trig_btn_hud,"❎")
-  make_tp(538, 79, 46, 5, 5, 2, trig_btn_hud,"❎")
-  make_tp(785, 55, 46, 5, 5, 3, trig_btn_hud,"❎")
+  make_tp(281, 41, 44, 15, 15, 5, trig_dist_hud,"⬆️")
+  make_tp(321, 41, 44, 15, 15, 5, trig_dist_hud,"⬆️")
+  make_tp(250, 225, 44, 15, 15, 8, trig_dist_hud,"⬆️")
+  -- make_tp(728, 41, 44, 15, 15, 3, trig_dist_hud,"⬆️")
+  -- make_tp(696, 41, 44, 15, 15, 3, trig_dist_hud,"⬆️")
+  -- make_tp(735, 41, 44, 15, 15, 3, trig_dist_hud,"⬆️")
+  make_tp(138, 71, 44, 5, 5, 1, trig_btn_hud,"❎")
+  make_tp(538, 79, 44, 5, 5, 2, trig_btn_hud,"❎")
+  make_tp(785, 55, 44, 5, 5, 3, trig_btn_hud,"❎")
 end
 
 function make_npc(x, y, s)
@@ -892,7 +892,7 @@ function move(a, x, y, ox, oy)
  end
  debug_collision_matrix(x1, y1, x2, y2)
 
- if (not fget(sp1, f_obst) and not fget(sp2, f_obst)) then
+ if (not fget(sp1, f_obst) and not fget(sp2, f_obst) or debug_enabled)  then
   a.x += x
   a.y += y
  end -- check obstacles on map
@@ -1152,7 +1152,7 @@ end
 function check_collisions(a, b, newx, newy)
  local newx = newx or 0
  local newy = newy or 0
- if(a == b or a.tag == b.tag) return false
+ if(a == b or a.tag == b.tag or debug_enabled) return false
  local box_a = get_box(a)
  local box_b = get_box(b)
  if (box_a.x1 + newx > box_b.x2 or
