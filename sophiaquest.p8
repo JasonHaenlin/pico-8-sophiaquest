@@ -42,7 +42,7 @@ function _init()
 
  _update = update_menu
  init_area()
- init_current_area(1)
+ init_current_area(2)
  init_screen()
  make_game()
 end
@@ -65,7 +65,7 @@ function init_area()
    tag = busstop,
    name = "cheat",
    map = {x1 = 8, y1 = 8, x2 = inf, y2 = inf},
-   spawn = { x = 125, y = 70 }
+   spawn = { x = 45, y = 448 }
   },
   {
    tag = busstop,
@@ -1375,7 +1375,7 @@ function draw_game()
  follow_player()
 
  cls()
- map()
+ map(0, 0, 0, 0, 128, 64)
 
  set_camera()
 
