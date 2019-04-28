@@ -6,12 +6,12 @@ __lua__
 -- const
 left, right, up, down, fire1, fire2, none = 0, 1, 2, 3, 4, 5, 6
 black, dark_blue, dark_purple, dark_green, brown, dark_gray, light_gray, white, red, orange, yellow, green, blue, indigo, pink, peach = 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15
-player, bullet, ennemy, item, npc = 0, 1, 2, 3, 4
+player, bullet, ennemy, item, npc, invisible = 0, 1, 2, 3, 4, 5
 immortal_object = 10000
 inf = 10000
 melee, ranged = 1, 20
 nb_of_ennemis = 2
-f_heal, f_item, f_inv, f_obst = 0, 1, 5, 7
+f_heal, f_item, f_door, f_inv, f_obst = 0, 1, 4, 5, 7
 l_player, l_ennemy, l_boss = 50, 10, 150
 walk, stay = "walk", "stay"
 
@@ -25,13 +25,56 @@ function _init()
  g_dfx = {}
  g_weapons = {}
  g_dialogs = {}
- set_map_delimiter(8, 8, 225, 125)
  g_open_inv=false
  g_selected_item=1
  g_ennemies_left=1
  _update = update_menu
+ init_area()
+ init_current_area(2)
  init_screen()
  make_game()
+end
+
+function init_current_area(area)
+ local ca = g_area[area]
+ g_spawn = {}
+ g_spawn.x = ca.spawn.x
+ g_spawn.y = ca.spawn.y
+ if(g_p)  then
+  g_p.x = g_spawn.x
+  g_p.y = g_spawn.y
+ end
+ set_map_delimiter(ca.map.x1, ca.map.y1, ca.map.x2, ca.map.y2)
+end
+
+function init_area()
+ g_area = {
+  {
+   name = "cheat",
+   map = {x1 = 8, y1 = 8, x2 = inf, y2 = inf},
+   spawn = { x = 128, y = 70 }
+  },
+  {
+   name = "sophia",
+   map = {x1 = 8, y1 = 8, x2 = 225, y2 = 125},
+   spawn = { x = 128, y = 70 }
+  },
+  {
+   name = "zone 2",
+   map = {x1 = 384 , y1 = 8, x2 = 537, y2 = 120},
+   spawn = { x = 528, y = 77 }
+  },
+  {
+   name = "zone 3",
+   map = {x1 = 625, y1 = 8, x2 = 688, y2 = -9},
+   spawn = { x = 777, y = 51 }
+  },
+  {
+   name = "room 1",
+   map = {x1 = 824, y1 = 8, x2 = 1025, y2 = 65},
+   spawn = { x = 860, y = 175 }
+  }
+ }
 end
 
 function init_screen()
@@ -52,7 +95,7 @@ function newentitie(x, y, sprite, tag, health, direction, mvn)
   s = sprite,
   tag = tag,
   health = health or immortal_object,
-  direction = direction or up,
+  direction = direction or down,
   mvn = mvn or {}
  }
 end
@@ -89,7 +132,6 @@ function newdialog(text, trigger)
   arg = trigger.arg
  }
 end
-
 -- trigger
 
 function trigger(arg, type)
@@ -139,8 +181,9 @@ function make_game()
  make_weapons()
  make_ennemies(nb_of_ennemis, {134})
  make_all_npc()
- make_player(128, 70, 128)
+ make_player(g_spawn.x, g_spawn.y, 128)
  make_items()
+ make_all_tp()
 end
 
 function make_weapon(cmpnttable)
@@ -235,6 +278,11 @@ function make_all_npc()
   })
 end
 
+function make_all_tp()
+  make_tp(281, 41, 46, 15, 15, 3)
+  make_tp(321, 41, 46, 15, 15, 3)
+end
+
 function make_npc(x, y, s)
  local n = make_actor({
   -- new player char
@@ -244,7 +292,7 @@ function make_npc(x, y, s)
   -- add a draw controller
   draw = draw_characters,
   -- set the hitbox
-  box = {x1 = 0, y1 = 0, x2 = 7, y2 = 14},
+  box = {x1 = 0, y1 = 8, x2 = 7, y2 = 15},
  })
   -- add animations
  n.anim = stay
@@ -264,7 +312,7 @@ function make_player(x, y, s)
   -- add a draw controller
   draw = draw_characters,
   -- set the hitbox
-  box = {x1 = 0, y1 = 7, x2 = 7, y2 = 15},
+  box = {x1 = 0, y1 = 8, x2 = 7, y2 = 14},
   -- add weapon
   weapon = g_weapons[1]
  })
@@ -287,7 +335,7 @@ function make_ennemies(nb, aspr)
     -- add a draw controller
     draw = draw_characters,
     -- set the hitbox
-    box = {x1 = 0, y1 = 7, x2 = 7, y2 = 15},
+    box = {x1 = 0, y1 = 8, x2 = 7, y2 = 15},
     -- add weapon
     weapon = g_weapons[1]
    })
@@ -300,21 +348,37 @@ function make_ennemies(nb, aspr)
  end
 end
 
+function make_tp(x, y, s, w, h, link)
+ local n = make_actor({
+  -- new player char
+  entitie = newentitie(x, y, s, npc, invisible, down),
+  -- add a action controller
+  control = controls_doors,
+  -- add a draw controller
+  draw = draw_item,
+  -- set the hitbox
+  box = {x1 = 0, y1 = 0, x2 = w, y2 = h},
+ })
+  -- add link
+ n.linkto = link
+ return n
+end
+
 function make_items()
-  for i in all(g_map_items) do
-    for p in all(i.pos) do
-      make_actor({
-      -- new player char
-      entitie = newentitie(p.x, p.y, i.spr, item),
-      -- add a action controller
-      control = function (self) end,
-      -- add a draw controller
-      draw = draw_item,
-      -- set the hitbox
-      box = {x1 = 0, y1 = 0, x2 = 7, y2 = 7},
-      })
-    end
+ for i in all(g_map_items) do
+  for p in all(i.pos) do
+    make_actor({
+    -- new player char
+    entitie = newentitie(p.x, p.y, i.spr, item),
+    -- add a action controller
+    control = function (self) end,
+    -- add a draw controller
+    draw = draw_item,
+    -- set the hitbox
+    box = {x1 = 0, y1 = 0, x2 = 7, y2 = 7},
+    })
   end
+ end
 end
 
 function create_dialogs(self, dialogs)
@@ -374,7 +438,7 @@ end
 function make_dialog(self, di)
  local di = di or self.dialogs[self.line]
  local nd = {
-  x = self.x,
+  x = self.x+(self.box.x2/4),
   y = self.y-10,
   text = di.text,
   is_triggered = di.is_triggered,
@@ -481,8 +545,9 @@ function controls_menu()
  end
 end
 
-function hint(self)
- make_dialog(self, newdialog("❎", trigger(5, trig_time)))
+function hint(self,sign)
+ local sign = sign or "❎"
+ make_dialog(self, newdialog(sign, trigger(5, trig_time)))
 end
 
 function warning(self)
@@ -495,6 +560,16 @@ function action_ennemies(a, d)
  if (a.cd == 0) then
   shoot(a, d)
   a.cd = 50
+ end
+end
+
+function controls_doors(self)
+ local dist = distance(self)
+ if (dist < 10) then
+  hint(self,"⬆️")
+ end
+ if (dist < 7) then
+  init_current_area(self.linkto)
  end
 end
 
@@ -550,10 +625,10 @@ end
 
 function controls_player(self)
  self.anim = walk
- if (is_moving(left))  move(self,-1, 0, 0, 15)
- if (is_moving(right)) move(self, 1, 0, 6, 15)
- if (is_moving(up))    move(self, 0,-1, 7, 8)
- if (is_moving(down))  move(self, 0, 1, 7, 15)
+ if (is_moving(left))  move(self,-1, 0, self.box.x1, self.box.y2)
+ if (is_moving(right)) move(self, 1, 0, self.box.x2, self.box.y2)
+ if (is_moving(up))    move(self, 0,-1, self.box.x2, self.box.y2-self.box.y1)
+ if (is_moving(down))  move(self, 0, 1, self.box.x2, self.box.y2)
  if (is_not_moving())  self.anim = stay
  action_player()
 end
@@ -625,13 +700,12 @@ function target_nearest_one(limit)
 end
 
 function move_on(a, go)
- if (go == left)  move(a ,-a.dx, 0, 0, 15)
- if (go == right) move(a, a.dx, 0, 6, 15)
- if (go == up)    move(a, 0 ,-a.dy, 6, 0)
- if (go == down)  move(a, 0, a.dy, 6, 15)
+ if (go == left)  move(a ,-a.dx, 0, a.box.x1, a.box.y2)
+ if (go == right) move(a, a.dx, 0, a.box.x2, a.box.y2)
+ if (go == up)    move(a, 0 ,-a.dy, a.box.x2, a.box.y2-a.box.y1)
+ if (go == down)  move(a, 0, a.dy, a.box.x2, a.box.y2)
  if (go ~= none)  a.d = go
 end
-
 
 function is_moving(direction)
  if (btn(direction)) then
@@ -659,6 +733,8 @@ function move(a, x, y, ox, oy)
  local sp1 = mget(get_tile(x1), get_tile(y1))
  local sp2 = mget(get_tile(x2), get_tile(y2))
  debug_front_matrix(a, x, y, ox, oy)
+ if(is_limit_of_map(x1,y1) or is_limit_of_map(x2,y2)) return
+
  for b in all(g_actors) do
   if(check_collisions(a, b, x, y)) return
  end
@@ -687,8 +763,8 @@ function action_player()
  if (g_p.cdfx > 0) g_p.cdfx -= 1
  local item_near = fget(mget(get_tile(g_p.x) ,get_tile(g_p.y + g_p.box.y1)), f_inv)
  if (btnp(fire2)) then
-  log(4,fget(mget(get_tile(g_p.x) ,get_tile(g_p.y + g_p.box.y1)), f_inv))
-  if (fget(mget(get_tile(g_p.x+((g_p.box.x2-g_p.box.x1)/2)) ,get_tile(g_p.y + (g_p.box.y1/2))), f_inv)) then
+  local tile = mget(get_tile(g_p.x+((g_p.box.x2-g_p.box.x1)/2)) ,get_tile(g_p.y + (g_p.box.y1/2)))
+  if (fget(tile, f_inv)) then
    g_open_inv = true
   else
   local target = target_nearest_one(30)
@@ -749,6 +825,13 @@ end
 
 function get_tile(a)
  return ((a - (a % 8)) / 8)
+end
+
+function is_limit_of_map(x, y)
+ return not (x > g_map.x1
+ and x < g_map.x2+128
+ and y > g_map.y1
+ and y < g_map.y2+128)
 end
 
 function is_of_limit(x, y, bx, by, r)
@@ -956,7 +1039,7 @@ function controls_collisions()
  for a in all(g_actors) do
   for b in all(g_actors) do
    if (check_collisions(a, b)) then
-    if (a.tag == bullet and b.tag ~= bullet) then
+    if (a.tag == bullet and (b.tag == player or b.tab == player)) then
      b.health -= a.dmg
      local damaged_actor = b
      make_particles(b, 10, 5)
@@ -1156,7 +1239,6 @@ function draw_game()
  draw_dialogs()
  draw_hud()
 
- log(1, g_p.x..":"..g_p.y)
  debug()
 end
 
@@ -1215,7 +1297,6 @@ function set_camera()
  reset_camera()
  g_scr.x = max(g_map.x1,min(g_map.x2,lerp(g_scr.x,g_p.x-64,0.4)))
  g_scr.y = max(g_map.y1,min(g_map.y2,lerp(g_scr.y,g_p.y-64,0.4)))
- log(2, g_scr.x..":"..g_scr.y)
  if (g_scr.shake > 0) then
   local a = rnd(1)
   g_scr.x += cos(a)*g_scr.intensity
@@ -1295,10 +1376,10 @@ function debug()
  display_hitbox_matrix()
  display_collision_matrix()
  display_front_matrix()
+ display_scr_info()
 end
 
 function display_front_matrix()
- log(5, g_ft.x1.." "..g_ft.y1.." "..g_ft.x2.." "..g_ft.y2)
  line(g_ft.x1, g_ft.y1, g_ft.x1, g_ft.y2, orange)
  line(g_ft.x1, g_ft.y1, g_ft.x2, g_ft.y1, orange)
  line(g_ft.x2, g_ft.y1, g_ft.x2, g_ft.y2, orange)
@@ -1315,6 +1396,12 @@ function display_hitbox_matrix()
  line(b.x1, b.y1, b.x2, b.y1, red)
  line(b.x2, b.y1, b.x2, b.y2, red)
  line(b.x2, b.y2, b.x1, b.y2, red)
+end
+
+function display_scr_info()
+ print("scr "..flr(g_scr.x)..":"..flr(g_scr.y), g_scr.x+1, g_scr.y+1, red)
+ print("scr "..flr(g_scr.x+128)..":"..flr(g_scr.y+128), g_scr.x+80, g_scr.y+118, red)
+ print("pl "..flr(g_p.x)..":"..flr(g_p.y), g_scr.x+50, g_scr.y+50, red)
 end
 
 function debug_collision_matrix(x1, y1, x2, y2)
