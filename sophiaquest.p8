@@ -18,20 +18,24 @@ debug_enabled = true
 
 -- init
 function _init()
-<<<<<<< HEAD
  debug_init()
 
-=======
- g_in_memory = {}
->>>>>>> 295ac81685f42a666c9ead6ce7ad335f57921271
  g_actors = {}
  g_dfx = {}
  g_weapons = {}
  g_dialogs = {}
  g_menus = {}
  g_loots = {
-  {obj = "heal", s = 175, drop_rate = 30},
-  {obj = "coin", s = 191, drop_rate = 60}
+  {
+   obj = "heal",
+   s = 175,
+   drop_rate = 30
+  },
+  {
+   obj = "coin",
+   s = 191,
+   drop_rate = 60
+  }
  }
 
  _update = update_menu
@@ -50,20 +54,7 @@ function init_current_area(area)
   g_p.y = g_spawn.y
   g_p.current_area = area
  end
- -- clear_area()
  set_map_delimiter(ca.map.x1, ca.map.y1, ca.map.x2, ca.map.y2)
- -- scan_ennemies(ca.map.x1,ca.map.x2,ca.map.y1,ca.map.y2)
- -- push_in_memory()
-end
-
-function push_in_memory()
- for entitie in all(g_in_memory) do
-  add(g_actors,entitie)
- end
-end
-
-function clear_area()
- g_actors = {}
 end
 
 function init_area()
@@ -188,13 +179,9 @@ function init_screen()
  }
 end
 
-function scan_ennemies(x1,y1,x2,y2)
+function scan_ennemies()
   -- spawn ennemies
- local x1 = get_tile(x1)
- local y1 = get_tile(y1)
- local x2 = get_tile(x2+128)
- local y2 = get_tile(y2+128)
- for y=y1,y2 do for x=x1,x2 do
+ for y=0,63 do for x=0,127 do
    local tile = mget(x,y)
    if (tile == 131) then
     make_ennemies(x*8, y*8, 131)
@@ -295,10 +282,11 @@ end
 
 function make_game()
  make_weapons()
- init_current_area(2)
- make_player(g_spawn.x, g_spawn.y, 128)
- make_all_tp()
  make_all_npc()
+ make_all_tp()
+ init_current_area(2)
+ scan_ennemies()
+ make_player(g_spawn.x, g_spawn.y, 128)
  make_items()
 end
 
@@ -352,7 +340,6 @@ function make_actor(cmpnttable)
   cd = 0,
   cdfx = 0
  }
- if(actor.tag ~= ennemy) add(g_in_memory,actor)
  add(g_actors, actor)
  return actor
 end
@@ -742,30 +729,6 @@ function make_particles(a, n, c)
  end
 end
 
-<<<<<<< HEAD
-=======
-function format_text(text)
- local ftext = ""
- local check = false
- local offset = {x=0,y=0}
-	local g = false
-	for i=1, #text do
-		ftext = ftext..sub(text, i,i)
-		if (i%22 == 0 or g) then
-			g = true
-   if (sub(text, i,i) == " ") then
-    offset.y -= 3
-    ftext = ftext.. "\n"
-    check = true
-				g = false
-			end
-		end
- end
- if (check) offset.x = -22
- return {text=ftext,ox=offset.x,oy=offset.y}
-end
-
->>>>>>> 295ac81685f42a666c9ead6ce7ad335f57921271
 function make_dialog(self, di)
  local di = di or self.dialogs[self.line]
  local nd = {
@@ -1630,12 +1593,7 @@ function draw_game()
  draw_dialogs()
  draw_hud()
 
-<<<<<<< HEAD
  debug()
-=======
- print(#g_actors, g_p.x,g_p.y-10,red)
- print(#g_in_memory, g_p.x,g_p.y-15,red)
->>>>>>> 295ac81685f42a666c9ead6ce7ad335f57921271
 end
 
 -- update
@@ -1948,7 +1906,7 @@ b3b3b3b3b3b3b3b3b3000000000000000000000000000000000000007676d37676767676d3d30000
 00000000000000000000000000000000000000000000000000000000000000007676000000000000000000000000000000000000000000272700000000000000
 00000000000000000000000000000000000000000000007676760000767676001576767676767676767676767676767676767676767600157676766575767600
 __gff__
-000080000000008080808080808000008000000000000080808080808080808080008080800000808080000000800000800080808000000002a000000080800000000080808080808000000000000000008000808080008080000000000000000000008080808000800000000000000085850505000000008080808000808000
+800080808000008080808080808000008000008080000080808080808080808080008080800000808080000000800000800080808000000002a000000080800000000080808080808000000000000000008000808080008080000000000000000000008080808000800000000000000085850505000000008080808000808000
 0000008080800000000000000000000500000080808000000000000000000000000000808080000000000000000000000000008080800000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
 __map__
 000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000171818070808080808080808080918181900000000002525252525003e3e3e3e3e3e3e007979790079797b7b797979
@@ -2005,3 +1963,4 @@ __music__
 03 08020355
 00 0b0c0e44
 00 0e0f1044
+
