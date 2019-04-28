@@ -308,11 +308,11 @@ function make_all_npc()
 end
 
 function make_all_tp()
-  make_tp(281, 41, 44, 15, 15, 3, trig_dist_hud)
-  make_tp(321, 41, 44, 15, 15, 3, trig_dist_hud)
-  make_tp(138, 71, 44, 5, 5, 1, trig_btn_hud)
-  make_tp(538, 79, 44, 5, 5, 2, trig_btn_hud)
-  make_tp(785, 55, 44, 5, 5, 3, trig_btn_hud)
+  make_tp(281, 41, 44, 15, 15, 3, trig_dist_hud,"⬆️")
+  make_tp(321, 41, 44, 15, 15, 3, trig_dist_hud,"⬆️")
+  make_tp(138, 71, 44, 5, 5, 1, trig_btn_hud,"❎")
+  make_tp(538, 79, 44, 5, 5, 2, trig_btn_hud,"❎")
+  make_tp(785, 55, 44, 5, 5, 3, trig_btn_hud,"❎")
 end
 
 function make_npc(x, y, s)
@@ -394,7 +394,7 @@ function trig_dist_hud(self, dist)
 end
 
 
-function make_tp(x, y, s, w, h, link, trigger)
+function make_tp(x, y, s, w, h, link, trigger, hint)
  local n = make_actor({
   -- new player char
   entitie = newentitie(x, y, s, invisible, invisible, down),
@@ -409,6 +409,7 @@ function make_tp(x, y, s, w, h, link, trigger)
  n.linkto = link
   -- add a trigger
  n.trigger = trigger
+ n.sign = hint
  return n
 end
 
@@ -641,7 +642,7 @@ end
 function controls_doors(self)
  local dist = distance(self)
  if (dist < 10) then
-  hint(self,"⬆️")
+  hint(self,self.sign)
  end
  self:trigger(dist)
 end
