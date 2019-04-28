@@ -30,7 +30,7 @@ function _init()
  g_ennemies_left=1
  _update = update_menu
  init_area()
- init_current_area(2)
+ init_current_area(1)
  init_screen()
  make_game()
 end
@@ -55,25 +55,40 @@ function init_area()
    spawn = { x = 128, y = 70 }
   },
   {
-   name = "sophia",
+   name = "biot",
    map = {x1 = 8, y1 = 8, x2 = 225, y2 = 125},
    spawn = { x = 128, y = 70 }
   },
   {
-   name = "zone 2",
+   name = "valbonne",
    map = {x1 = 384 , y1 = 8, x2 = 537, y2 = 120},
    spawn = { x = 528, y = 77 }
   },
   {
-   name = "zone 3",
+   name = "antibes",
    map = {x1 = 625, y1 = 8, x2 = 688, y2 = -9},
    spawn = { x = 777, y = 51 }
   },
   {
-   name = "room 1",
+    name = "capgemo",
+    map = {x1 = 824, y1 = 8, x2 = 1025, y2 = 65},
+    spawn = { x = 860, y = 175 }
+  },
+  {
+   name = "sophiatech batiment est",
    map = {x1 = 824, y1 = 8, x2 = 1025, y2 = 65},
    spawn = { x = 860, y = 175 }
-  }
+  },
+  {
+    name = "sophiatech batiment ouest",
+    map = {x1 = 824, y1 = 8, x2 = 1025, y2 = 65},
+    spawn = { x = 860, y = 175 }
+   },
+   {
+    name = "sophiatech restaurant",
+    map = {x1 = 15, y1 = 54, x2 = 1025, y2 = 65},
+    spawn = { x = 860, y = 175 }
+   }
  }
 end
 
