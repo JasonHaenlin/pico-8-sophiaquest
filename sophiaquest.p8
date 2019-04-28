@@ -1291,6 +1291,7 @@ end
 function debug()
  if (not debug_enabled) return
  debug_log(g_fp.x+10, g_fp.y+10)
+ log_cpu_mem(g_fp.x+70, g_fp.y+5)
  display_hitbox_matrix()
  display_collision_matrix()
  display_front_matrix()
@@ -1339,6 +1340,11 @@ function debug_log(x, y)
  for i=1,#g_dbg do
   print(g_dbg[i], x, y+(6*i), red)
  end
+end
+
+function log_cpu_mem(x, y)
+ print("cpu "..flr(stat(1)*100).."%", x, y, red)
+ print("mem "..stat(0), x, y+6, red)
 end
 
 __gfx__
