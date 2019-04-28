@@ -738,12 +738,34 @@ function make_particles(a, n, c)
  end
 end
 
+function format_text(text)
+ local ftext = ""
+ local check = false
+ local offset = {x=0,y=0}
+	local g = false
+	for i=1, #text do
+		ftext = ftext..sub(text, i,i)
+		if (i%22 == 0 or g) then
+			g = true
+   if (sub(text, i,i) == " ") then
+    offset.y -= 2
+    ftext = ftext.. "\n"
+    check = true
+				g = false
+			end
+		end
+ end
+ if (check) offset.x = -22
+ return {text=ftext,ox=offset.x,oy=offset.y}
+end
+
 function make_dialog(self, di)
  local di = di or self.dialogs[self.line]
+ local t = format_text(di.text)
  local nd = {
-  x = self.x+(self.box.x2/4),
-  y = self.y-10,
-  text = di.text,
+  x = self.x+(self.box.x2/4) + t.ox,
+  y = self.y-10 + t.oy,
+  text = t.text,
   is_triggered = di.is_triggered,
   base_triggered = di.base_triggered,
   arg = di.arg,
