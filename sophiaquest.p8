@@ -511,10 +511,6 @@ function make_all_npc()
    local npc_daminaca_bestcorp = {}
    npc_daminaca_bestcorp = make_npc(772,176,137)
    npc_daminaca_bestcorp:create_dialogs({
-    newdialog("vous l'avez fait ! vous avez reussi a valider vos trois experiences professionnelles ! ❎",trigger(200, trig_time)),
-    newdialog("je suis tres fier de vous. ❎",trigger(200, trig_time)),
-    newdialog("votre parcours est exceptionnel. voici votre diplome et felicitation ! ❎",trigger(200, trig_time)),
-    newdialog("maintenant il ne vous reste plus qu'a trouver le metier de vos reves et… quoi ? ❎",trigger(200, trig_time)),
     newdialog("vous voulez etre directrice de sophiatech ? ❎",trigger(200, trig_time)),
     newdialog("hmm… vous etes donc venus a sophia dans le seul but de me remplacer dans ma fonction… ❎",trigger(200, trig_time)),
     newdialog("je vois. votre plan est temeraire. eh bien pour cela, ❎",trigger(200, trig_time)),
