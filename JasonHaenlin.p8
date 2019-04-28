@@ -11,7 +11,7 @@ immortal_object = 10000
 inf = 10000
 melee, ranged = 1, 20
 f_heal, f_item, f_door, f_inv, f_obst = 0, 1, 4, 5, 7
-l_player, l_ennemy, l_boss = 50, 10, 150
+l_player, l_ennemy, l_boss = 200, 10, 150
 walk, stay = "walk", "stay"
 
 -- init
@@ -31,7 +31,7 @@ function _init()
   {
    obj = "coin",
    s = 191,
-   drop_rate = 100
+   drop_rate = 50
   }
  }
 
@@ -489,7 +489,7 @@ function make_all_npc()
    })
 
    local npc_thelas_drh_valbonne = {}
-   npc_thelas_drh_valbonne = make_npc(999,53,134,boss,100,true,6)
+   npc_thelas_drh_valbonne = make_npc(999,53,134,boss,100,true,g_weapons[6])
    npc_thelas_drh_valbonne:create_dialogs({
     newdialog("zzzzz… zzzzz… zz… hein ? quoi ? quelqu'un ! ❎",trigger(200, trig_time)),
     newdialog("ici ? mais ca fait des mois que personne ne s'est presente ici pour un stage ! ❎",trigger(200, trig_time)),
@@ -500,7 +500,7 @@ function make_all_npc()
    })
 
    local npc_drh_leonardo_antibes = {}
-   npc_drh_leonardo_antibes = make_npc(665,463,140,boss,100,true,7)
+   npc_drh_leonardo_antibes = make_npc(665,463,140,boss,100,true,g_weapons[7])
    npc_drh_leonardo_antibes:create_dialogs({
     newdialog("hola ! qu'est-ce qu'on a la ? ❎",trigger(200, trig_time)),
     newdialog("vous cherchez un stage hein ? ❎",trigger(200, trig_time)),
@@ -509,7 +509,7 @@ function make_all_npc()
    })
 
    local npc_daminaca_bestcorp = {}
-   npc_daminaca_bestcorp = make_npc(772,176,137,100,true,8)
+   npc_daminaca_bestcorp = make_npc(772,176,137,boss,100,true,g_weapons[8])
    npc_daminaca_bestcorp:create_dialogs({
     newdialog("hein ? vous voulez etre directrice de sophiatech ? ❎",trigger(200, trig_time)),
     newdialog("hmm… vous etes donc venus a sophia dans le seul but de me remplacer dans ma fonction… ❎",trigger(200, trig_time)),
@@ -1128,7 +1128,7 @@ function action_player()
    if (target.enn ~= nil and g_p.cdfx == 0) then
     g_p.cdfx = g_p.weapon.cdfx
     g_p.weapon.dfx(target.enn.x, target.enn.y, 3, abs(g_fp.y - target.enn.y), g_p.weapon.draw)
-    target.enn.health -= 10
+    target.enn.health -= 20
     check_actor_health(target.enn)
    elseif (target.npc ~= nil and distance(target.npc) < 10) then
     begin_dialog(target.npc)
