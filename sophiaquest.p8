@@ -551,7 +551,7 @@ end
 function controls_player(self)
  self.anim = walk
  if (is_moving(left))  move(self,-1, 0, 0, 15)
- if (is_moving(right)) move(self, 1, 0, 6, 15)
+ if (is_moving(right)) move(self, 1, 0, 7, 15)
  if (is_moving(up))    move(self, 0,-1, 7, 8)
  if (is_moving(down))  move(self, 0, 1, 7, 15)
  if (is_not_moving())  self.anim = stay
@@ -659,6 +659,9 @@ function move(a, x, y, ox, oy)
  local sp1 = mget(get_tile(x1), get_tile(y1))
  local sp2 = mget(get_tile(x2), get_tile(y2))
  debug_front_matrix(a, x, y, ox, oy)
+ log(4, flr(x1)..":"..flr(y1).." - "..flr(x2)..":"..flr(y2))
+ if(is_limit_of_map(x1,y1) or is_limit_of_map(x2,y2)) return
+
  for b in all(g_actors) do
   if(check_collisions(a, b, x, y)) return
  end
@@ -687,7 +690,6 @@ function action_player()
  if (g_p.cdfx > 0) g_p.cdfx -= 1
  local item_near = fget(mget(get_tile(g_p.x) ,get_tile(g_p.y + g_p.box.y1)), f_inv)
  if (btnp(fire2)) then
-  log(4,fget(mget(get_tile(g_p.x) ,get_tile(g_p.y + g_p.box.y1)), f_inv))
   if (fget(mget(get_tile(g_p.x+((g_p.box.x2-g_p.box.x1)/2)) ,get_tile(g_p.y + (g_p.box.y1/2))), f_inv)) then
    g_open_inv = true
   else
@@ -749,6 +751,13 @@ end
 
 function get_tile(a)
  return ((a - (a % 8)) / 8)
+end
+
+function is_limit_of_map(x, y)
+ return not (x > g_map.x1
+ and x < g_map.x2+128
+ and y > g_map.y1
+ and y < g_map.y2+128)
 end
 
 function is_of_limit(x, y, bx, by, r)
@@ -1157,6 +1166,8 @@ function draw_game()
  draw_hud()
 
  log(1, g_p.x..":"..g_p.y)
+ log(2, g_scr.x..":"..g_scr.y)
+ log(3, g_map.x1..":"..g_map.y1.." - "..g_map.x2..":"..g_map.y2)
  debug()
 end
 
@@ -1215,7 +1226,6 @@ function set_camera()
  reset_camera()
  g_scr.x = max(g_map.x1,min(g_map.x2,lerp(g_scr.x,g_p.x-64,0.4)))
  g_scr.y = max(g_map.y1,min(g_map.y2,lerp(g_scr.y,g_p.y-64,0.4)))
- log(2, g_scr.x..":"..g_scr.y)
  if (g_scr.shake > 0) then
   local a = rnd(1)
   g_scr.x += cos(a)*g_scr.intensity
@@ -1298,7 +1308,6 @@ function debug()
 end
 
 function display_front_matrix()
- log(5, g_ft.x1.." "..g_ft.y1.." "..g_ft.x2.." "..g_ft.y2)
  line(g_ft.x1, g_ft.y1, g_ft.x1, g_ft.y2, orange)
  line(g_ft.x1, g_ft.y1, g_ft.x2, g_ft.y1, orange)
  line(g_ft.x2, g_ft.y1, g_ft.x2, g_ft.y2, orange)
