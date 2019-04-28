@@ -30,7 +30,7 @@ function _init()
  g_ennemies_left=1
  _update = update_menu
  init_area()
- init_current_area(1)
+ init_current_area(2)
  init_screen()
  make_game()
 end
@@ -74,7 +74,7 @@ function init_area()
    name = "room 1",
    map = {x1 = 824, y1 = 8, x2 = 1025, y2 = 65},
    spawn = { x = 860, y = 175 },
-   look = down
+   look = up
   }
  }
 end
@@ -289,7 +289,7 @@ function make_npc(x, y, s)
   -- add a draw controller
   draw = draw_characters,
   -- set the hitbox
-  box = {x1 = 0, y1 = 0, x2 = 7, y2 = 14},
+  box = {x1 = 0, y1 = 8, x2 = 7, y2 = 15},
  })
   -- add animations
  n.anim = stay
@@ -309,7 +309,7 @@ function make_player(x, y, s)
   -- add a draw controller
   draw = draw_characters,
   -- set the hitbox
-  box = {x1 = 0, y1 = 7, x2 = 7, y2 = 15},
+  box = {x1 = 0, y1 = 8, x2 = 7, y2 = 15},
   -- add weapon
   weapon = g_weapons[1]
  })
@@ -332,7 +332,7 @@ function make_ennemies(nb, aspr)
     -- add a draw controller
     draw = draw_characters,
     -- set the hitbox
-    box = {x1 = 0, y1 = 7, x2 = 7, y2 = 15},
+    box = {x1 = 0, y1 = 8, x2 = 7, y2 = 15},
     -- add weapon
     weapon = g_weapons[1]
    })
@@ -595,10 +595,10 @@ end
 
 function controls_player(self)
  self.anim = walk
- if (is_moving(left))  move(self,-1, 0, 0, 15)
- if (is_moving(right)) move(self, 1, 0, 7, 15)
- if (is_moving(up))    move(self, 0,-1, 7, 8)
- if (is_moving(down))  move(self, 0, 1, 7, 15)
+ if (is_moving(left))  move(self,-1, 0, self.box.x1, self.box.y2)
+ if (is_moving(right)) move(self, 1, 0, self.box.x2, self.box.y2)
+ if (is_moving(up))    move(self, 0,-1, self.box.x2, self.box.y2-self.box.y1)
+ if (is_moving(down))  move(self, 0, 1, self.box.x2, self.box.y2)
  if (is_not_moving())  self.anim = stay
  action_player()
 end
@@ -670,13 +670,12 @@ function target_nearest_one(limit)
 end
 
 function move_on(a, go)
- if (go == left)  move(a ,-a.dx, 0, 0, 15)
- if (go == right) move(a, a.dx, 0, 6, 15)
- if (go == up)    move(a, 0 ,-a.dy, 6, 0)
- if (go == down)  move(a, 0, a.dy, 6, 15)
+ if (go == left)  move(a ,-a.dx, 0, a.box.x1, a.box.y2)
+ if (go == right) move(a, a.dx, 0, a.box.x2, a.box.y2)
+ if (go == up)    move(a, 0 ,-a.dy, a.box.x2, a.box.y2-a.box.y1)
+ if (go == down)  move(a, 0, a.dy, a.box.x2, a.box.y2)
  if (go ~= none)  a.d = go
 end
-
 
 function is_moving(direction)
  if (btn(direction)) then
