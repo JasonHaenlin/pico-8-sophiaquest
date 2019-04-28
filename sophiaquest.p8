@@ -552,8 +552,8 @@ function controls_player(self)
  self.anim = walk
  if (is_moving(left))  move(self,-1, 0, 0, 15)
  if (is_moving(right)) move(self, 1, 0, 6, 15)
- if (is_moving(up))    move(self, 0,-1, 6, 0)
- if (is_moving(down))  move(self, 0, 1, 6, 15)
+ if (is_moving(up))    move(self, 0,-1, 7, 8)
+ if (is_moving(down))  move(self, 0, 1, 7, 15)
  if (is_not_moving())  self.anim = stay
  action_player()
 end
@@ -656,17 +656,13 @@ function move(a, x, y, ox, oy)
  local y1 = max(a.box.y1 + a.y, a.y + y + ((oy/2) * y) + oy/2)
  local x2 = (a.x + x + ox)
  local y2 = max(a.box.y1 + a.y, a.y + y + oy)
- local sp1 = mget(x1 / 8, y1 / 8)
- local sp2 = mget(x2 / 8, y2 / 8)
-
+ local sp1 = mget(get_tile(x1), get_tile(y1))
+ local sp2 = mget(get_tile(x2), get_tile(y2))
+ debug_front_matrix(a, x, y, ox, oy)
  for b in all(g_actors) do
   if(check_collisions(a, b, x, y)) return
  end
-
- g_cm.x1 = x1
- g_cm.x2 = x2
- g_cm.y1 = y1
- g_cm.y2 = y2
+ debug_collision_matrix(x1, y1, x2, y2)
 
  if (fget(sp1, f_obst)) then
   a.x += abs(y)
@@ -689,8 +685,10 @@ function action_player()
   g_p.cd = g_p.weapon.cd
  end
  if (g_p.cdfx > 0) g_p.cdfx -= 1
+ local item_near = fget(mget(get_tile(g_p.x) ,get_tile(g_p.y + g_p.box.y1)), f_inv)
  if (btnp(fire2)) then
-  if (fget(mget(g_p.x / 8 ,(g_p.y - 1) / 8), f_inv)) then
+  log(4,fget(mget(get_tile(g_p.x) ,get_tile(g_p.y + g_p.box.y1)), f_inv))
+  if (fget(mget(get_tile(g_p.x+((g_p.box.x2-g_p.box.x1)/2)) ,get_tile(g_p.y + (g_p.box.y1/2))), f_inv)) then
    g_open_inv = true
   else
   local target = target_nearest_one(30)
@@ -742,11 +740,15 @@ function g_good_spot(xmax, ymax)
   x = rnd(xmax),
   y = rnd(ymax)
  }
- while(fget(mget(a.x / 8 ,(a.y) / 8), f_obst)) do
+ while(fget(mget(get_tile(a.x) ,get_tile(a.y)), f_obst)) do
   a.x = rnd(xmax)
   a.y = rnd(ymax)
  end
  return a
+end
+
+function get_tile(a)
+ return ((a - (a % 8)) / 8)
 end
 
 function is_of_limit(x, y, bx, by, r)
@@ -1062,7 +1064,7 @@ function draw_weapon(a,f)
 end
 
 function draw_item(self)
-  spr(self.s,self.x,self.y)
+ spr(self.s,self.x,self.y)
 end
 
 function draw_actors()
@@ -1155,7 +1157,7 @@ function draw_game()
  draw_hud()
 
  log(1, g_p.x..":"..g_p.y)
- if(debug_enabled) debug()
+ debug()
 end
 
 -- update
@@ -1282,25 +1284,32 @@ g_map_items = {
 
 function debug_init()
   g_dbg = {"","","","","","","","","",""}
-  g_cm = {
-  x1 = 0,
-  y1 = 0,
-  x2 = 0,
-  y2 = 0
- }
+  g_ft = {x1=0,y1=0,x2=0,y2=0}
+  g_cl = {x1=0,y1=0,x2=0,y2=0}
 end
 
 function debug()
- debug_collision_matrix()
- debug_hitbox_matrix()
+ if (not debug_enabled) return
  debug_log(g_fp.x+10, g_fp.y+10)
+ log_cpu_mem(g_fp.x+70, g_fp.y+5)
+ display_hitbox_matrix()
+ display_collision_matrix()
+ display_front_matrix()
 end
 
-function debug_collision_matrix()
- line(g_cm.x1,g_cm.y1,g_cm.x2,g_cm.y2,pink)
+function display_front_matrix()
+ log(5, g_ft.x1.." "..g_ft.y1.." "..g_ft.x2.." "..g_ft.y2)
+ line(g_ft.x1, g_ft.y1, g_ft.x1, g_ft.y2, orange)
+ line(g_ft.x1, g_ft.y1, g_ft.x2, g_ft.y1, orange)
+ line(g_ft.x2, g_ft.y1, g_ft.x2, g_ft.y2, orange)
+ line(g_ft.x2, g_ft.y2, g_ft.x1, g_ft.y2, orange)
 end
 
-function debug_hitbox_matrix()
+function display_collision_matrix(params)
+ line(g_cl.x1,g_cl.y1,g_cl.x2,g_cl.y2,pink)
+end
+
+function display_hitbox_matrix()
  local b = get_box(g_p)
  line(b.x1, b.y1, b.x1, b.y2, red)
  line(b.x1, b.y1, b.x2, b.y1, red)
@@ -1308,7 +1317,21 @@ function debug_hitbox_matrix()
  line(b.x2, b.y2, b.x1, b.y2, red)
 end
 
+function debug_collision_matrix(x1, y1, x2, y2)
+ if (not debug_enabled) return
+   g_cl = {x1=x1,y1=y1,x2=x2,y2=y2}
+end
+
+function debug_front_matrix(a, x, y, ox, oy)
+ if (not debug_enabled) return
+ g_ft.x1 = (a.x + x + ((ox - a.x%8 + (8*x))))
+ g_ft.y1 = (a.y + y + ((oy - a.y%8 + (8*y))))
+ g_ft.y2 = (a.y + y + oy + ((8 - a.y%8 + (8*y))))
+ g_ft.x2 = (a.x + x + ox + ((8 - a.x%8 + (8*x))))
+end
+
 function log(tab,text)
+ if (not debug_enabled) return
  if(tab < 0 or tab > #g_dbg) return
  g_dbg[tab] = text
 end
@@ -1317,6 +1340,11 @@ function debug_log(x, y)
  for i=1,#g_dbg do
   print(g_dbg[i], x, y+(6*i), red)
  end
+end
+
+function log_cpu_mem(x, y)
+ print("cpu "..flr(stat(1)*100).."%", x, y, red)
+ print("mem "..stat(0), x, y+6, red)
 end
 
 __gfx__
@@ -1504,4 +1532,3 @@ __music__
 03 08020355
 00 0b0c0e44
 00 0e0f1044
-
