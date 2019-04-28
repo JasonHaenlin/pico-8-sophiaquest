@@ -489,7 +489,7 @@ function make_all_npc()
    })
 
    local npc_thelas_drh_valbonne = {}
-   npc_thelas_drh_valbonne = make_npc(999,53,134,boss)
+   npc_thelas_drh_valbonne = make_npc(999,53,134,boss,100,true,6)
    npc_thelas_drh_valbonne:create_dialogs({
     newdialog("zzzzz… zzzzz… zz… hein ? quoi ? quelqu'un ! ❎",trigger(200, trig_time)),
     newdialog("ici ? mais ca fait des mois que personne ne s'est presente ici pour un stage ! ❎",trigger(200, trig_time)),
@@ -500,7 +500,7 @@ function make_all_npc()
    })
 
    local npc_drh_leonardo_antibes = {}
-   npc_drh_leonardo_antibes = make_npc(665,463,140,boss)
+   npc_drh_leonardo_antibes = make_npc(665,463,140,boss,100,true,7)
    npc_drh_leonardo_antibes:create_dialogs({
     newdialog("hola ! qu'est-ce qu'on a la ? ❎",trigger(200, trig_time)),
     newdialog("vous cherchez un stage hein ? ❎",trigger(200, trig_time)),
@@ -509,7 +509,7 @@ function make_all_npc()
    })
 
    local npc_daminaca_bestcorp = {}
-   npc_daminaca_bestcorp = make_npc(772,176,137)
+   npc_daminaca_bestcorp = make_npc(772,176,137,100,true,8)
    npc_daminaca_bestcorp:create_dialogs({
     newdialog("vous voulez etre directrice de sophiatech ? ❎",trigger(200, trig_time)),
     newdialog("hmm… vous etes donc venus a sophia dans le seul but de me remplacer dans ma fonction… ❎",trigger(200, trig_time)),
@@ -602,7 +602,7 @@ function make_ennemies(x, y, s)
   -- set the hitbox
   box = {x1 = 0, y1 = 8, x2 = 7, y2 = 15},
   -- add weapon
-  weapon = g_weapons[1]
+  weapon = g_weapons[5]
  })
  -- add animations
  e.anim = stay
@@ -1921,4 +1921,3 @@ __music__
 03 08020355
 00 0b0c0e44
 00 0e0f1044
-
