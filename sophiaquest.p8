@@ -1335,6 +1335,7 @@ function draw_border_on_entities(entitie, x, y, c)
  spr(entitie.f, x-1, y,   1, 2, entitie.flip, false)
  spr(entitie.f, x+1, y,   1, 2, entitie.flip, false)
  pal()
+ palt(black,false)
  palt(pink,true)
  spr(entitie.f, x,   y,   1, 2, entitie.flip, false)
 end
