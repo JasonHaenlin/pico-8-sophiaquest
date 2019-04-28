@@ -490,7 +490,7 @@ function make_all_npc()
    })
 
    local npc_daminaca_bestcorp = {}
-   npc_daminaca_bestcorp = make_npc(772,176,140)
+   npc_daminaca_bestcorp = make_npc(772,176,137)
    npc_daminaca_bestcorp:create_dialogs({
     newdialog("vous l'avez fait ! vous avez reussi a valider vos trois experiences professionnelles ! ❎",trigger(200, trig_time)),
     newdialog("je suis tres fier de vous. ❎",trigger(200, trig_time)),
