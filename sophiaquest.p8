@@ -14,8 +14,12 @@ f_heal, f_item, f_door, f_inv, f_obst = 0, 1, 4, 5, 7
 l_player, l_ennemy, l_boss = 50, 10, 150
 walk, stay = "walk", "stay"
 
+debug_enabled = true
+
 -- init
 function _init()
+ debug_init()
+
  g_actors = {}
  g_dfx = {}
  g_weapons = {}
@@ -184,9 +188,6 @@ function scan_ennemies()
     mset(x,y,mget(x-1,y))
    elseif (tile == 134) then
     make_ennemies(x*8, y*8, 134)
-    mset(x,y,mget(x-1,y))
-   elseif (tile == 140) then
-    make_ennemies(x*8, y*8, 140)
     mset(x,y,mget(x-1,y))
    end
   end end
@@ -444,6 +445,7 @@ function make_all_npc()
     newdialog("laissez-moi vous expliquer le fonctionnement de cette ecole. ❎",trigger(200, trig_time)),
     newdialog("mais avant tout, voici le materiel dont vous aurez besoin pour votre parcours ❎",trigger(200, trig_time)),
     newdialog("tenez ! ❎",trigger(200, trig_time)),
+    -- todo add weapon
     newdialog("votre materiel est extremement precieux. ❎",trigger(200, trig_time)),
     newdialog("sans materiel vous ne pourrez jamais terminer vos etudes et realiser votre reve à sophia. ❎",trigger(200, trig_time)),
     newdialog("votre materiel constitue l�█▥outil principal de votre connaissance. ❎",trigger(200, trig_time)),
@@ -454,7 +456,6 @@ function make_all_npc()
     newdialog("l'ordre que je vous conseil pour les stages est le suivant : d'abord capgemo qui se trouve a biot, puis leonardo energie a antibes et enfin thelas à valbonne. ❎",trigger(200, trig_time)),
     newdialog("vous devrez aller parler aux recruteurs de chacune de ces entreprises et passer leurs epreuves afin d'etre recrutee. ❎",trigger(200, trig_time)),
     newdialog("dans le campus, des etudiants et professeurs viendront vous aborder pour vous aider a prendre de l�█▥experience et tester vos connaissances. ❎",trigger(200, trig_time)),
-    newdialog("Et noublies pas de récupérer ton équipement sur le terminal à côté. ❎",trigger(200, trig_time)),
     newdialog("en cas de doute, durant votre parcours n'hesitez pas a revenir me voir et je vous repeterai tout cela. ❎",trigger(200, trig_time)),
    })
 
@@ -728,34 +729,12 @@ function make_particles(a, n, c)
  end
 end
 
-function format_text(text)
- local ftext = ""
- local check = false
- local offset = {x=0,y=0}
-	local g = false
-	for i=1, #text do
-		ftext = ftext..sub(text, i,i)
-		if (i%22 == 0 or g) then
-			g = true
-   if (sub(text, i,i) == " ") then
-    offset.y -= 2
-    ftext = ftext.. "\n"
-    check = true
-				g = false
-			end
-		end
- end
- if (check) offset.x = -22
- return {text=ftext,ox=offset.x,oy=offset.y}
-end
-
 function make_dialog(self, di)
  local di = di or self.dialogs[self.line]
- local t = format_text(di.text)
  local nd = {
-  x = self.x+(self.box.x2/4) + t.ox,
-  y = self.y-10 + t.oy,
-  text = t.text,
+  x = self.x+(self.box.x2/4),
+  y = self.y-10,
+  text = di.text,
   is_triggered = di.is_triggered,
   base_triggered = di.base_triggered,
   arg = di.arg,
@@ -849,6 +828,8 @@ end
 function controls_loot(self)
  local dist = distance(self)
  if (dist < 8) then
+  log(2, self.obj)
+  log(3, g_p.health)
   if(self.obj == "heal" and g_p.health < l_player) then
    g_p.health += 10
    if (g_p.health > l_player) g_p.health = l_player
@@ -1087,6 +1068,7 @@ function move(a, x, y, ox, oy)
  local y2 = max(a.box.y1 + a.y, a.y + y + oy)
  local sp1 = mget(get_tile(x1), get_tile(y1))
  local sp2 = mget(get_tile(x2), get_tile(y2))
+ debug_front_matrix(a, x, y, ox, oy)
  if(is_limit_of_map(x1,y1) or is_limit_of_map(x2,y2)) return
 
  for b in all(g_actors) do
@@ -1094,8 +1076,9 @@ function move(a, x, y, ox, oy)
    return
   end
  end
+ debug_collision_matrix(x1, y1, x2, y2)
 
- if (not fget(sp1, f_obst) and not fget(sp2, f_obst))  then
+ if (not fget(sp1, f_obst) and not fget(sp2, f_obst) or debug_enabled)  then
   a.x += x
   a.y += y
  end -- check obstacles on map
@@ -1343,7 +1326,7 @@ end
 function check_collisions(a, b, newx, newy)
  local newx = newx or 0
  local newy = newy or 0
- if(a == b or a.tag == b.tag) return false
+ if(a == b or a.tag == b.tag or debug_enabled) return false
  local box_a = get_box(a)
  local box_b = get_box(b)
  if (box_a.x1 + newx > box_b.x2 or
@@ -1609,6 +1592,8 @@ function draw_game()
  draw_dfxs()
  draw_dialogs()
  draw_hud()
+
+ debug()
 end
 
 -- update
@@ -1622,6 +1607,7 @@ function update_menu()
 end
 
 function update_game()
+  log(1, rnd(1))
  if (#g_menus < 1) then
   controls_update()
   controls_collisions()
@@ -1717,6 +1703,79 @@ spr_life = {
  {0, 0, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 0, 0}
 }
 
+-- debug
+
+function debug_init()
+  g_dbg = {"","","","","","","","","",""}
+  g_ft = {x1=0,y1=0,x2=0,y2=0}
+  g_cl = {x1=0,y1=0,x2=0,y2=0}
+end
+
+function debug()
+ if (not debug_enabled) return
+ debug_log(g_fp.x+10, g_fp.y+10)
+ log_cpu_mem(g_fp.x+70, g_fp.y+5)
+ display_hitbox_matrix()
+ display_collision_matrix()
+ display_front_matrix()
+ display_scr_info()
+end
+
+function display_front_matrix()
+ line(g_ft.x1, g_ft.y1, g_ft.x1, g_ft.y2, orange)
+ line(g_ft.x1, g_ft.y1, g_ft.x2, g_ft.y1, orange)
+ line(g_ft.x2, g_ft.y1, g_ft.x2, g_ft.y2, orange)
+ line(g_ft.x2, g_ft.y2, g_ft.x1, g_ft.y2, orange)
+end
+
+function display_collision_matrix(params)
+ line(g_cl.x1,g_cl.y1,g_cl.x2,g_cl.y2,pink)
+end
+
+function display_hitbox_matrix()
+ local b = get_box(g_p)
+ line(b.x1, b.y1, b.x1, b.y2, red)
+ line(b.x1, b.y1, b.x2, b.y1, red)
+ line(b.x2, b.y1, b.x2, b.y2, red)
+ line(b.x2, b.y2, b.x1, b.y2, red)
+end
+
+function display_scr_info()
+ print("scr "..flr(g_scr.x)..":"..flr(g_scr.y), g_scr.x+1, g_scr.y+1, red)
+ print("scr "..flr(g_scr.x+128)..":"..flr(g_scr.y+128), g_scr.x+80, g_scr.y+118, red)
+ print("pl "..flr(g_p.x)..":"..flr(g_p.y), g_scr.x+50, g_scr.y+50, red)
+end
+
+function debug_collision_matrix(x1, y1, x2, y2)
+ if (not debug_enabled) return
+   g_cl = {x1=x1,y1=y1,x2=x2,y2=y2}
+end
+
+function debug_front_matrix(a, x, y, ox, oy)
+ if (not debug_enabled) return
+ g_ft.x1 = (a.x + x + ((ox - a.x%8 + (8*x))))
+ g_ft.y1 = (a.y + y + ((oy - a.y%8 + (8*y))))
+ g_ft.y2 = (a.y + y + oy + ((8 - a.y%8 + (8*y))))
+ g_ft.x2 = (a.x + x + ox + ((8 - a.x%8 + (8*x))))
+end
+
+function log(tab,text)
+ if (not debug_enabled) return
+ if(tab < 0 or tab > #g_dbg) return
+ g_dbg[tab] = text
+end
+
+function debug_log(x, y)
+ for i=1,#g_dbg do
+  print(g_dbg[i], x, y+(6*i), red)
+ end
+end
+
+function log_cpu_mem(x, y)
+ print("cpu "..flr(stat(1)*100).."%", x, y, red)
+ print("mem "..stat(0), x, y+6, red)
+end
+
 __gfx__
 000000007777777733bb3b3b517711550000000075577557a555555a000000000000000000000000000000000000000000000000000000000555555555555550
 0000000055555555bbbbb3b3517171550dd7ddd075577557a55555a50066666666666666666666005066666666666666666666050d7dddd00000000000000000
@@ -1766,14 +1825,14 @@ __gfx__
 07665555611711165555667004444440a0aaaaaaaaaaaa0a6222222620000002eeee999eceeeeeeceeeeeeeeeeeeeeeeeee7eeeeeec1ceeee5eeeeee56899865
 07665555661111665555000004444440aaaaaaaaaaaaaaaa626666262000000299eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee7e7eeeeec1ceeeeeee8eeee568865e
 07665555661111665555667004444440aaa0000000000aaa6266662620000002eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeec1ceeeeeee5eeeee5665ee
-07665555555555555555667070111106aa000000000000aa2222111166666666eeeeeeeeeeee1eeeeee8eeeeeeeeeeeeeeee4eeeeeee8eeeeeeeeeeeee888eee
-07665555555555555555667070111106aa000000000000aa2222111176666667eee99eeeeeec1eeeee828eeeeeeeeeeeeeede4eeeee88eeeeeeeeeeeee888eee
-07665555555555555555667070111106aa000000000000aa2222111177666677eee9e9eeeeec1eeeee48eeeeeeee8eeeeeedee4ee5555511eeee8eeeee8d8eee
-00005555555555555555667070111106aaa0000000000aaa2222111177766777eeee5e9eeeec1eeeeee4eeeeee55559eeeedee4ee5555511e5555a55ee8d8eee
-07666666606666666660667070111106aaaaaaaaaaaaaaaa2222111177766777eee5e99eeeec1eeeee4eeeeeeeddeeeeeeedee4eeeddeeeeeeddeaaeee8d8eee
-07666666606666666660667070111106aaaaaaaaaaaaaaaa2222111177666677e95eeeeeeeec1eeeeee4eeeeeedeeeeeeeede4eeeedeeeeeeedeeaaeeedddeee
-07777777707777777770777070111106566aaaaaaaaaa6652222111176666667ea9eeeeeeeeceeeeeee4eeeeeeeeeeeeeeee4eeeeeeeeeeeeeeeeeeeeeedeeee
-000000000000000000000000601111065566aaaaaaaa66552222111166666666eeeeeeeeeee5eeeeeee4eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeedeeee
+07665555555555555555667070111106aa000000000000aa2222111166666666ee00eee5eeee1eeeeee8eeeeeeeeeeeeeeee4eeeeeee8eeeeeeeeeeeee888eee
+07665555555555555555667070111106aa000000000000aa2222111176666667ee0000e5eeec1eeeee828eeeeeeeeeeeeeede4eeeee88eeeeeeeeeeeee888eee
+07665555555555555555667070111106aa000000000000aa2222111177666677e00000e5eeec1eeeee48eeeeeeee8eeeeeedee4ee5555511eeee8eeeee8d8eee
+00005555555555555555667070111106aaa0000000000aaa2222111177766777e00000e5eeec1eeeeee4eeeeee55559eeeedee4ee5555511e5555a55ee8d8eee
+07666666606666666660667070111106aaaaaaaaaaaaaaaa2222111177766777ee000ee5eeec1eeeee4eeeeeeeddeeeeeeedee4eeeddeeeeeeddeaaeee8d8eee
+07666666606666666660667070111106aaaaaaaaaaaaaaaa2222111177666677eeeeeee5eeec1eeeeee4eeeeeedeeeeeeeede4eeeedeeeeeeedeeaaeeedddeee
+07777777707777777770777070111106566aaaaaaaaaa6652222111176666667ee22222deeeceeeeeee4eeeeeeeeeeeeeeee4eeeeeeeeeeeeeeeeeeeeeedeeee
+000000000000000000000000601111065566aaaaaaaa66552222111166666666555555ddeee5eeeeeee4eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeedeeee
 555555551111111155555555622222265550055566666662ee0550ee6666667550222262000000000000000000000000666666660000000077077077eeeeeeee
 555555551111111165555556622222265550055566666662ee0550ee66666675502222620000000007777770077777706666666666666666777cc777eeeeeeee
 555555551111111166555566622222265550055566666662ee0550ee6666667550222262ffffffff0777777007077770666666666666666677cccc77eeeeeeee
