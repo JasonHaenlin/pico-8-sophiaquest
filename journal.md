@@ -2,17 +2,17 @@
 
  - 12/04/2019
 	 - Prise en main de PICO-8
-	 - Découvertes des sprites, l'éditeur de map, de musique
+	 - Découverte des sprites, l'éditeur de map, de musique
 	 - Familiarisation avec la syntaxe Lua
 	 
  - 20/04/2019
-	 - Création d'un jeu de test comprenant une grande arène avec un personnage et des ennemis
+	 - Création d'un jeu de tests comprenant une grande arène avec un personnage et des ennemis
 	 - Les personnages/acteurs sont sur 8x8 pixels, la map est très basique avec des bordures simples pour délimiter la zone explorable
 
  - 21/04/2019
 	- Les ennemis et le héros ont des armes et des points de vies. Le héros peut changer d'armes, le jeu se termine quand tous les ennemis ont été vaincus.
 	- Ajout d'un HUD pour les PVs et le "cooldown" des attaques.
-	- Les ennemis se déplace vers le joueur sans se soucier des obstacles.
+	- Les ennemis se déplacent vers le joueur sans se soucier des obstacles.
 	- Ajout des potions de vie
 	
 - 24/04/2019
@@ -27,17 +27,17 @@
 
 - 26/04/2019
 	- Début de la map du vrai jeu 
-	- Ajout des bâtiments Est Polytech, du parking et des intersections de routes 
-	- Ajout des sprites de champions d'arènes pour les arènes de Biot, Valbonne et Antibes
-	- Suppression de l'ancienne carte qui servait de banc de test
+	- Ajout des bâtiments Est Sophiatech, du parking et des intersections de routes 
+	- Ajout des sprites de directeurs des ressources humaines pour les entreprises de Biot, Valbonne et Antibes
+	- Suppression de l'ancienne carte qui servait de banc de tests
 	- Des problèmes de transparences résolues en choisissant la couleur ROSE comme couleur transparente pour les acteurs dans le code (potion, personnages, armes, etc ...)
 	- Amélioration de plusieurs sprites dans la map
 	- Ajustement des collisions pour 8x16 pixels (la partie inférieure du personnage sert de repère)
-	- Clean du code qui commence à être un peu désordonné
+	- Nettoyage du code pour lisibilité
 
 - 27/04/2019
 	- Ajout de la map BIOT, VALBONNE et ANTIBES
-	- Changement du design des buildings et de la clôture du bâtiment à polytech
+	- Changement des design des buildings et de la clôture du bâtiment à polytech
 	- Ajustement de la "hitbox" des projectiles et de la caméra
 	- Optimisation de la mémoire utilisée par les sprites et la map
 	- Ajout des dialogues et séparation entre les personnages narratifs et les personnages aggressifs
@@ -45,6 +45,7 @@
 	- Limiter la portée de la caméra pour ne pas afficher les éléments parasites de la vue actuelle (ville et intérieur des bâtiments)
 
 - 28/04/2019
-	- Ajout de l'arène Thelas et CapGemo
-	- Mis à jour de quelques sprites
-	- Debug et optimisation des  performances CPU et mémoire
+	- Ajout de l'entreprise Thelas et CapGemo
+	- Mise à jour de quelques sprites
+	- Debug et optimisation des performances CPU et mémoire
+	- Re disign général des sprites de décor
