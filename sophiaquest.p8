@@ -6,7 +6,7 @@ __lua__
 -- const
 left, right, up, down, fire1, fire2, none = 0, 1, 2, 3, 4, 5, 6
 black, dark_blue, dark_purple, dark_green, brown, dark_gray, light_gray, white, red, orange, yellow, green, blue, indigo, pink, peach = 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15
-player, bullet, ennemy, item, npc, invisible, busstop, room = 0, 1, 2, 3, 4, 5, 6, 7
+player, bullet, ennemy, item, npc, invisible, busstop, room,  boss = 0, 1, 2, 3, 4, 5, 6, 7, 8
 immortal_object = 10000
 inf = 10000
 melee, ranged = 1, 20
@@ -21,6 +21,7 @@ function _init()
  g_weapons = {}
  g_dialogs = {}
  g_menus = {}
+ g_to_win = 3
  g_loots = {
   {
    obj = "heal",
@@ -429,7 +430,7 @@ function make_all_npc()
    })
 
    local npc_drh_capgemo_biot = {}
-   npc_drh_capgemo_biot = make_npc(346,425,140)
+   npc_drh_capgemo_biot = make_npc(346,425,140,boss)
    npc_drh_capgemo_biot:create_dialogs({
     newdialog("présentez vous ! ❎",trigger(200, trig_time)),
    })
@@ -488,7 +489,7 @@ function make_all_npc()
    })
 
    local npc_thelas_drh_valbonne = {}
-   npc_thelas_drh_valbonne = make_npc(999,53,134)
+   npc_thelas_drh_valbonne = make_npc(999,53,134,boss)
    npc_thelas_drh_valbonne:create_dialogs({
     newdialog("zzzzz… zzzzz… zz… hein ? quoi ? quelqu'un ! ❎",trigger(200, trig_time)),
     newdialog("ici ? mais ca fait des mois que personne ne s'est presente ici pour un stage ! ❎",trigger(200, trig_time)),
@@ -499,7 +500,7 @@ function make_all_npc()
    })
 
    local npc_drh_leonardo_antibes = {}
-   npc_drh_leonardo_antibes = make_npc(665,463,140)
+   npc_drh_leonardo_antibes = make_npc(665,463,140,boss)
    npc_drh_leonardo_antibes:create_dialogs({
     newdialog("hola ! qu'est-ce qu'on a la ? ❎",trigger(200, trig_time)),
     newdialog("vous cherchez un stage hein ? ❎",trigger(200, trig_time)),
@@ -549,7 +550,7 @@ function make_all_tp()
   make_tp(785, 55, 46, 5, 5, 3, trig_btn_hud,"❎")
 end
 
-function make_npc(x, y, s, health, fury, weapon)
+function make_npc(x, y, s, tag ,health, fury, weapon)
  local health = health or l_ennemy
  local n = make_actor({
   -- new player char
@@ -569,6 +570,7 @@ function make_npc(x, y, s, health, fury, weapon)
  n.create_dialogs = create_dialogs
  n.furymode = fury or true
  n.weapon_in_pocket = weapon or g_weapons[1]
+ n.super = tag or npc
  return n
 end
 
@@ -1385,6 +1387,7 @@ function check_actor_health(damaged_actor)
  if (is_dead(damaged_actor)) then
   dfx_disapearance(damaged_actor.x, damaged_actor.y, flr((rnd(5)+1)), nil, draw_explosion)
   screenshake(5)
+  if (damaged_actor.super == boss) g_to_win -= 1
   del(g_actors, damaged_actor)
  end
 end
@@ -1531,6 +1534,13 @@ function draw_hud()
  for m in all(g_menus) do
   m:draw()
  end
+ draw_results()
+end
+
+function draw_results()
+  if(g_to_win < 1) then
+    printoutline("Bravo", g_p.x,g_p.y,white)
+  end
 end
 
 function draw_coins(x, y)
