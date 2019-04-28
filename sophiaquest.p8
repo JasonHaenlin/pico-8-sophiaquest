@@ -89,13 +89,13 @@ function init_area()
   {
    tag = room, -- 5
    name = "capgemo",
-   map = {x1 = 223, y1 = 387, x2 = 258, y2 = 385},
+   map = {x1 = 223, y1 = 387, x2 = 278, y2 = 385},
    spawn = { x = 260, y = 493 }
   },
   {
    tag = room, -- 6
    name = "leonardo energie",
-   map = {x1 = 399, y1 = 385, x2 = 553, y2 = 385},
+   map = {x1 = 402, y1 = 385, x2 = 553, y2 = 385},
    spawn = { x = 445, y = 494 }
   },
   {
@@ -107,7 +107,7 @@ function init_area()
   {
    tag = room, -- 8
    name = "sophiatech batiment est",
-   map = {x1 = 605, y1 = 125, x2 = 698, y2 = 125},
+   map = {x1 = 605, y1 = 125, x2 = 678, y2 = 125},
    spawn = { x = 717, y = 227 }
   },
   {
@@ -1851,3 +1851,4 @@ __music__
 03 08020355
 00 0b0c0e44
 00 0e0f1044
+
