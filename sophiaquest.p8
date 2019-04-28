@@ -14,12 +14,8 @@ f_heal, f_item, f_door, f_inv, f_obst = 0, 1, 4, 5, 7
 l_player, l_ennemy, l_boss = 50, 10, 150
 walk, stay = "walk", "stay"
 
-debug_enabled = true
-
 -- init
 function _init()
- debug_init()
-
  g_actors = {}
  g_dfx = {}
  g_weapons = {}
@@ -188,6 +184,9 @@ function scan_ennemies()
     mset(x,y,mget(x-1,y))
    elseif (tile == 134) then
     make_ennemies(x*8, y*8, 134)
+    mset(x,y,mget(x-1,y))
+   elseif (tile == 140) then
+    make_ennemies(x*8, y*8, 140)
     mset(x,y,mget(x-1,y))
    end
   end end
@@ -452,7 +451,6 @@ function make_all_npc()
     newdialog("laissez-moi vous expliquer le fonctionnement de cette ecole. ❎",trigger(200, trig_time)),
     newdialog("mais avant tout, voici le materiel dont vous aurez besoin pour votre parcours ❎",trigger(200, trig_time)),
     newdialog("tenez ! ❎",trigger(200, trig_time)),
-    -- todo add weapon
     newdialog("votre materiel est extremement precieux. ❎",trigger(200, trig_time)),
     newdialog("sans materiel vous ne pourrez jamais terminer vos etudes et realiser votre reve à sophia. ❎",trigger(200, trig_time)),
     newdialog("votre materiel constitue l�█▥outil principal de votre connaissance. ❎",trigger(200, trig_time)),
@@ -463,6 +461,7 @@ function make_all_npc()
     newdialog("l'ordre que je vous conseil pour les stages est le suivant : d'abord capgemo qui se trouve a biot, puis leonardo energie a antibes et enfin thelas à valbonne. ❎",trigger(200, trig_time)),
     newdialog("vous devrez aller parler aux recruteurs de chacune de ces entreprises et passer leurs epreuves afin d'etre recrutee. ❎",trigger(200, trig_time)),
     newdialog("dans le campus, des etudiants et professeurs viendront vous aborder pour vous aider a prendre de l�█▥experience et tester vos connaissances. ❎",trigger(200, trig_time)),
+    newdialog("Et noublies pas de récupérer ton équipement sur le terminal à côté. ❎",trigger(200, trig_time)),
     newdialog("en cas de doute, durant votre parcours n'hesitez pas a revenir me voir et je vous repeterai tout cela. ❎",trigger(200, trig_time)),
    })
 
@@ -838,8 +837,6 @@ end
 function controls_loot(self)
  local dist = distance(self)
  if (dist < 8) then
-  log(2, self.obj)
-  log(3, g_p.health)
   if(self.obj == "heal" and g_p.health < l_player) then
    g_p.health += 10
    if (g_p.health > l_player) g_p.health = l_player
@@ -1078,7 +1075,6 @@ function move(a, x, y, ox, oy)
  local y2 = max(a.box.y1 + a.y, a.y + y + oy)
  local sp1 = mget(get_tile(x1), get_tile(y1))
  local sp2 = mget(get_tile(x2), get_tile(y2))
- debug_front_matrix(a, x, y, ox, oy)
  if(is_limit_of_map(x1,y1) or is_limit_of_map(x2,y2)) return
 
  for b in all(g_actors) do
@@ -1086,9 +1082,8 @@ function move(a, x, y, ox, oy)
    return
   end
  end
- debug_collision_matrix(x1, y1, x2, y2)
 
- if (not fget(sp1, f_obst) and not fget(sp2, f_obst) or debug_enabled)  then
+ if (not fget(sp1, f_obst) and not fget(sp2, f_obst))  then
   a.x += x
   a.y += y
  end -- check obstacles on map
@@ -1336,7 +1331,7 @@ end
 function check_collisions(a, b, newx, newy)
  local newx = newx or 0
  local newy = newy or 0
- if(a == b or a.tag == b.tag or debug_enabled) return false
+ if(a == b or a.tag == b.tag) return false
  local box_a = get_box(a)
  local box_b = get_box(b)
  if (box_a.x1 + newx > box_b.x2 or
@@ -1602,8 +1597,6 @@ function draw_game()
  draw_dfxs()
  draw_dialogs()
  draw_hud()
-
- debug()
 end
 
 -- update
@@ -1617,7 +1610,6 @@ function update_menu()
 end
 
 function update_game()
-  log(1, rnd(1))
  if (#g_menus < 1) then
   controls_update()
   controls_collisions()
@@ -1712,79 +1704,6 @@ spr_life = {
  {0, 5, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 5, 0},
  {0, 0, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 0, 0}
 }
-
--- debug
-
-function debug_init()
-  g_dbg = {"","","","","","","","","",""}
-  g_ft = {x1=0,y1=0,x2=0,y2=0}
-  g_cl = {x1=0,y1=0,x2=0,y2=0}
-end
-
-function debug()
- if (not debug_enabled) return
- debug_log(g_fp.x+10, g_fp.y+10)
- log_cpu_mem(g_fp.x+70, g_fp.y+5)
- display_hitbox_matrix()
- display_collision_matrix()
- display_front_matrix()
- display_scr_info()
-end
-
-function display_front_matrix()
- line(g_ft.x1, g_ft.y1, g_ft.x1, g_ft.y2, orange)
- line(g_ft.x1, g_ft.y1, g_ft.x2, g_ft.y1, orange)
- line(g_ft.x2, g_ft.y1, g_ft.x2, g_ft.y2, orange)
- line(g_ft.x2, g_ft.y2, g_ft.x1, g_ft.y2, orange)
-end
-
-function display_collision_matrix(params)
- line(g_cl.x1,g_cl.y1,g_cl.x2,g_cl.y2,pink)
-end
-
-function display_hitbox_matrix()
- local b = get_box(g_p)
- line(b.x1, b.y1, b.x1, b.y2, red)
- line(b.x1, b.y1, b.x2, b.y1, red)
- line(b.x2, b.y1, b.x2, b.y2, red)
- line(b.x2, b.y2, b.x1, b.y2, red)
-end
-
-function display_scr_info()
- print("scr "..flr(g_scr.x)..":"..flr(g_scr.y), g_scr.x+1, g_scr.y+1, red)
- print("scr "..flr(g_scr.x+128)..":"..flr(g_scr.y+128), g_scr.x+80, g_scr.y+118, red)
- print("pl "..flr(g_p.x)..":"..flr(g_p.y), g_scr.x+50, g_scr.y+50, red)
-end
-
-function debug_collision_matrix(x1, y1, x2, y2)
- if (not debug_enabled) return
-   g_cl = {x1=x1,y1=y1,x2=x2,y2=y2}
-end
-
-function debug_front_matrix(a, x, y, ox, oy)
- if (not debug_enabled) return
- g_ft.x1 = (a.x + x + ((ox - a.x%8 + (8*x))))
- g_ft.y1 = (a.y + y + ((oy - a.y%8 + (8*y))))
- g_ft.y2 = (a.y + y + oy + ((8 - a.y%8 + (8*y))))
- g_ft.x2 = (a.x + x + ox + ((8 - a.x%8 + (8*x))))
-end
-
-function log(tab,text)
- if (not debug_enabled) return
- if(tab < 0 or tab > #g_dbg) return
- g_dbg[tab] = text
-end
-
-function debug_log(x, y)
- for i=1,#g_dbg do
-  print(g_dbg[i], x, y+(6*i), red)
- end
-end
-
-function log_cpu_mem(x, y)
- print("cpu "..flr(stat(1)*100).."%", x, y, red)
- print("mem "..stat(0), x, y+6, red)
-end
 
 __gfx__
 000000007777777733bb3b3b517711550000000075577557a555555a000000000000000000000000000000000000000000000000000000000555555555555550
