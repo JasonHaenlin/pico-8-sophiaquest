@@ -10,7 +10,6 @@ player, bullet, ennemy, item, npc, invisible, busstop, room = 0, 1, 2, 3, 4, 5, 
 immortal_object = 10000
 inf = 10000
 melee, ranged = 1, 20
-nb_of_ennemis = 5
 f_heal, f_item, f_door, f_inv, f_obst = 0, 1, 4, 5, 7
 l_player, l_ennemy, l_boss = 50, 10, 150
 walk, stay = "walk", "stay"
@@ -26,7 +25,6 @@ function _init()
  g_weapons = {}
  g_dialogs = {}
  g_menus = {}
- g_ennemies_left=1
  g_loots = {
   {
    obj = "heal",
@@ -42,7 +40,6 @@ function _init()
 
  _update = update_menu
  init_area()
- init_current_area(1)
  init_screen()
  make_game()
 end
@@ -182,6 +179,20 @@ function init_screen()
  }
 end
 
+function scan_ennemies()
+  -- spawn ennemies
+ for y=0,63 do for x=0,127 do
+   local tile = mget(x,y)
+   if (tile == 131) then
+    make_ennemies(x*8, y*8, 131)
+    mset(x,y,mget(x-1,y))
+   elseif (tile == 134) then
+    make_ennemies(x*8, y*8, 134)
+    mset(x,y,mget(x-1,y))
+   end
+  end end
+end
+
 -- new
 
 function newentitie(x, y, sprite, tag, health, direction, mvn)
@@ -271,11 +282,12 @@ end
 
 function make_game()
  make_weapons()
- make_ennemies(nb_of_ennemis, {134})
  make_all_npc()
+ make_all_tp()
+ init_current_area(2)
+ scan_ennemies()
  make_player(g_spawn.x, g_spawn.y, 128)
  make_items()
- make_all_tp()
 end
 
 function make_weapon(cmpnttable)
@@ -368,16 +380,140 @@ function make_weapons()
 end
 
 function make_all_npc()
-  local npc = {}
-  npc = make_npc(200, 66, 137)
-  npc:create_dialogs({
-   newdialog("hey1 ❎",trigger(200, trig_time)),
-   newdialog("hey2 ❎",trigger(200, trig_time)),
-   newdialog("hey3 ❎",trigger(200, trig_time)),
-   newdialog("hey4 ❎",trigger(200, trig_time)),
-   newdialog("hey5 ❎",trigger(200, trig_time)),
-   newdialog("hey6 ❎",trigger(200, trig_time)),
-  })
+
+  local npc_busstop_man_biot = {}
+  npc_busstop_man_biot = make_npc(108,71,140)
+  npc_busstop_man_biot:create_dialogs({
+    newdialog("que… quoi ? ❎",trigger(200, trig_time)),
+    newdialog("vous arrivez a sophia sans aucune competence ?! ❎",trigger(200, trig_time)),
+    newdialog("vous devez avoir beaucoup de courage… ou de betise ❎",trigger(200, trig_time)),
+    newdialog("pour survivre ici, il va vous falloir vous faire une place parmi les entreprises. et elles sont implacables. ❎",trigger(200, trig_time)),
+    newdialog("le coin grouille de recruteurs qui sont prets à vous faire passer des entretiens en pleine rue. ❎",trigger(200, trig_time)),
+    newdialog("sans competences, vous ne tiendrez pas 2h ici. ❎",trigger(200, trig_time)),
+    newdialog("je vous conseille de vous diriger vers l'ecole qui est juste de l'autre cote de cette route. ❎",trigger(200, trig_time)),
+    newdialog("sophiatech je crois que ca s'appelle. ❎",trigger(200, trig_time)),
+    newdialog("la-bas, vous devriez en apprendre assez pour survivre ici assez longtemps. ❎",trigger(200, trig_time)),
+    newdialog("le directeur de l'ecole se trouve juste apres l'entree. ❎",trigger(200, trig_time)),
+    newdialog("ah ! et ne pensez meme pas aller vers l'est si vous n'etes pas prete. ❎",trigger(200, trig_time)),
+    newdialog("il y a des recruteurs sans vergogne qui rodent dans ces environs. ❎",trigger(200, trig_time)),
+   })
+
+   local npc_recruiter1_biot = {}
+   npc_recruiter1_biot = make_npc(341,86,140)
+   npc_recruiter1_biot:create_dialogs({
+    newdialog("eh la, jeune fille ! ❎",trigger(200, trig_time)),
+    newdialog("ou pensez-vous aller comme ca ? ❎",trigger(200, trig_time)),
+    newdialog("quel est votre domaine de competence ? ❎",trigger(200, trig_time)),
+   })
+
+   local npc_recruiter2_biot = {}
+   npc_recruiter2_biot = make_npc(239,12,134)
+   npc_recruiter2_biot:create_dialogs({
+    newdialog("tiens tiens, qu'est-ce qu'on a la ? ❎",trigger(200, trig_time)),
+    newdialog("vous etes sans emploi ? ❎",trigger(200, trig_time)),
+    newdialog("vous savez quoi ? laissez-moi regarder votre CV ! ❎",trigger(200, trig_time)),
+   })
+
+   local npc_student_capgemo_biot = {}
+   npc_student_capgemo_biot = make_npc(304,43,131)
+   npc_student_capgemo_biot:create_dialogs({
+    newdialog("tu vas passer un entretien a Capgemo ? ❎",trigger(200, trig_time)),
+    newdialog("tu n'as pas l'air si douee que ça. ❎",trigger(200, trig_time)),
+    newdialog("laisse-moi t'evaluer rapidement. ❎",trigger(200, trig_time)),
+   })
+
+   local npc_drh_capgemo_biot = {}
+   npc_drh_capgemo_biot = make_npc(346,425,140)
+   npc_drh_capgemo_biot:create_dialogs({
+    newdialog("Présentez vous ! ❎",trigger(200, trig_time)),
+   })
+
+   local npc_daminaca_sophiatech_biot = {}
+   npc_daminaca_sophiatech_biot = make_npc(179,163,137)
+   npc_daminaca_sophiatech_biot:create_dialogs({
+    newdialog("hmm, une nouvelle tete ? ❎",trigger(200, trig_time)),
+    newdialog("je ne vous avais jamais vu jeune fille.❎",trigger(200, trig_time)),
+    newdialog("et pourtant je connais tous mes etudiants ! ❎",trigger(200, trig_time)),
+    newdialog("vous ne faites pas partie de cette ecole n'est-ce pas ? ❎",trigger(200, trig_time)),
+    newdialog("c'est bien ce que je me disais. ❎",trigger(200, trig_time)),
+    newdialog("que venez-vous faire ici ? ❎",trigger(200, trig_time)),
+    newdialog("en temps normal ma prestigieuse ecole n'accepte personne sans inscription prealable. ❎",trigger(200, trig_time)),
+    newdialog("mais je percois chez vous une certaine flamme. ❎",trigger(200, trig_time)),
+    newdialog("vous savez quoi ? ❎",trigger(200, trig_time)),
+    newdialog("je vais vous laisser une chance. ❎",trigger(200, trig_time)),
+    newdialog("bienvenue a sophiatech ! ❎",trigger(200, trig_time)),
+    newdialog("laissez-moi vous expliquer le fonctionnement de cette ecole. ❎",trigger(200, trig_time)),
+    newdialog("mais avant tout, voici le materiel dont vous aurez besoin pour votre parcours ❎",trigger(200, trig_time)),
+    newdialog("tenez ! ❎",trigger(200, trig_time)),
+    -- todo add weapon
+    newdialog("votre materiel est extremement precieux. ❎",trigger(200, trig_time)),
+    newdialog("sans materiel vous ne pourrez jamais terminer vos etudes et realiser votre reve à sophia. ❎",trigger(200, trig_time)),
+    newdialog("votre materiel constitue l�█▥outil principal de votre connaissance. ❎",trigger(200, trig_time)),
+    newdialog("utilisez-le pour demontrer vos connaissances aux etudiants et aux professeurs qui veulent vous tester. ❎",trigger(200, trig_time)),
+    newdialog("et il y en a beaucoup sur le campus et sur les routes. ❎",trigger(200, trig_time)),
+    newdialog("votre objectif est simple : obtenir votre diplome pour etre recrutee dans l'entreprise de vos reves. ❎",trigger(200, trig_time)),
+    newdialog("pour se faire vous devez effectuer trois stages differents qui permettront d�█▥ameliorer vos competences et votre materiel. ❎",trigger(200, trig_time)),
+    newdialog("l'ordre que je vous conseil pour les stages est le suivant : d'abord capgemo qui se trouve a biot, puis leonardo energie a antibes et enfin thelas à valbonne. ❎",trigger(200, trig_time)),
+    newdialog("vous devrez aller parler aux recruteurs de chacune de ces entreprises et passer leurs epreuves afin d'etre recrutee. ❎",trigger(200, trig_time)),
+    newdialog("dans le campus, des etudiants et professeurs viendront vous aborder pour vous aider a prendre de l�█▥experience et tester vos connaissances. ❎",trigger(200, trig_time)),
+    newdialog("en cas de doute, durant votre parcours n'hesitez pas a revenir me voir et je vous repeterai tout cela. ❎",trigger(200, trig_time)),
+   })
+
+   local npc_student1_biot = {}
+   npc_student1_biot = make_npc(199,214,131)
+   npc_student1_biot:create_dialogs({
+    newdialog("ma specialite c'est genie de l'eau ! et toi ?! ❎",trigger(200, trig_time)),
+   })
+
+   local npc_student2_biot = {}
+   npc_student2_biot = make_npc(103,136,131)
+   npc_student2_biot:create_dialogs({
+    newdialog("il parait que le restaurant universitaire se trouve a l'ouest d'ici… ❎",trigger(200, trig_time)),
+    newdialog("va y faire un tour, la nourriture va te requinquer. ❎",trigger(200, trig_time)),
+   })
+
+   local npc_student_valbonne = {}
+   npc_student_valbonne = make_npc(712,43,131)
+   npc_student_valbonne:create_dialogs({
+    newdialog("j'ai entendu dire que le drh de cet entreprise… thelas ❎",trigger(200, trig_time)),
+    newdialog("est assez rude avec ses recrues. ❎",trigger(200, trig_time)),
+    newdialog("sois bien prete avant d'y entrer. ❎",trigger(200, trig_time)),
+    newdialog("je te conseille d'avoir effectue deux stages auparavant. ❎",trigger(200, trig_time)),
+   })
+
+   local npc_thelas_drh_valbonne = {}
+   npc_thelas_drh_valbonne = make_npc(999,53,134)
+   npc_thelas_drh_valbonne:create_dialogs({
+    newdialog("zzzzz… zzzzz… zz… hein ? quoi ? quelqu'un ! ❎",trigger(200, trig_time)),
+    newdialog("ici ? mais ca fait des mois que personne ne s'est presente ici pour un stage ! ❎",trigger(200, trig_time)),
+    newdialog("personne n'en a encore ete digne ! mais… ❎",trigger(200, trig_time)),
+    newdialog("attendez, oui c'est bien vous ! J'ai entendu parler de vous. ❎",trigger(200, trig_time)),
+    newdialog("mais thelas n'accepte que l'lite vous le savez ! ❎",trigger(200, trig_time)),
+    newdialog("parlez-moi de ce dont vous etes capable. presentez-vous ! ❎",trigger(200, trig_time)),
+   })
+
+   local npc_drh_leonardo_antibes = {}
+   npc_drh_leonardo_antibes = make_npc(665,463,140)
+   npc_drh_leonardo_antibes:create_dialogs({
+    newdialog("hola ! qu'est-ce qu'on a la ? ❎",trigger(200, trig_time)),
+    newdialog("vous cherchez un stage hein ? ❎",trigger(200, trig_time)),
+    newdialog("et qu'est ce qui vous fait dire que vous sortez de la masse d'etudiants qui postulent chez nous ? ❎",trigger(200, trig_time)),
+    newdialog(" j'espere que vous avez prepare cet entretien ! je n'aime pas du tout perdre mon temps… ❎",trigger(200, trig_time)),
+   })
+
+   local npc_daminaca_bestcorp = {}
+   npc_daminaca_bestcorp = make_npc(772,176,137)
+   npc_daminaca_bestcorp:create_dialogs({
+    newdialog("vous l'avez fait ! vous avez reussi a valider vos trois experiences professionnelles ! ❎",trigger(200, trig_time)),
+    newdialog("je suis tres fier de vous. ❎",trigger(200, trig_time)),
+    newdialog("votre parcours est exceptionnel. Voici votre diplome et FELICITATION ! ❎",trigger(200, trig_time)),
+    newdialog("maintenant il ne vous reste plus qu'a trouver le metier de vos reves et… quoi ? ❎",trigger(200, trig_time)),
+    newdialog("vous voulez etre directrice de sophiatech ? ❎",trigger(200, trig_time)),
+    newdialog("hmm… vous etes donc venus a sophia dans le seul but de me remplacer dans ma fonction… ❎",trigger(200, trig_time)),
+    newdialog("je vois. Votre plan est temeraire. Eh bien pour cela, ❎",trigger(200, trig_time)),
+    newdialog("vous allez devoir surpasser mes connaissances ! montrez-moi ce que vous savez faire ! ❎",trigger(200, trig_time)),
+   })
+
 end
 
 function make_all_tp()
@@ -448,30 +584,23 @@ function make_player(x, y, s)
  g_p.current_area = 1
 end
 
-function make_ennemies(nb, aspr)
- g_ennemies_left = 0
- for s in all(aspr) do
-  for i=1, nb/#aspr do
-   local a = g_good_spot(248, 248)
-   local e = make_actor({
-    -- new player char
-    entitie = newentitie(a.x, a.y, s, ennemy, l_ennemy, up, {dx = 0.9, dy = 0.9}),
-    -- add a action controller
-    control = controls_ennemies,
-    -- add a draw controller
-    draw = draw_characters,
-    -- set the hitbox
-    box = {x1 = 0, y1 = 8, x2 = 7, y2 = 15},
-    -- add weapon
-    weapon = g_weapons[1]
-   })
-   -- add animations
-   e.anim = stay
-   e.walk = make_anim(make_walk_anim(s))
-   e.stay = make_anim(make_stay_anim(s))
-   g_ennemies_left += 1
-  end
- end
+function make_ennemies(x, y, s)
+ local e = make_actor({
+  -- new player char
+  entitie = newentitie(x, y, s, ennemy, l_ennemy, up, {dx = 0.9, dy = 0.9}),
+  -- add a action controller
+  control = controls_ennemies,
+  -- add a draw controller
+  draw = draw_characters,
+  -- set the hitbox
+  box = {x1 = 0, y1 = 8, x2 = 7, y2 = 15},
+  -- add weapon
+  weapon = g_weapons[1]
+ })
+ -- add animations
+ e.anim = stay
+ e.walk = make_anim(make_walk_anim(131))
+ e.stay = make_anim(make_stay_anim(131))
 end
 
 function make_loot(x, y, item)
@@ -1014,18 +1143,6 @@ end
 
 -- util
 
-function g_good_spot(xmax, ymax)
- local a = {
-  x = rnd(xmax),
-  y = rnd(ymax)
- }
- while(fget(mget(get_tile(a.x) ,get_tile(a.y)), f_obst)) do
-  a.x = rnd(xmax)
-  a.y = rnd(ymax)
- end
- return a
-end
-
 function get_tile(a)
  return ((a - (a % 8)) / 8)
 end
@@ -1236,13 +1353,8 @@ function drop_loot(a)
  end
 end
 
-function is_game_done()
- return g_ennemies_left <= 0
-end
-
 function check_actor_health(damaged_actor)
  if (is_dead(damaged_actor)) then
-  if (damaged_actor.tag == ennemy) g_ennemies_left -= 1
   dfx_disapearance(damaged_actor.x, damaged_actor.y, flr((rnd(5)+1)), nil, draw_explosion)
   screenshake(5)
   del(g_actors, damaged_actor)
@@ -1495,7 +1607,7 @@ function update_menu()
 end
 
 function update_game()
-  log(1, #g_menus)
+  log(1, rnd(1))
  if (#g_menus < 1) then
   controls_update()
   controls_collisions()
@@ -1553,7 +1665,7 @@ function reset_camera()
 end
 
 function check_game_state()
- if (is_dead(g_p) or is_game_done()) then
+ if (is_dead(g_p)) then
   cls()
 
   g_actors = {}
@@ -1806,7 +1918,7 @@ __map__
 0002020202020202020202020202020202020202020202311252121512501223242d1e14141e1e1e14141e2f000000002324020a666666660b666666660b666666660c12125212151250020000002121212121212d1e14141e1e1e14141e2f12121221212121003e3e79797979464343463e3e3e00477c7c007c003d67676767
 0002020202020202020202020202020202020202020202211252121512501233343131121231313112123131000000003334021a1b04041b1b1b04041b1b1b04041b1c1212521215125002000000121212121212121212121212121212121212121203121212003d3d464646467c53537c3d3d3d0038757c007c006767674767
 0039212121392121212121212121213121212121213121311252121512501202020202121202020212120202000000000202021a1b14141b1b1b14141b1b1b14141b1c1212521215125002000000616161616161616161616161616161616161616113616161007c7c7c7c7c7c7c7c7c7c7c7c7c00477c7c007c006767674775
-00121212121212121212121212121212120312121212121212520505055012121212121212121212121212120000000012121212121212303030121230303012121212121252121512500200000012121212121212121212121212121212121206060606061200567c477c7c7c7c7c7c7c7c7c7c00387c7c007c006757575767
+00121212121212121212121212121212120312121212121212520505055012121212121212128312121212120000000012121212121212303030121230303012121212121252121512500200000012121212121212121212121212121212121206060606061200567c477c7c7c7c7c7c7c7c7c7c00387c7c007c006757575767
 00616161616161616161616161616161611361616161616161620505056061616161616161616161616161610000000012121212121212121212121212121212121212031252121512500200000011111111111111111111111111111111111111111111111100567c577c7c7c7c7c7c7c7c7c7c0047757c007c006767676767
 00121212121212121212121212120606060606121212121201011212120101121212121212121212121212120000000061616161616161616161616161616161616161136162121512500200000012121212121212121212121212121212121212121212121200797979797c7c7c7c7c7c7c7c7c0038757c007c797979797979
 00111111111111111111111111111111111111111111111101011212120101111111111111111111111111110000000012121212121212121212010112121212060606060612121512500200000041414141414141414141414141414141414141414141414100463846467c7c7c7c007c7c7c7c00477c7c007c464646464646
@@ -1851,4 +1963,3 @@ __music__
 03 08020355
 00 0b0c0e44
 00 0e0f1044
-
