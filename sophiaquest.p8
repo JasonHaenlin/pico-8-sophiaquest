@@ -368,71 +368,64 @@ function make_weapons()
 end
 
 function make_all_npc()
-  local npc = {}
-  npc = make_npc(200, 66, 137)
-  npc:create_dialogs({
-   newdialog("hey1 ❎",trigger(200, trig_time)),
-   newdialog("hey2 ❎",trigger(200, trig_time)),
-   newdialog("hey3 ❎",trigger(200, trig_time)),
-   newdialog("hey4 ❎",trigger(200, trig_time)),
-   newdialog("hey5 ❎",trigger(200, trig_time)),
-   newdialog("hey6 ❎",trigger(200, trig_time)),
-  })
 
   local npc_busstop_man_biot = {}
-  npc_busstop_man_biot = make_npc(150,66,140)
+  npc_busstop_man_biot = make_npc(108,71,140)
   npc_busstop_man_biot:create_dialogs({
     newdialog("que… quoi ? ❎",trigger(200, trig_time)),
     newdialog("vous arrivez a sophia sans aucune competence ?! ❎",trigger(200, trig_time)),
-    newdialog("vous devez avoir beaucoup de courage… ❎",trigger(200, trig_time)),
-    newdialog("ou de betise… ❎",trigger(200, trig_time)),
-    newdialog("pour survivre ici, il va vous falloir vous faire une place parmi les entreprises. ❎",trigger(200, trig_time)),
-    newdialog("et elles sont implacables. ❎",trigger(200, trig_time)),
+    newdialog("vous devez avoir beaucoup de courage… ou de betise ❎",trigger(200, trig_time)),
+    newdialog("pour survivre ici, il va vous falloir vous faire une place parmi les entreprises. et elles sont implacables. ❎",trigger(200, trig_time)),
     newdialog("le coin grouille de recruteurs qui sont prets à vous faire passer des entretiens en pleine rue. ❎",trigger(200, trig_time)),
     newdialog("sans competences, vous ne tiendrez pas 2h ici. ❎",trigger(200, trig_time)),
-    newdialog("je vous conseille de vous diriger vers l/'ecole qui est juste de l/'autre cote de cette route. ❎",trigger(200, trig_time)),
-    newdialog("sophiatech je crois que ca s/'appelle. ❎",trigger(200, trig_time)),
+    newdialog("je vous conseille de vous diriger vers l'ecole qui est juste de l'autre cote de cette route. ❎",trigger(200, trig_time)),
+    newdialog("sophiatech je crois que ca s'appelle. ❎",trigger(200, trig_time)),
     newdialog("la-bas, vous devriez en apprendre assez pour survivre ici assez longtemps. ❎",trigger(200, trig_time)),
-    newdialog("le directeur de l/'ecole se trouve juste apres l/'entree. ❎",trigger(200, trig_time)),
-    newdialog("ah ! et ne pensez meme pas aller vers l/'est si vous n/'etes pas prete. ❎",trigger(200, trig_time)),
+    newdialog("le directeur de l'ecole se trouve juste apres l'entree. ❎",trigger(200, trig_time)),
+    newdialog("ah ! et ne pensez meme pas aller vers l'est si vous n'etes pas prete. ❎",trigger(200, trig_time)),
     newdialog("il y a des recruteurs sans vergogne qui rodent dans ces environs. ❎",trigger(200, trig_time)),
    })
 
    local npc_recruiter1_biot = {}
-   npc_recruiter1_biot = make_npc(150,66,140)
+   npc_recruiter1_biot = make_npc(341,86,140)
    npc_recruiter1_biot:create_dialogs({
-    newdialog("eh la jeune fille ! ❎",trigger(200, trig_time)),
+    newdialog("eh la, jeune fille ! ❎",trigger(200, trig_time)),
     newdialog("ou pensez-vous aller comme ca ? ❎",trigger(200, trig_time)),
     newdialog("quel est votre domaine de competence ? ❎",trigger(200, trig_time)),
    })
 
    local npc_recruiter2_biot = {}
-   npc_recruiter2_biot = make_npc(150,66,140)
+   npc_recruiter2_biot = make_npc(239,12,134)
    npc_recruiter2_biot:create_dialogs({
-    newdialog("tiens tiens, qu/'est-ce qu/'on a la ? ❎",trigger(200, trig_time)),
+    newdialog("tiens tiens, qu'est-ce qu'on a la ? ❎",trigger(200, trig_time)),
     newdialog("vous etes sans emploi ? ❎",trigger(200, trig_time)),
-    newdialog("lVous savez quoi ?aissez-moi regarder votre CV ! ❎",trigger(200, trig_time)),
+    newdialog("vous savez quoi ? laissez-moi regarder votre CV ! ❎",trigger(200, trig_time)),
    })
 
    local npc_student_capgemo_biot = {}
-   npc_student_capgemo_biot = make_npc(150,66,140)
+   npc_student_capgemo_biot = make_npc(304,43,131)
    npc_student_capgemo_biot:create_dialogs({
-    newdialog("hmm… ❎",trigger(200, trig_time)),
     newdialog("tu vas passer un entretien a Capgemo ? ❎",trigger(200, trig_time)),
-    newdialog("tu n/'as pas l/'air si douee que ça. ❎",trigger(200, trig_time)),
-    newdialog("laisse-moi t/'evaluer rapidement. ❎",trigger(200, trig_time)),  
+    newdialog("tu n'as pas l'air si douee que ça. ❎",trigger(200, trig_time)),
+    newdialog("laisse-moi t'evaluer rapidement. ❎",trigger(200, trig_time)),  
+   })
+
+   local npc_drh_capgemo_biot = {}
+   npc_drh_capgemo_biot = make_npc(346,425,140)
+   npc_drh_capgemo_biot:create_dialogs({
+    newdialog("Présentez vous ! ❎",trigger(200, trig_time)),
    })
 
    local npc_daminaca_sophiatech_biot = {}
-   npc_daminaca_sophiatech_biot = make_npc(150,66,140)
+   npc_daminaca_sophiatech_biot = make_npc(179,163,137)
    npc_daminaca_sophiatech_biot:create_dialogs({
     newdialog("hmm, une nouvelle tete ? ❎",trigger(200, trig_time)),
     newdialog("je ne vous avais jamais vu jeune fille.❎",trigger(200, trig_time)),
     newdialog("et pourtant je connais tous mes etudiants ! ❎",trigger(200, trig_time)),
-    newdialog("vous ne faites pas partie de cette ecole n/'est-ce pas ? ❎",trigger(200, trig_time)),
-    newdialog("c/'est bien ce que je me disais. ❎",trigger(200, trig_time)),
+    newdialog("vous ne faites pas partie de cette ecole n'est-ce pas ? ❎",trigger(200, trig_time)),
+    newdialog("c'est bien ce que je me disais. ❎",trigger(200, trig_time)),
     newdialog("que venez-vous faire ici ? ❎",trigger(200, trig_time)),
-    newdialog("en temps normal ma prestigieuse ecole n/'accepte personne sans inscription prealable. ❎",trigger(200, trig_time)),
+    newdialog("en temps normal ma prestigieuse ecole n'accepte personne sans inscription prealable. ❎",trigger(200, trig_time)),
     newdialog("mais je percois chez vous une certaine flamme. ❎",trigger(200, trig_time)),
     newdialog("vous savez quoi ? ❎",trigger(200, trig_time)),
     newdialog("je vais vous laisser une chance. ❎",trigger(200, trig_time)),
@@ -440,87 +433,69 @@ function make_all_npc()
     newdialog("laissez-moi vous expliquer le fonctionnement de cette ecole. ❎",trigger(200, trig_time)),
     newdialog("mais avant tout, voici le materiel dont vous aurez besoin pour votre parcours ❎",trigger(200, trig_time)),
     newdialog("tenez ! ❎",trigger(200, trig_time)),
+    -- todo add weapon
     newdialog("votre materiel est extremement precieux. ❎",trigger(200, trig_time)),
     newdialog("sans materiel vous ne pourrez jamais terminer vos etudes et realiser votre reve à sophia. ❎",trigger(200, trig_time)),
     newdialog("votre materiel constitue l’outil principal de votre connaissance. ❎",trigger(200, trig_time)),
     newdialog("utilisez-le pour demontrer vos connaissances aux etudiants et aux professeurs qui veulent vous tester. ❎",trigger(200, trig_time)),
     newdialog("et il y en a beaucoup sur le campus et sur les routes. ❎",trigger(200, trig_time)),
-    newdialog("votre objectif est simple : obtenir votre diplome pour etre recrutee dans l/'entreprise de vos reves. ❎",trigger(200, trig_time)),
+    newdialog("votre objectif est simple : obtenir votre diplome pour etre recrutee dans l'entreprise de vos reves. ❎",trigger(200, trig_time)),
     newdialog("pour se faire vous devez effectuer trois stages differents qui permettront d’ameliorer vos competences et votre materiel. ❎",trigger(200, trig_time)),
-    newdialog("l/'ordre que je vous conseil pour les stages est le suivant : d/'abord capgemo qui se trouve a biot, puis leonardo energie a antibes et enfin thelas à valbonne. ❎",trigger(200, trig_time)),
-    newdialog("vous devrez aller parler aux recruteurs de chacune de ces entreprises et passer leurs epreuves afin d/'etre recrutee. ❎",trigger(200, trig_time)),
+    newdialog("l'ordre que je vous conseil pour les stages est le suivant : d'abord capgemo qui se trouve a biot, puis leonardo energie a antibes et enfin thelas à valbonne. ❎",trigger(200, trig_time)),
+    newdialog("vous devrez aller parler aux recruteurs de chacune de ces entreprises et passer leurs epreuves afin d'etre recrutee. ❎",trigger(200, trig_time)),
     newdialog("dans le campus, des etudiants et professeurs viendront vous aborder pour vous aider a prendre de l’experience et tester vos connaissances. ❎",trigger(200, trig_time)),
-    newdialog("en cas de doute, durant votre parcours n/'hesitez pas a revenir me voir et je vous repeterai tout cela. ❎",trigger(200, trig_time)),
-    newdialog(" ❎",trigger(200, trig_time)),
+    newdialog("en cas de doute, durant votre parcours n'hesitez pas a revenir me voir et je vous repeterai tout cela. ❎",trigger(200, trig_time)),
    })
 
    local npc_student1_biot = {}
-   npc_student1_biot = make_npc(150,66,140)
+   npc_student1_biot = make_npc(199,214,131)
    npc_student1_biot:create_dialogs({
-    newdialog("ma specialite c/'est genie de l/'eau ! et toi ?! ❎",trigger(200, trig_time)),
+    newdialog("ma specialite c'est genie de l'eau ! et toi ?! ❎",trigger(200, trig_time)),
    })
 
    local npc_student2_biot = {}
-   npc_student2_biot = make_npc(150,66,140)
+   npc_student2_biot = make_npc(103,136,131)
    npc_student2_biot:create_dialogs({
-    newdialog("il parait que le restaurant universitaire se trouve a l/'ouest d/'ici… ❎",trigger(200, trig_time)),
+    newdialog("il parait que le restaurant universitaire se trouve a l'ouest d'ici… ❎",trigger(200, trig_time)),
     newdialog("va y faire un tour, la nourriture va te requinquer. ❎",trigger(200, trig_time)),
    })
 
-   local npc_home_woman_biot = {}
-   npc_polytech_east_woman_biot = make_npc(150,66,140)
-   npc_polytech_east_woman_biot:create_dialogs({
-    newdialog("bienvenue a sophiatech ! antre de connaissance et porte vers l/'avenir. ❎",trigger(200, trig_time)),
-    newdialog("si vous voulez accroitre votre savoir, parlez aux etudiants et aux professeurs. ❎",trigger(200, trig_time)),
-   })
-
    local npc_student_valbonne = {}
-   npc_student_valbonne = make_npc(150,66,140)
+   npc_student_valbonne = make_npc(712,43,131)
    npc_student_valbonne:create_dialogs({
-    newdialog("j/'ai entendu dire que le drh de cet entreprise… thelas. ❎",trigger(200, trig_time)),
-    newdialog("il est assez rude avec ses recrues. ❎",trigger(200, trig_time)),
-    newdialog("sois bien prete avant d/'y entrer. ❎",trigger(200, trig_time)),
-    newdialog("je te conseille d/'avoir effectue deux stages auparavant. thelas ❎",trigger(200, trig_time)),
+    newdialog("j'ai entendu dire que le drh de cet entreprise… thelas ❎",trigger(200, trig_time)),
+    newdialog("est assez rude avec ses recrues. ❎",trigger(200, trig_time)),
+    newdialog("sois bien prete avant d'y entrer. ❎",trigger(200, trig_time)),
+    newdialog("je te conseille d'avoir effectue deux stages auparavant. ❎",trigger(200, trig_time)),
    })
 
    local npc_thelas_drh_valbonne = {}
-   npc_thelas_drh_valbonne = make_npc(150,66,140)
+   npc_thelas_drh_valbonne = make_npc(999,53,134)
    npc_thelas_drh_valbonne:create_dialogs({
-    newdialog("zzzzz… zzzzz… zz… hein ? quoi ? quelqu/'un ! ❎",trigger(200, trig_time)),
-    newdialog("ici ? mais ca fait des mois que personne ne s/'est presente ici pour un stage ! ❎",trigger(200, trig_time)),
-    newdialog("personne n/'en a encore ete digne ! mais… ❎",trigger(200, trig_time)),
-    newdialog("attendez, oui c/'est bien vous ! J/'ai entendu parler de vous. ❎",trigger(200, trig_time)),
-    newdialog("vous avez ete acceptee à capgemo ET leonardo energie ! ❎",trigger(200, trig_time)),
-    newdialog("c/'est un parcours impressionnant. ❎",trigger(200, trig_time)),
-    newdialog("mais thelas n/'accepte que l/'lite vous le savez ! ❎",trigger(200, trig_time)),
+    newdialog("zzzzz… zzzzz… zz… hein ? quoi ? quelqu'un ! ❎",trigger(200, trig_time)),
+    newdialog("ici ? mais ca fait des mois que personne ne s'est presente ici pour un stage ! ❎",trigger(200, trig_time)),
+    newdialog("personne n'en a encore ete digne ! mais… ❎",trigger(200, trig_time)),
+    newdialog("attendez, oui c'est bien vous ! J'ai entendu parler de vous. ❎",trigger(200, trig_time)),
+    newdialog("mais thelas n'accepte que l'lite vous le savez ! ❎",trigger(200, trig_time)),
     newdialog("parlez-moi de ce dont vous etes capable. presentez-vous ! ❎",trigger(200, trig_time)),
    })
 
-   local npc_carouffe_woman_antibes = {}
-   npc_carouffe_woman_antibes = make_npc(150,66,140)
-   npc_carouffe_woman_antibes:create_dialogs({
-    newdialog("bonjour madame ! bienvenue a carouffe. ❎",trigger(200, trig_time)),
-    newdialog("vous trouverez ici toute sorte d/'objets et d/'aliments qui permettront de vous garder en bonne sante. ❎",trigger(200, trig_time)),
-   })
-
-
    local npc_drh_leonardo_antibes = {}
-   npc_drh_leonardo_antibes = make_npc(150,66,140)
+   npc_drh_leonardo_antibes = make_npc(665,463,140)
    npc_drh_leonardo_antibes:create_dialogs({
-    newdialog("hola ! qu/'est-ce qu/'on a la ? ❎",trigger(200, trig_time)),
+    newdialog("hola ! qu'est-ce qu'on a la ? ❎",trigger(200, trig_time)),
     newdialog("vous cherchez un stage hein ? ❎",trigger(200, trig_time)),
-    newdialog("et qu/'est ce qui vous fait dire que vous sortez de la masse d/'etudiants qui postulent chez nous ? ❎",trigger(200, trig_time)),
-    newdialog(" j/'espere que vous avez prepare cet entretien ! je n/'aime pas du tout perdre mon temps… ❎",trigger(200, trig_time)),
+    newdialog("et qu'est ce qui vous fait dire que vous sortez de la masse d'etudiants qui postulent chez nous ? ❎",trigger(200, trig_time)),
+    newdialog(" j'espere que vous avez prepare cet entretien ! je n'aime pas du tout perdre mon temps… ❎",trigger(200, trig_time)),
    })
-
 
    local npc_daminaca_bestcorp = {}
-   npc_daminaca_bestcorp = make_npc(150,66,140)
+   npc_daminaca_bestcorp = make_npc(772,176,140)
    npc_daminaca_bestcorp:create_dialogs({
-    newdialog("vous l/'avez fait ! vous avez reussi a valider vos trois experiences professionnelles ! ❎",trigger(200, trig_time)),
+    newdialog("vous l'avez fait ! vous avez reussi a valider vos trois experiences professionnelles ! ❎",trigger(200, trig_time)),
     newdialog("je suis tres fier de vous. ❎",trigger(200, trig_time)),
     newdialog("votre parcours est exceptionnel. Voici votre diplome et FELICITATION ! ❎",trigger(200, trig_time)),
-    newdialog("maintenant il ne vous reste plus qu/'a trouver le metier de vos reves et… quoi ? ❎",trigger(200, trig_time)),
+    newdialog("maintenant il ne vous reste plus qu'a trouver le metier de vos reves et… quoi ? ❎",trigger(200, trig_time)),
     newdialog("vous voulez etre directrice de sophiatech ? ❎",trigger(200, trig_time)),
     newdialog("hmm… vous etes donc venus a sophia dans le seul but de me remplacer dans ma fonction… ❎",trigger(200, trig_time)),
     newdialog("je vois. Votre plan est temeraire. Eh bien pour cela, ❎",trigger(200, trig_time)),
