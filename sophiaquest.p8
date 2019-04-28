@@ -52,12 +52,12 @@ function init_area()
   {
    name = "cheat",
    map = {x1 = 8, y1 = 8, x2 = inf, y2 = inf},
-   spawn = { x = 128, y = 70 }
+   spawn = { x = 125, y = 70 }
   },
   {
    name = "biot",
    map = {x1 = 8, y1 = 8, x2 = 225, y2 = 125},
-   spawn = { x = 128, y = 70 }
+   spawn = { x = 125, y = 70 }
   },
   {
    name = "valbonne",
@@ -186,16 +186,6 @@ function trig_time(self)
  return self.arg <= 0
 end
 
-function trig_btn(self)
- return btnp(self.arg)
-end
-
-function trig_dist(self, dist)
-  if (dist < 7) then
-   init_current_area(self.linkto)
-  end
-end
-
 -- make
 
 function make_game()
@@ -310,8 +300,11 @@ function make_all_npc()
 end
 
 function make_all_tp()
-  make_tp(281, 41, 46, 15, 15, 3, trig_dist)
-  make_tp(321, 41, 46, 15, 15, 3, trig_dist)
+  make_tp(281, 41, 44, 15, 15, 3, trig_dist_hud)
+  make_tp(321, 41, 44, 15, 15, 3, trig_dist_hud)
+  make_tp(138, 71, 44, 5, 5, 1, trig_btn_hud)
+  make_tp(538, 79, 44, 5, 5, 2, trig_btn_hud)
+  make_tp(785, 55, 44, 5, 5, 3, trig_btn_hud)
 end
 
 function make_npc(x, y, s)
@@ -379,10 +372,24 @@ function make_ennemies(nb, aspr)
  end
 end
 
+
+function trig_btn_hud(self, dist)
+ if(btnp(fire2) and dist < 7) then
+  make_tp_hud()
+ end
+end
+
+function trig_dist_hud(self, dist)
+  if (dist < 7) then
+   init_current_area(self.linkto)
+  end
+end
+
+
 function make_tp(x, y, s, w, h, link, trigger)
  local n = make_actor({
   -- new player char
-  entitie = newentitie(x, y, s, npc, invisible, down),
+  entitie = newentitie(x, y, s, invisible, invisible, down),
   -- add a action controller
   control = controls_doors,
   -- add a draw controller
@@ -579,22 +586,30 @@ function controls_hud(self)
 end
 
 function controls_pl_inv(self)
- if (btnp(up) and self.selected > 1) then
-  self.selected -= 1
- end
- if (btnp(down) and self.selected < #g_weapons) then
-  self.selected += 1
- end
+ menu_selection(self)
  if (btnp(fire1)) then
   g_p.weapon = g_weapons[self.selected]
   g_p.cd = 10
   del(g_menus,self)
  end
-
 end
 
 function controls_tp(self)
+ menu_selection(self)
+ if (btnp(fire1)) then
+  init_current_area(self.selected)
+  g_p.cd = 10
+  del(g_menus,self)
+ end
+end
 
+function menu_selection(self)
+  if (btnp(up) and self.selected > 1) then
+  self.selected -= 1
+ end
+ if (btnp(down) and self.selected < #g_weapons) then
+  self.selected += 1
+ end
 end
 
 function hint(self,sign)
@@ -788,7 +803,10 @@ function move(a, x, y, ox, oy)
  if(is_limit_of_map(x1,y1) or is_limit_of_map(x2,y2)) return
 
  for b in all(g_actors) do
-  if(check_collisions(a, b, x, y)) return
+  if(check_collisions(a, b, x, y) and b.tag ~= invisible) then
+   log(2, "here!!"..rnd(1))
+   return
+  end
  end
  debug_collision_matrix(x1, y1, x2, y2)
 
@@ -1221,7 +1239,6 @@ function draw_hud()
  for m in all(g_menus) do
   m:draw()
  end
- -- draw_inventory(g_fp.x+80, g_fp.y)
 end
 
 function draw_life(bx, by)
@@ -1245,9 +1262,26 @@ function draw_menu()
  print("press x+c", 50, 90, white)
 end
 
+function draw_tp(self)
+  local x1 = g_fp.x+32
+  local y1 = g_fp.y+32
+  local x2 = g_fp.x+118
+  local y2 = g_fp.y+96
+  local tx = x1 + 7
+  local ty = y1 + 10
+  rectfill(x1, y1, x2, y2, dark_blue)
+  for i = 1,#g_area do
+   print(g_area[i].name, tx + 12, ty - 2, white)
+   if (self.selected == i) then
+    spr(58, tx - 7, ty - 2)
+   end
+   ty += 12
+  end
+end
+
 function draw_pl_inv(self)
-  x = g_fp.x+80
-  y = g_fp.y
+  local x = g_fp.x+80
+  local y = g_fp.y
   rectfill(x, y, x + 48, y + 128, dark_blue)
   line(x, y, x, y + 128, light_gray)
   local tx = x + 7
@@ -1611,7 +1645,7 @@ e2e2e2e200000000e2e2e2e200000000000000000000000000007676d37676767676d3d300000000
 00000000000000000000000000000000000000000000000000007676767600007676767600000000000000000000000000002727272727000027270027272727
 27272727272727007676767676767615767676767600000000000000000000000000000000000000000000000000000000000000000000000000000000000000
 __gff__
-800080800000008080808080808000008000008000000080808080808000000080008080800000808080000080000000800080808000000082a000000080800000000080808080808000000000000000008000808080008080000000000000000000000080808080800000000000000085850505000000808080808000000000
+000080008000008080808080808000008000000080000080808080808000000080008080800000808080000000000000800080808000000082a000000080800000000080808080808000000000000000008000808080008080000000000000000000000080808080800000000000000085850505000000808080808000000000
 0000008080800000000000000000000500000080808000000000000000000000000000808080000000000000000000000000008080800000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
 __map__
 000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000171818070808080808080808080918181900000000002525252525003e3e3e3e3e3e3e007979790079797b7b797979
