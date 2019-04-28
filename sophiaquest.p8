@@ -42,7 +42,7 @@ function _init()
 
  _update = update_menu
  init_area()
- init_current_area(2)
+ init_current_area(1)
  init_screen()
  make_game()
 end
@@ -55,6 +55,7 @@ function init_current_area(area)
  if(g_p)  then
   g_p.x = g_spawn.x
   g_p.y = g_spawn.y
+  g_p.current_area = area
  end
  set_map_delimiter(ca.map.x1, ca.map.y1, ca.map.x2, ca.map.y2)
 end
@@ -62,71 +63,113 @@ end
 function init_area()
  g_area = {
   {
-   tag = busstop,
+   tag = busstop, -- 1
    name = "cheat",
-   map = {x1 = 8, y1 = 8, x2 = inf, y2 = inf},
-   spawn = { x = 45, y = 448 }
+   map = {x1 = -inf, y1 = -inf, x2 = inf, y2 = inf},
+   spawn = { x = 125, y = 70 }
   },
   {
-   tag = busstop,
+   tag = busstop, -- 2
    name = "biot (c)",
    map = {x1 = 8, y1 = 8, x2 = 225, y2 = 125},
    spawn = { x = 125, y = 70 }
   },
   {
-   tag = busstop,
+   tag = busstop, -- 3
    name = "antibes (c)",
-   map = {x1 = 384 , y1 = 8, x2 = 537, y2 = 120},
-   spawn = { x = 528, y = 600 }
+   map = {x1 = 384 , y1 = 8, x2 = 474, y2 = 118},
+   spawn = { x = 528, y = 77 }
   },
   {
-   tag = busstop,
+   tag = busstop, -- 4
    name = "valbonne (c)",
    map = {x1 = 625, y1 = -10, x2 = 688, y2 = -9},
    spawn = { x = 777, y = 53 }
   },
   {
-   tag = room,
+   tag = room, -- 5
    name = "capgemo",
-   map = {x1 = 824, y1 = 8, x2 = 1025, y2 = 65},
-   spawn = { x = 860, y = 175 }
+   map = {x1 = 223, y1 = 387, x2 = 258, y2 = 385},
+   spawn = { x = 260, y = 493 }
   },
   {
-    tag = room,
-    name = "leonardo energie",
-    map = {x1 = 0, y1 = 0, x2 = 0, y2 = 0},
-    spawn = { x = 0, y = 0 }
-   },
-   {
-    tag = room,
-    name = "thelas",
-    map = {x1 = 817, y1 = 8, x2 = 902, y2 = 88},
-    spawn = { x = 873, y = 167 }
-   },
+   tag = room, -- 6
+   name = "leonardo energie",
+   map = {x1 = 399, y1 = 385, x2 = 553, y2 = 385},
+   spawn = { x = 445, y = 494 }
+  },
   {
-   tag = room,
+   tag = room, -- 7
+   name = "thelas",
+   map = {x1 = 822, y1 = 8, x2 = 895, y2 = 75},
+   spawn = { x = 868, y = 180 }
+  },
+  {
+   tag = room, -- 8
    name = "sophiatech batiment est",
-   map = {x1 = 0, y1 = 0, x2 = 0, y2 = 0},
-   spawn = { x = 0, y = 0 }
+   map = {x1 = 605, y1 = 125, x2 = 698, y2 = 125},
+   spawn = { x = 717, y = 227 }
   },
   {
-   tag = room,
+   tag = room, -- 9
    name = "sophiatech batiment ouest",
-   map = {x1 = 0, y1 = 0, x2 = 0, y2 = 0},
-   spawn = { x = 0, y = 0 }
+   map = {x1 = 694, y1 = 384, x2 = 888, y2 = 386},
+   spawn = { x = 723, y = 489 }
   },
   {
-   tag = room,
+   tag = room, -- 10
    name = "sophiatech restaurant",
-   map = {x1 = 0, y1 = 0, x2 = 0, y2 = 0},
-   spawn = { x = 0, y = 0 }
+   map = {x1 = 96, y1 = 384, x2 = 96, y2 = 384},
+   spawn = { x = 131, y = 469 }
   },
   {
-    tag = room,
-    name = "carrouffe",
-    map = {x1 = 0, y1 = 0, x2 = 0, y2 = 0},
-    spawn = { x = 0, y = 0 }
-   }
+   tag = room, -- 11
+   name = "carrouffe",
+   map = {x1 = -27, y1 = 392, x2 = -27, y2 = 392},
+   spawn = { x = 45, y = 481 }
+  },
+  {
+   tag = room, -- 12
+   name = "biot (c) door",
+   map = {x1 = 8, y1 = 8, x2 = 225, y2 = 125},
+   spawn = { x = 285, y = 53 }
+  },
+  {
+   tag = room, -- 13
+   name = "biot (c) door",
+   map = {x1 = 8, y1 = 8, x2 = 225, y2 = 125},
+   spawn = { x = 253, y = 239 }
+  },
+  {
+   tag = room, -- 14
+   name = "biot (c) door",
+   map = {x1 = 8, y1 = 8, x2 = 225, y2 = 125},
+   spawn = { x = 109, y = 240 }
+  },
+  {
+   tag = room, -- 15
+   name = "biot (c) door ru",
+   map = {x1 = 8, y1 = 8, x2 = 225, y2 = 125},
+   spawn = { x = 36, y = 211 }
+  },
+  {
+   tag = room, -- 16
+   name = "antibes (c) door",
+   map = {x1 = 384 , y1 = 8, x2 = 474, y2 = 118},
+   spawn = { x = 468, y = 73 }
+  },
+  {
+   tag = room, -- 17
+   name = "antibes (c) door",
+   map = {x1 = 384 , y1 = 8, x2 = 474, y2 = 118},
+   spawn = { x = 545, y = 191 }
+  },
+  {
+   tag = room, -- 18
+   name = "valbonne (c) door",
+   map = {x1 = 625, y1 = -10, x2 = 688, y2 = -9},
+   spawn = { x = 693, y = 55 }
+  }
  }
 end
 
@@ -338,15 +381,30 @@ function make_all_npc()
 end
 
 function make_all_tp()
-  make_tp(281, 41, 46, 15, 15, 3, trig_dist_hud,"⬆️") --capgemo
-  make_tp(321, 41, 46, 15, 15, 3, trig_dist_hud,"⬆️") --capgemo
-  make_tp(688, 41, 46, 15, 15, 3, trig_dist_hud,"⬆️") --thelas
-  make_tp(728, 41, 46, 15, 15, 3, trig_dist_hud,"⬆️") --thelas
-  make_tp(696, 41, 46, 15, 15, 3, trig_dist_hud,"⬆️") --thelas
-  make_tp(735, 41, 46, 15, 15, 3, trig_dist_hud,"⬆️") --thelas
-  make_tp(138, 71, 46, 5, 5, 1, trig_btn_hud,"❎")
-  make_tp(538, 79, 46, 5, 5, 2, trig_btn_hud,"❎")
-  make_tp(785, 55, 46, 5, 5, 3, trig_btn_hud,"❎")
+  make_tp(281, 41, 44, 15, 10, 5, trig_dist_hud,"⬆️") -- capgemo
+  make_tp(321, 41, 44, 15, 10, 5, trig_dist_hud,"⬆️") -- capgemo
+  make_tp(546, 177, 44, 15, 10, 6, trig_dist_hud,"⬆️")
+  make_tp(569, 177, 44, 15, 10, 6, trig_dist_hud,"⬆️")
+  make_tp(689, 40, 44, 15, 10, 7, trig_dist_hud,"⬆️")
+  make_tp(729, 40, 44, 15, 10, 7, trig_dist_hud,"⬆️")
+  make_tp(250, 225, 44, 15, 10, 8, trig_dist_hud,"⬆️") -- sbe
+  make_tp(105, 224, 44, 15, 10, 9, trig_dist_hud,"⬆️") -- sbo
+  make_tp(136, 224, 44, 15, 10, 9, trig_dist_hud,"⬆️") -- sbo
+  make_tp(425, 56, 44, 15, 10, 11, trig_dist_hud,"⬆️")
+  make_tp(504, 56, 44, 15, 10, 11, trig_dist_hud,"⬆️")
+  make_tp(465, 56, 44, 15, 10, 11, trig_dist_hud,"⬆️")
+  make_tp(33, 192, 44, 15, 10, 10, trig_dist_hud,"⬆️") -- ru
+  make_tp(257, 504, 44, 15, 10, 12, trig_dist_hud,"⬇️")
+  make_tp(713, 239, 44, 15, 10, 13, trig_dist_hud,"⬇️")
+  make_tp(720, 504, 44, 15, 10, 14, trig_dist_hud,"⬇️")
+  make_tp(129, 479, 44, 15, 10, 15, trig_dist_hud,"⬇️")
+  make_tp(43, 496, 44, 15, 10, 16, trig_dist_hud,"⬇️")
+  make_tp(441, 504, 44, 15, 10, 17, trig_dist_hud,"⬇️")
+  make_tp(864, 192, 44, 15, 10, 18, trig_dist_hud,"⬇️")
+
+  make_tp(138, 71, 44, 5, 5, 1, trig_btn_hud,"❎")
+  make_tp(538, 79, 44, 5, 5, 2, trig_btn_hud,"❎")
+  make_tp(785, 55, 44, 5, 5, 3, trig_btn_hud,"❎")
 end
 
 function make_npc(x, y, s)
@@ -386,6 +444,8 @@ function make_player(x, y, s)
  g_p.anim = stay
  g_p.walk = make_anim(make_walk_anim(s))
  g_p.stay = make_anim(make_stay_anim(s))
+ g_p.coins = 0
+ g_p.current_area = 1
 end
 
 function make_ennemies(nb, aspr)
@@ -436,7 +496,7 @@ function trig_btn_hud(self, dist)
 end
 
 function trig_dist_hud(self, dist)
-  if (dist < 7) then
+  if (dist < 5) then
    init_current_area(self.linkto)
   end
 end
@@ -647,6 +707,11 @@ function controls_loot(self)
    sfx(2)
    del(g_actors,self)
   end
+  if(self.obj == "coin") then
+   g_p.coins += 1
+   sfx(2)
+   del(g_actors,self)
+  end
  end
 end
 
@@ -657,7 +722,7 @@ function controls_hud(self)
 end
 
 function controls_pl_inv(self)
- menu_selection(self)
+ menu_selection(self,#g_weapons)
  if (btnp(fire1)) then
   g_p.weapon = g_weapons[self.selected]
   g_p.cd = 10
@@ -666,7 +731,11 @@ function controls_pl_inv(self)
 end
 
 function controls_tp(self)
- menu_selection(self)
+ local i = 0
+ for a in all(g_area) do
+  if(a.tag == busstop) i += 1
+ end
+ menu_selection(self,i)
  if (btnp(fire1)) then
   init_current_area(self.selected)
   g_p.cd = 10
@@ -674,11 +743,11 @@ function controls_tp(self)
  end
 end
 
-function menu_selection(self)
+function menu_selection(self,max)
   if (btnp(up) and self.selected > 1) then
   self.selected -= 1
  end
- if (btnp(down) and self.selected < #g_weapons) then
+ if (btnp(down) and self.selected < max) then
   self.selected += 1
  end
 end
@@ -880,7 +949,7 @@ function move(a, x, y, ox, oy)
  end
  debug_collision_matrix(x1, y1, x2, y2)
 
- if (not fget(sp1, f_obst) and not fget(sp2, f_obst)) then
+ if (not fget(sp1, f_obst) and not fget(sp2, f_obst) or debug_enabled)  then
   a.x += x
   a.y += y
  end -- check obstacles on map
@@ -1140,7 +1209,7 @@ end
 function check_collisions(a, b, newx, newy)
  local newx = newx or 0
  local newy = newy or 0
- if(a == b or a.tag == b.tag) return false
+ if(a == b or a.tag == b.tag or debug_enabled) return false
  local box_a = get_box(a)
  local box_b = get_box(b)
  if (box_a.x1 + newx > box_b.x2 or
@@ -1318,9 +1387,15 @@ end
 function draw_hud()
  draw_life(g_fp.x+60, g_fp.y+108)
  draw_skills(g_fp.x+60, g_fp.y+108)
+ draw_coins(g_fp.x+110, g_fp.y+112)
  for m in all(g_menus) do
   m:draw()
  end
+end
+
+function draw_coins(x, y)
+ spr(g_loots[2].s, x, y)
+ printoutline(g_p.coins,x-5,y-5,white)
 end
 
 function draw_life(bx, by)
@@ -1514,18 +1589,6 @@ spr_life = {
  {5, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 5},
  {0, 5, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 5, 0},
  {0, 0, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 0, 0}
-}
-
--- map items positions
-
-g_map_items = {
- {
-  name = "heal_potion",
-  spr = 118,
-  pos = {
-   {x = 201, y = 113}
-  }
- }
 }
 
 -- debug
@@ -1731,7 +1794,7 @@ b3b3b3b3b3b3b3b3b3000000000000000000000000000000000000007676d37676767676d3d30000
 00000000000000000000000000000000000000000000000000000000000000007676000000000000000000000000000000000000000000272700000000000000
 00000000000000000000000000000000000000000000007676760000767676001576767676767676767676767676767676767676767600157676766575767600
 __gff__
-000080008000008080808080808000008000000080000080808080808000000080008080800000808080000000000000800080808000000002a000000080800000000080808080808000000000000000008000808080008080000000000000000000000080808080800000000000000085850505000000808080808000000000
+800080008000008080808080808000008000000080000080808080808000000080008080800000808080000000000000800080808000000002a000000080800000000080808080808000000000000000008000808080008080000000000000000000000080808080800000000000000085850505000000808080808000000000
 0000008080800000000000000000000500000080808000000000000000000000000000808080000000000000000000000000008080800000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
 __map__
 000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000171818070808080808080808080918181900000000002525252525003e3e3e3e3e3e3e007979790079797b7b797979
@@ -1788,4 +1851,3 @@ __music__
 03 08020355
 00 0b0c0e44
 00 0e0f1044
-
