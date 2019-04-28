@@ -65,7 +65,7 @@ function init_area()
   {
    tag = busstop, -- 1
    name = "cheat",
-   map = {x1 = 8, y1 = 8, x2 = inf, y2 = inf},
+   map = {x1 = -inf, y1 = -inf, x2 = inf, y2 = inf},
    spawn = { x = 125, y = 70 }
   },
   {
@@ -89,8 +89,8 @@ function init_area()
   {
    tag = room, -- 5
    name = "capgemo",
-   map = {x1 = 207, y1 = 387, x2 = 258, y2 = 385},
-   spawn = { x = 245, y = 492 }
+   map = {x1 = 223, y1 = 387, x2 = 258, y2 = 385},
+   spawn = { x = 260, y = 493 }
   },
   {
    tag = room, -- 6
@@ -101,7 +101,7 @@ function init_area()
   {
    tag = room, -- 7
    name = "thelas",
-   map = {x1 = 822, y1 = 8, x2 = 895, y2 = 72},
+   map = {x1 = 822, y1 = 8, x2 = 895, y2 = 75},
    spawn = { x = 868, y = 180 }
   },
   {
@@ -113,20 +113,62 @@ function init_area()
   {
    tag = room, -- 9
    name = "sophiatech batiment ouest",
-   map = {x1 = 694, y1 = 384, x2 = 888, y2 = 384},
-   spawn = { x = 660, y = 429 }
+   map = {x1 = 694, y1 = 384, x2 = 888, y2 = 386},
+   spawn = { x = 723, y = 489 }
   },
   {
    tag = room, -- 10
    name = "sophiatech restaurant",
-   map = {x1 = 0, y1 = 0, x2 = 0, y2 = 0},
-   spawn = { x = 0, y = 0 }
+   map = {x1 = 96, y1 = 384, x2 = 96, y2 = 384},
+   spawn = { x = 131, y = 469 }
   },
   {
    tag = room, -- 11
    name = "carrouffe",
-   map = {x1 = 0, y1 = 0, x2 = 0, y2 = 0},
-   spawn = { x = 0, y = 0 }
+   map = {x1 = -27, y1 = 392, x2 = -27, y2 = 392},
+   spawn = { x = 45, y = 481 }
+  },
+  {
+   tag = room, -- 12
+   name = "biot (c) door",
+   map = {x1 = 8, y1 = 8, x2 = 225, y2 = 125},
+   spawn = { x = 285, y = 53 }
+  },
+  {
+   tag = room, -- 13
+   name = "biot (c) door",
+   map = {x1 = 8, y1 = 8, x2 = 225, y2 = 125},
+   spawn = { x = 253, y = 239 }
+  },
+  {
+   tag = room, -- 14
+   name = "biot (c) door",
+   map = {x1 = 8, y1 = 8, x2 = 225, y2 = 125},
+   spawn = { x = 109, y = 240 }
+  },
+  {
+   tag = room, -- 15
+   name = "biot (c) door ru",
+   map = {x1 = 8, y1 = 8, x2 = 225, y2 = 125},
+   spawn = { x = 36, y = 211 }
+  },
+  {
+   tag = room, -- 16
+   name = "antibes (c) door",
+   map = {x1 = 384 , y1 = 8, x2 = 474, y2 = 118},
+   spawn = { x = 468, y = 73 }
+  },
+  {
+   tag = room, -- 17
+   name = "antibes (c) door",
+   map = {x1 = 384 , y1 = 8, x2 = 474, y2 = 118},
+   spawn = { x = 545, y = 191 }
+  },
+  {
+   tag = room, -- 18
+   name = "valbonne (c) door",
+   map = {x1 = 625, y1 = -10, x2 = 688, y2 = -9},
+   spawn = { x = 693, y = 55 }
   }
  }
 end
@@ -339,12 +381,27 @@ function make_all_npc()
 end
 
 function make_all_tp()
-  make_tp(281, 41, 44, 15, 15, 5, trig_dist_hud,"⬆️")
-  make_tp(321, 41, 44, 15, 15, 5, trig_dist_hud,"⬆️")
-  make_tp(250, 225, 44, 15, 15, 8, trig_dist_hud,"⬆️")
-  -- make_tp(728, 41, 44, 15, 15, 3, trig_dist_hud,"⬆️")
-  -- make_tp(696, 41, 44, 15, 15, 3, trig_dist_hud,"⬆️")
-  -- make_tp(735, 41, 44, 15, 15, 3, trig_dist_hud,"⬆️")
+  make_tp(281, 41, 44, 15, 10, 5, trig_dist_hud,"⬆️") -- capgemo
+  make_tp(321, 41, 44, 15, 10, 5, trig_dist_hud,"⬆️") -- capgemo
+  make_tp(546, 177, 44, 15, 10, 6, trig_dist_hud,"⬆️")
+  make_tp(569, 177, 44, 15, 10, 6, trig_dist_hud,"⬆️")
+  make_tp(689, 40, 44, 15, 10, 7, trig_dist_hud,"⬆️")
+  make_tp(729, 40, 44, 15, 10, 7, trig_dist_hud,"⬆️")
+  make_tp(250, 225, 44, 15, 10, 8, trig_dist_hud,"⬆️") -- sbe
+  make_tp(105, 224, 44, 15, 10, 9, trig_dist_hud,"⬆️") -- sbo
+  make_tp(136, 224, 44, 15, 10, 9, trig_dist_hud,"⬆️") -- sbo
+  make_tp(425, 56, 44, 15, 10, 11, trig_dist_hud,"⬆️")
+  make_tp(504, 56, 44, 15, 10, 11, trig_dist_hud,"⬆️")
+  make_tp(465, 56, 44, 15, 10, 11, trig_dist_hud,"⬆️")
+  make_tp(33, 192, 44, 15, 10, 10, trig_dist_hud,"⬆️") -- ru
+  make_tp(257, 504, 44, 15, 10, 12, trig_dist_hud,"⬇️")
+  make_tp(713, 239, 44, 15, 10, 13, trig_dist_hud,"⬇️")
+  make_tp(720, 504, 44, 15, 10, 14, trig_dist_hud,"⬇️")
+  make_tp(129, 479, 44, 15, 10, 15, trig_dist_hud,"⬇️")
+  make_tp(43, 496, 44, 15, 10, 16, trig_dist_hud,"⬇️")
+  make_tp(441, 504, 44, 15, 10, 17, trig_dist_hud,"⬇️")
+  make_tp(864, 192, 44, 15, 10, 18, trig_dist_hud,"⬇️")
+
   make_tp(138, 71, 44, 5, 5, 1, trig_btn_hud,"❎")
   make_tp(538, 79, 44, 5, 5, 2, trig_btn_hud,"❎")
   make_tp(785, 55, 44, 5, 5, 3, trig_btn_hud,"❎")
@@ -439,7 +496,7 @@ function trig_btn_hud(self, dist)
 end
 
 function trig_dist_hud(self, dist)
-  if (dist < 7) then
+  if (dist < 5) then
    init_current_area(self.linkto)
   end
 end
@@ -1794,4 +1851,3 @@ __music__
 03 08020355
 00 0b0c0e44
 00 0e0f1044
-
