@@ -410,13 +410,13 @@ function make_all_npc()
    npc_recruiter2_biot:create_dialogs({
     newdialog("tiens tiens, qu'est-ce qu'on a la ? ❎",trigger(200, trig_time)),
     newdialog("vous etes sans emploi ? ❎",trigger(200, trig_time)),
-    newdialog("vous savez quoi ? laissez-moi regarder votre CV ! ❎",trigger(200, trig_time)),
+    newdialog("vous savez quoi ? laissez-moi regarder votre cv ! ❎",trigger(200, trig_time)),
    })
 
    local npc_student_capgemo_biot = {}
    npc_student_capgemo_biot = make_npc(304,43,131)
    npc_student_capgemo_biot:create_dialogs({
-    newdialog("tu vas passer un entretien a Capgemo ? ❎",trigger(200, trig_time)),
+    newdialog("tu vas passer un entretien a capgemo ? ❎",trigger(200, trig_time)),
     newdialog("tu n'as pas l'air si douee que ça. ❎",trigger(200, trig_time)),
     newdialog("laisse-moi t'evaluer rapidement. ❎",trigger(200, trig_time)),
    })
@@ -424,7 +424,7 @@ function make_all_npc()
    local npc_drh_capgemo_biot = {}
    npc_drh_capgemo_biot = make_npc(346,425,140)
    npc_drh_capgemo_biot:create_dialogs({
-    newdialog("Présentez vous ! ❎",trigger(200, trig_time)),
+    newdialog("présentez vous ! ❎",trigger(200, trig_time)),
    })
 
    local npc_daminaca_sophiatech_biot = {}
@@ -454,7 +454,7 @@ function make_all_npc()
     newdialog("l'ordre que je vous conseil pour les stages est le suivant : d'abord capgemo qui se trouve a biot, puis leonardo energie a antibes et enfin thelas à valbonne. ❎",trigger(200, trig_time)),
     newdialog("vous devrez aller parler aux recruteurs de chacune de ces entreprises et passer leurs epreuves afin d'etre recrutee. ❎",trigger(200, trig_time)),
     newdialog("dans le campus, des etudiants et professeurs viendront vous aborder pour vous aider a prendre de l�█▥experience et tester vos connaissances. ❎",trigger(200, trig_time)),
-    newdialog("Et noublies pas de récupérer ton équipement sur le terminal à côté. ❎",trigger(200, trig_time)),
+    newdialog("et noublies pas de récupérer ton équipement sur le terminal à côté. ❎",trigger(200, trig_time)),
     newdialog("en cas de doute, durant votre parcours n'hesitez pas a revenir me voir et je vous repeterai tout cela. ❎",trigger(200, trig_time)),
    })
 
@@ -486,7 +486,7 @@ function make_all_npc()
     newdialog("zzzzz… zzzzz… zz… hein ? quoi ? quelqu'un ! ❎",trigger(200, trig_time)),
     newdialog("ici ? mais ca fait des mois que personne ne s'est presente ici pour un stage ! ❎",trigger(200, trig_time)),
     newdialog("personne n'en a encore ete digne ! mais… ❎",trigger(200, trig_time)),
-    newdialog("attendez, oui c'est bien vous ! J'ai entendu parler de vous. ❎",trigger(200, trig_time)),
+    newdialog("attendez, oui c'est bien vous ! j'ai entendu parler de vous. ❎",trigger(200, trig_time)),
     newdialog("mais thelas n'accepte que l'lite vous le savez ! ❎",trigger(200, trig_time)),
     newdialog("parlez-moi de ce dont vous etes capable. presentez-vous ! ❎",trigger(200, trig_time)),
    })
@@ -505,11 +505,11 @@ function make_all_npc()
    npc_daminaca_bestcorp:create_dialogs({
     newdialog("vous l'avez fait ! vous avez reussi a valider vos trois experiences professionnelles ! ❎",trigger(200, trig_time)),
     newdialog("je suis tres fier de vous. ❎",trigger(200, trig_time)),
-    newdialog("votre parcours est exceptionnel. Voici votre diplome et FELICITATION ! ❎",trigger(200, trig_time)),
+    newdialog("votre parcours est exceptionnel. voici votre diplome et felicitation ! ❎",trigger(200, trig_time)),
     newdialog("maintenant il ne vous reste plus qu'a trouver le metier de vos reves et… quoi ? ❎",trigger(200, trig_time)),
     newdialog("vous voulez etre directrice de sophiatech ? ❎",trigger(200, trig_time)),
     newdialog("hmm… vous etes donc venus a sophia dans le seul but de me remplacer dans ma fonction… ❎",trigger(200, trig_time)),
-    newdialog("je vois. Votre plan est temeraire. Eh bien pour cela, ❎",trigger(200, trig_time)),
+    newdialog("je vois. votre plan est temeraire. eh bien pour cela, ❎",trigger(200, trig_time)),
     newdialog("vous allez devoir surpasser mes connaissances ! montrez-moi ce que vous savez faire ! ❎",trigger(200, trig_time)),
    })
 
@@ -1325,6 +1325,7 @@ function draw_border_on_entities(entitie, x, y, c)
  spr(entitie.f, x-1, y,   1, 2, entitie.flip, false)
  spr(entitie.f, x+1, y,   1, 2, entitie.flip, false)
  pal()
+ palt(black,false)
  palt(pink,true)
  spr(entitie.f, x,   y,   1, 2, entitie.flip, false)
 end
@@ -1750,30 +1751,30 @@ __gfx__
 517111153383333366566656333333244433333355575555555755550a9999a00000000031655553ecc1eeee77777776eeeeeeeecc79922a6163dc8470555506
 511111153828333366566656333332244443333355575555555755550aaaaaa0444004443c155553ec1eeeee77777776eeeeeeeecc7992296163dc8470555506
 55111155338333330000000033333334244333335557555555575555000000000000000035555553e1eeeeee66666666eeeeeeee000000000000000060555506
-000000000000000000000000000000005555555555555555ffffffff44444444eeee99eeeec551eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee5665ee
-07770777777777077777777004444440558aaaaaaaaaa855ffffffff444444449eee9eeeeeec551eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee58e58e568865e
-07660666666666066666667004444440588aaaaaaaaaa885ffffffff444444449eee9eeeeeeec51eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeceeeeeeeeee56899865
-07660666666666066666667004444440aaaaaaaaaaaaaaaaffffffff4444444499eeeeeeeeeec51eeee88eeeeeeeeeee7eeeee5ecccccccee58eeeee689aa986
-07665555555555555555000004444440aaa0000000000aaaffffffff44444444e99eeeeeeeeec51eeee898eeeee558eee74444551111111ceeee58ee689aa986
-07665555555555555555667004444440aa000000000000aa4444444444444444eeee999eeeeec51eeee88eeeeeeeeeee7eeeee5eccccccceeeeeeeee56899865
-07665555555555555555667004444440aa000000000000aa444444444444444499eeeeeeeeec551eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeceeee58ee58e568865e
+000000000000000000000000000000005555555555555555ffffffff44444444eeeeaaeeeec551eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee5665ee
+07770777777777077777777004444440558aaaaaaaaaa855ffffffff44444444ceeeaeeeeeec551eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee58e58e568865e
+07660666666666066666667004444440588aaaaaaaaaa885ffffffff44444444ceeeaeeeeeeec51eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeceeeeeeeeee56899865
+07660666666666066666667004444440aaaaaaaaaaaaaaaaffffffff44444444cceeeeeeeeeec51eeee88eeeeeeeeeee7eeeee5ecccccccee58eeeee689aa986
+07665555555555555555000004444440aaa0000000000aaaffffffff44444444ecceeeeeeeeec51eeee898eeeee558eee74444551111111ceeee58ee689aa986
+07665555555555555555667004444440aa000000000000aa4444444444444444eeee888eeeeec51eeee88eeeeeeeeeee7eeeee5eccccccceeeeeeeee56899865
+07665555555555555555667004444440aa000000000000aa444444444444444488eeeeeeeeec551eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeceeee58ee58e568865e
 07665555555555555555667004044440aaa0000000000aaa4444444444444444eeeeeeeeeec551eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee5665ee
-07665555636363665555667004444440a0aaaaaaaaaaaa0a2666666644444444eeee99eeeeeeeeeeeeeeeeeeeeeeeeeeeee5eeeeeeeceeeeee8e8eeeee5665ee
-00005555663339365555667004444440a00aaaaaaaaaa00a26666666444444449eee9eeee111111eeeeeeeeeeeeeeeeeee555eeeeeccceeeee5e5eeee568865e
-07665555633b33365555667004444440aaaaaaaaaaaaaaaa26666666444444449eee9eee15555551eee8eeeeeee8eeeeeee4eeeeecc1cceeeeeeeeee56899865
-076655556363b3635555667004444440a00aaaaaaaaaa00a244444464444444499eeeeee55cccc55ee898eeeeee5eeeeeee4eeeeeec1ceeeeee8e8ee689aa986
-07665555611111165555667004444440a00aaaaaaaaaa00a2444444622222222e99eeeee5ceeeec5ee888eeeeee5eeeeeee4eeeeeec1ceeee8e5e5ee689aa986
-07665555611711165555667004444440a0aaaaaaaaaaaa0a6222222620000002eeee999eceeeeeeceeeeeeeeeeeeeeeeeee7eeeeeec1ceeee5eeeeee56899865
-07665555661111665555000004444440aaaaaaaaaaaaaaaa626666262000000299eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee7e7eeeeec1ceeeeeee8eeee568865e
+07665555636363665555667004444440a0aaaaaaaaaaaa0a2666666644444444eeeebbeeeeeeeeeeeeeeeeeeeeeeeeeeeee5eeeeeeeceeeeee8e8eeeee5665ee
+00005555663339365555667004444440a00aaaaaaaaaa00a2666666644444444ceeebeeee111111eeeeeeeeeeeeeeeeeee555eeeeeccceeeee5e5eeee568865e
+07665555633b33365555667004444440aaaaaaaaaaaaaaaa2666666644444444ceeebeee15555551eee8eeeeeee8eeeeeee4eeeeecc1cceeeeeeeeee56899865
+076655556363b3635555667004444440a00aaaaaaaaaa00a2444444644444444cceeeeee55cccc55ee898eeeeee5eeeeeee4eeeeeec1ceeeeee8e8ee689aa986
+07665555611111165555667004444440a00aaaaaaaaaa00a2444444622222222ecceeeee5ceeeec5ee888eeeeee5eeeeeee4eeeeeec1ceeee8e5e5ee689aa986
+07665555611711165555667004444440a0aaaaaaaaaaaa0a6222222620000002eeeebbbeceeeeeeceeeeeeeeeeeeeeeeeee7eeeeeec1ceeee5eeeeee56899865
+07665555661111665555000004444440aaaaaaaaaaaaaaaa6266662620000002cceeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee7e7eeeeec1ceeeeeee8eeee568865e
 07665555661111665555667004444440aaa0000000000aaa6266662620000002eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeec1ceeeeeee5eeeee5665ee
-07665555555555555555667070111106aa000000000000aa2222111166666666eeeeeeeeeeee1eeeeee8eeeeeeeeeeeeeeee4eeeeeee8eeeeeeeeeeeee888eee
-07665555555555555555667070111106aa000000000000aa2222111176666667eee99eeeeeec1eeeee828eeeeeeeeeeeeeede4eeeee88eeeeeeeeeeeee888eee
-07665555555555555555667070111106aa000000000000aa2222111177666677eee9e9eeeeec1eeeee48eeeeeeee8eeeeeedee4ee5555511eeee8eeeee8d8eee
-00005555555555555555667070111106aaa0000000000aaa2222111177766777eeee5e9eeeec1eeeeee4eeeeee55559eeeedee4ee5555511e5555a55ee8d8eee
-07666666606666666660667070111106aaaaaaaaaaaaaaaa2222111177766777eee5e99eeeec1eeeee4eeeeeeeddeeeeeeedee4eeeddeeeeeeddeaaeee8d8eee
-07666666606666666660667070111106aaaaaaaaaaaaaaaa2222111177666677e95eeeeeeeec1eeeeee4eeeeeedeeeeeeeede4eeeedeeeeeeedeeaaeeedddeee
-07777777707777777770777070111106566aaaaaaaaaa6652222111176666667ea9eeeeeeeeceeeeeee4eeeeeeeeeeeeeeee4eeeeeeeeeeeeeeeeeeeeeedeeee
-000000000000000000000000601111065566aaaaaaaa66552222111166666666eeeeeeeeeee5eeeeeee4eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeedeeee
+07665555555555555555667070111106aa000000000000aa2222111166666666eeeeeee0eeee1eeeeee8eeeeeeeeeeeeeeee4eeeeeee8eeeeeeeeeeeee888eee
+07665555555555555555667070111106aa000000000000aa2222111176666667eeeeeee0eeec1eeeee828eeeeeeeeeeeeeede4eeeee88eeeeeeeeeeeee888eee
+07665555555555555555667070111106aa000000000000aa2222111177666677eeeeeee0eeec1eeeee48eeeeeeee8eeeeeedee4ee5555511eeee8eeeee8d8eee
+00005555555555555555667070111106aaa0000000000aaa2222111177766777eeeeeee0eeec1eeeeee4eeeeee55559eeeedee4ee5555511e5555a55ee8d8eee
+07666666606666666660667070111106aaaaaaaaaaaaaaaa2222111177766777eeeeeee0eeec1eeeee4eeeeeeeddeeeeeeedee4eeeddeeeeeeddeaaeee8d8eee
+07666666606666666660667070111106aaaaaaaaaaaaaaaa2222111177666677eeeeeee0eeec1eeeeee4eeeeeedeeeeeeeede4eeeedeeeeeeedeeaaeeedddeee
+07777777707777777770777070111106566aaaaaaaaaa6652222111176666667e1111115eeeceeeeeee4eeeeeeeeeeeeeeee4eeeeeeeeeeeeeeeeeeeeeedeeee
+000000000000000000000000601111065566aaaaaaaa6655222211116666666600000055eee5eeeeeee4eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeedeeee
 555555551111111155555555622222265550055566666662ee0550ee6666667550222262000000000000000000000000666666660000000077077077eeeeeeee
 555555551111111165555556622222265550055566666662ee0550ee66666675502222620000000007777770077777706666666666666666777cc777eeeeeeee
 555555551111111166555566622222265550055566666662ee0550ee6666667550222262ffffffff0777777007077770666666666666666677cccc77eeeeeeee
@@ -1904,3 +1905,4 @@ __music__
 03 08020355
 00 0b0c0e44
 00 0e0f1044
+
