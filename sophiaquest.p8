@@ -55,6 +55,7 @@ function init_current_area(area)
  if(g_p)  then
   g_p.x = g_spawn.x
   g_p.y = g_spawn.y
+  g_p.current_area = area
  end
  set_map_delimiter(ca.map.x1, ca.map.y1, ca.map.x2, ca.map.y2)
 end
@@ -386,6 +387,8 @@ function make_player(x, y, s)
  g_p.anim = stay
  g_p.walk = make_anim(make_walk_anim(s))
  g_p.stay = make_anim(make_stay_anim(s))
+ g_p.coins = 0
+ g_p.current_area = 1
 end
 
 function make_ennemies(nb, aspr)
@@ -647,6 +650,11 @@ function controls_loot(self)
    sfx(2)
    del(g_actors,self)
   end
+  if(self.obj == "coin") then
+   g_p.coins += 1
+   sfx(2)
+   del(g_actors,self)
+  end
  end
 end
 
@@ -657,7 +665,7 @@ function controls_hud(self)
 end
 
 function controls_pl_inv(self)
- menu_selection(self)
+ menu_selection(self,#g_weapons)
  if (btnp(fire1)) then
   g_p.weapon = g_weapons[self.selected]
   g_p.cd = 10
@@ -666,7 +674,11 @@ function controls_pl_inv(self)
 end
 
 function controls_tp(self)
- menu_selection(self)
+ local i = 0
+ for a in all(g_area) do
+  if(a.tag == busstop) i += 1
+ end
+ menu_selection(self,i)
  if (btnp(fire1)) then
   init_current_area(self.selected)
   g_p.cd = 10
@@ -674,11 +686,11 @@ function controls_tp(self)
  end
 end
 
-function menu_selection(self)
+function menu_selection(self,max)
   if (btnp(up) and self.selected > 1) then
   self.selected -= 1
  end
- if (btnp(down) and self.selected < #g_weapons) then
+ if (btnp(down) and self.selected < max) then
   self.selected += 1
  end
 end
@@ -1318,9 +1330,15 @@ end
 function draw_hud()
  draw_life(g_fp.x+60, g_fp.y+108)
  draw_skills(g_fp.x+60, g_fp.y+108)
+ draw_coins(g_fp.x+110, g_fp.y+112)
  for m in all(g_menus) do
   m:draw()
  end
+end
+
+function draw_coins(x, y)
+ spr(g_loots[2].s, x, y)
+ printoutline(g_p.coins,x-5,y-5,white)
 end
 
 function draw_life(bx, by)
@@ -1514,18 +1532,6 @@ spr_life = {
  {5, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 5},
  {0, 5, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 5, 0},
  {0, 0, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 0, 0}
-}
-
--- map items positions
-
-g_map_items = {
- {
-  name = "heal_potion",
-  spr = 118,
-  pos = {
-   {x = 201, y = 113}
-  }
- }
 }
 
 -- debug
@@ -1731,7 +1737,7 @@ b3b3b3b3b3b3b3b3b3000000000000000000000000000000000000007676d37676767676d3d30000
 00000000000000000000000000000000000000000000000000000000000000007676000000000000000000000000000000000000000000272700000000000000
 00000000000000000000000000000000000000000000007676760000767676001576767676767676767676767676767676767676767600157676766575767600
 __gff__
-000080008000008080808080808000008000000080000080808080808000000080008080800000808080000000000000800080808000000002a000000080800000000080808080808000000000000000008000808080008080000000000000000000000080808080800000000000000085850505000000808080808000000000
+800080008000008080808080808000008000000080000080808080808000000080008080800000808080000000000000800080808000000002a000000080800000000080808080808000000000000000008000808080008080000000000000000000000080808080800000000000000085850505000000808080808000000000
 0000008080800000000000000000000500000080808000000000000000000000000000808080000000000000000000000000008080800000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
 __map__
 000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000171818070808080808080808080918181900000000002525252525003e3e3e3e3e3e3e007979790079797b7b797979
