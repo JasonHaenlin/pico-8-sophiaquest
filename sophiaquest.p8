@@ -25,13 +25,58 @@ function _init()
  g_dfx = {}
  g_weapons = {}
  g_dialogs = {}
- set_map_delimiter(8, 8, 225, 125)
  g_open_inv=false
  g_selected_item=1
  g_ennemies_left=1
  _update = update_menu
+ init_area()
+ init_current_area(1)
  init_screen()
  make_game()
+end
+
+function init_current_area(area)
+ local ca = g_area[area]
+ g_spawn = {}
+ g_spawn.x = ca.spawn.x
+ g_spawn.y = ca.spawn.y
+ if(g_p) g_d = ca.look
+ set_map_delimiter(ca.map.x1, ca.map.y1, ca.map.x2, ca.map.y2)
+end
+
+function init_area()
+ g_area = {
+  {
+   name = "cheat",
+   map = {x1 = 8, y1 = 8, x2 = inf, y2 = inf},
+   spawn = { x = 860, y = 175 },
+   look = down
+  },
+  {
+   name = "zone 1",
+   map = {x1 = 8, y1 = 8, x2 = 225, y2 = 125},
+   spawn = { x = 128, y = 70 },
+   look = down
+  },
+  {
+   name = "zone 2",
+   map = {x1 = 384 , y1 = 8, x2 = 537, y2 = 120},
+   spawn = { x = 528, y = 77 },
+   look = down
+  },
+  {
+   name = "zone 3",
+   map = {x1 = 625, y1 = 8, x2 = 688, y2 = -9},
+   spawn = { x = 777, y = 51 },
+   look = down
+  },
+  {
+   name = "room 1",
+   map = {x1 = 824, y1 = 8, x2 = 1025, y2 = 65},
+   spawn = { x = 860, y = 175 },
+   look = down
+  }
+ }
 end
 
 function init_screen()
@@ -52,7 +97,7 @@ function newentitie(x, y, sprite, tag, health, direction, mvn)
   s = sprite,
   tag = tag,
   health = health or immortal_object,
-  direction = direction or up,
+  direction = direction or down,
   mvn = mvn or {}
  }
 end
@@ -139,7 +184,7 @@ function make_game()
  make_weapons()
  make_ennemies(nb_of_ennemis, {134})
  make_all_npc()
- make_player(128, 70, 128)
+ make_player(g_spawn.x, g_spawn.y, 128)
  make_items()
 end
 
@@ -659,7 +704,7 @@ function move(a, x, y, ox, oy)
  local sp1 = mget(get_tile(x1), get_tile(y1))
  local sp2 = mget(get_tile(x2), get_tile(y2))
  debug_front_matrix(a, x, y, ox, oy)
- log(4, flr(x1)..":"..flr(y1).." - "..flr(x2)..":"..flr(y2))
+ log(4, "limit "..flr(x1)..":"..flr(y1).." - "..flr(x2)..":"..flr(y2))
  if(is_limit_of_map(x1,y1) or is_limit_of_map(x2,y2)) return
 
  for b in all(g_actors) do
@@ -1165,9 +1210,9 @@ function draw_game()
  draw_dialogs()
  draw_hud()
 
- log(1, g_p.x..":"..g_p.y)
- log(2, g_scr.x..":"..g_scr.y)
- log(3, g_map.x1..":"..g_map.y1.." - "..g_map.x2..":"..g_map.y2)
+ log(1, "pl "..g_p.x..":"..g_p.y)
+ log(2, "scr "..g_scr.x..":"..g_scr.y)
+ log(3, "ma"..g_map.x1..":"..g_map.y1.." - "..g_map.x2..":"..g_map.y2)
  debug()
 end
 
