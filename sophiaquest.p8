@@ -6,7 +6,7 @@ __lua__
 -- const
 left, right, up, down, fire1, fire2, none = 0, 1, 2, 3, 4, 5, 6
 black, dark_blue, dark_purple, dark_green, brown, dark_gray, light_gray, white, red, orange, yellow, green, blue, indigo, pink, peach = 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15
-player, bullet, ennemy, item, npc, invisible = 0, 1, 2, 3, 4, 5
+player, bullet, ennemy, item, npc, invisible, busstop, room = 0, 1, 2, 3, 4, 5, 6, 7
 immortal_object = 10000
 inf = 10000
 melee, ranged = 1, 20
@@ -50,45 +50,53 @@ end
 function init_area()
  g_area = {
   {
+   tag = busstop,
    name = "cheat",
    map = {x1 = 8, y1 = 8, x2 = inf, y2 = inf},
    spawn = { x = 125, y = 70 }
   },
   {
+   tag = busstop,
    name = "biot",
    map = {x1 = 8, y1 = 8, x2 = 225, y2 = 125},
    spawn = { x = 125, y = 70 }
   },
   {
+   tag = busstop,
    name = "valbonne",
    map = {x1 = 384 , y1 = 8, x2 = 537, y2 = 120},
    spawn = { x = 528, y = 77 }
   },
   {
+   tag = busstop,
    name = "antibes",
    map = {x1 = 625, y1 = 8, x2 = 688, y2 = -9},
    spawn = { x = 777, y = 51 }
   },
   {
-    name = "capgemo",
-    map = {x1 = 824, y1 = 8, x2 = 1025, y2 = 65},
-    spawn = { x = 860, y = 175 }
+   tag = busstop,
+   name = "capgemo",
+   map = {x1 = 824, y1 = 8, x2 = 1025, y2 = 65},
+   spawn = { x = 860, y = 175 }
   },
   {
+   tag = room,
    name = "sophiatech batiment est",
    map = {x1 = 824, y1 = 8, x2 = 1025, y2 = 65},
    spawn = { x = 860, y = 175 }
   },
   {
-    name = "sophiatech batiment ouest",
-    map = {x1 = 824, y1 = 8, x2 = 1025, y2 = 65},
-    spawn = { x = 860, y = 175 }
-   },
-   {
-    name = "sophiatech restaurant",
-    map = {x1 = 15, y1 = 54, x2 = 1025, y2 = 65},
-    spawn = { x = 860, y = 175 }
-   }
+   tag = room,
+   name = "sophiatech batiment ouest",
+   map = {x1 = 824, y1 = 8, x2 = 1025, y2 = 65},
+   spawn = { x = 860, y = 175 }
+  },
+  {
+   tag = room,
+   name = "sophiatech restaurant",
+   map = {x1 = 15, y1 = 54, x2 = 1025, y2 = 65},
+   spawn = { x = 860, y = 175 }
+  }
  }
 end
 
@@ -1271,11 +1279,13 @@ function draw_tp(self)
   local ty = y1 + 10
   rectfill(x1, y1, x2, y2, dark_blue)
   for i = 1,#g_area do
-   print(g_area[i].name, tx + 12, ty - 2, white)
-   if (self.selected == i) then
-    spr(58, tx - 7, ty - 2)
+   if(g_area[i].tag == busstop) then
+    print(g_area[i].name, tx + 12, ty - 2, white)
+    if (self.selected == i) then
+     spr(58, tx - 7, ty - 2)
+    end
+    ty += 12
    end
-   ty += 12
   end
 end
 
