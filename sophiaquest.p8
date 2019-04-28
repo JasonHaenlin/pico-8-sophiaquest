@@ -352,27 +352,27 @@ end
 
 function make_weapons()
  make_weapon({
-  wpm = newweapon("elec", 104, 8, {h = 72, v = 88}, 20, 15, melee, 2, 8, 5, -5),
+  wpm = newweapon("laptop", 104, 8, {h = 72, v = 88}, 20, 15, melee, 2, 8, 5, -5),
   dfx = newdfx(dfx_thunder, draw_thunder, 100)
  })
  make_weapon({
-  wpm = newweapon("sword", 105, 4, {h = 73, v = 89}, 15, 7, melee, 2, 8, 5, -4),
+  wpm = newweapon("justice", 105, 4, {h = 73, v = 89}, 15, 7, melee, 2, 8, 5, -4),
   dfx = newdfx()
  })
  make_weapon({
-  wpm = newweapon("firewand", 106, 1, {h = 74, v = 90}, 8, 8, ranged, 3, 3, 5, -4),
+  wpm = newweapon("feu", 106, 1, {h = 74, v = 90}, 8, 8, ranged, 3, 3, 5, -4),
   dfx = newdfx()
  })
  make_weapon({
-  wpm = newweapon("gun", 107, 5, {h = 75, v = 91}, 3, 3, ranged, 10, 2, 5, -5),
+  wpm = newweapon("diplomatie", 107, 5, {h = 75, v = 91}, 3, 3, ranged, 10, 2, 5, -5),
   dfx = newdfx()
  })
  make_weapon({
-  wpm = newweapon("bow", 108, 3, {h = 76, v = 92}, 6, 5, ranged, 6, 3, 5, -5),
+  wpm = newweapon("arc", 108, 3, {h = 76, v = 92}, 6, 5, ranged, 6, 3, 5, -5),
   dfx = newdfx()
  })
  make_weapon({
-  wpm = newweapon("secret", 109, 6, {h = 77, v = 93}, 4, 5, ranged, 5, 1, 5, -5),
+  wpm = newweapon("biohazard", 109, 6, {h = 77, v = 93}, 4, 5, ranged, 5, 1, 5, -5),
   dfx = newdfx(dfx_waterfall, draw_waterfall, 100)
  })
  make_weapon({
@@ -449,21 +449,21 @@ function make_all_npc()
     newdialog("je vais vous laisser une chance. ❎",trigger(200, trig_time)),
     newdialog("bienvenue a sophiatech ! ❎",trigger(200, trig_time)),
     newdialog("laissez-moi vous expliquer le fonctionnement de cette ecole. ❎",trigger(200, trig_time)),
-    newdialog("mais avant tout, voici le materiel dont vous aurez besoin pour votre parcours ❎",trigger(200, trig_time)),
-    newdialog("tenez ! ❎",trigger(200, trig_time)),
-    newdialog("votre materiel est extremement precieux. ❎",trigger(200, trig_time)),
-    newdialog("sans materiel vous ne pourrez jamais terminer vos etudes et realiser votre reve à sophia. ❎",trigger(200, trig_time)),
-    newdialog("votre materiel constitue l�█▥outil principal de votre connaissance. ❎",trigger(200, trig_time)),
-    newdialog("utilisez-le pour demontrer vos connaissances aux etudiants et aux professeurs qui veulent vous tester. ❎",trigger(200, trig_time)),
-    newdialog("et il y en a beaucoup sur le campus et sur les routes. ❎",trigger(200, trig_time)),
     newdialog("votre objectif est simple : obtenir votre diplome pour etre recrutee dans l'entreprise de vos reves. ❎",trigger(200, trig_time)),
-    newdialog("pour se faire vous devez effectuer trois stages differents qui permettront d�█▥ameliorer vos competences et votre materiel. ❎",trigger(200, trig_time)),
+    newdialog("pour se faire vous devez effectuer trois stages differents qui permettront d'ameliorer vos competences et votre materiel. ❎",trigger(200, trig_time)),
     newdialog("l'ordre que je vous conseil pour les stages est le suivant : d'abord capgemo qui se trouve a biot, puis leonardo energie a antibes et enfin thelas à valbonne. ❎",trigger(200, trig_time)),
     newdialog("vous devrez aller parler aux recruteurs de chacune de ces entreprises et passer leurs epreuves afin d'etre recrutee. ❎",trigger(200, trig_time)),
     newdialog("dans le campus, des etudiants et professeurs viendront vous aborder pour vous aider a prendre de l�█▥experience et tester vos connaissances. ❎",trigger(200, trig_time)),
     newdialog("et noublies pas de récupérer ton équipement sur le terminal à côté. ❎",trigger(200, trig_time)),
     newdialog("en cas de doute, durant votre parcours n'hesitez pas a revenir me voir et je vous repeterai tout cela. ❎",trigger(200, trig_time)),
-   })
+    newdialog("n'oubliez pas votre materiel! ❎",trigger(200, trig_time)),
+    newdialog("vous pouvez le choisir sur le terminal derriere moi! ❎",trigger(200, trig_time)),
+    newdialog("votre materiel est extremement precieux. ❎",trigger(200, trig_time)),
+    newdialog("sans materiel vous ne pourrez jamais terminer vos etudes et realiser votre reve à sophia. ❎",trigger(200, trig_time)),
+    newdialog("votre materiel constitue l'outil principal de votre connaissance. ❎",trigger(200, trig_time)),
+    newdialog("utilisez-le pour demontrer vos connaissances aux etudiants et aux professeurs qui veulent vous tester. ❎",trigger(200, trig_time)),
+    newdialog("et il y en a beaucoup sur le campus et sur les routes. ❎",trigger(200, trig_time)),
+  })
 
    local npc_student1_biot = {}
    npc_student1_biot = make_npc(199,214,131)
@@ -1760,30 +1760,30 @@ __gfx__
 517111153383333366566656333333244433333355575555555755550a9999a00000000081655558ecc1eeee77777776eeeeeeeecc79922a6163dc8470555506
 511111153828333366566656333332244443333355575555555755550aaaaaa0444004448c155558ec1eeeee77777776eeeeeeeecc7992296163dc8470555506
 55111155338333330000000033333334244333335557555555575555000000000000000098888889e1eeeeee66666666eeeeeeee000000000000000060555506
-000000000000000000000000000000005555555555555555ffffffff44444444eeee99eeeec551eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee5665ee
-07770777777777077777777004444440558aaaaaaaaaa855ffffffff444444449eee9eeeeeec551eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee58e58e568865e
-07660666666666066666667004444440588aaaaaaaaaa885ffffffff444444449eee9eeeeeeec51eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeceeeeeeeeee56899865
-07660666666666066666667004444440aaaaaaaaaaaaaaaaffffffff4444444499eeeeeeeeeec51eeee88eeeeeeeeeee7eeeee5ecccccccee58eeeee689aa986
-07665555555555555555000004444440aaa0000000000aaaffffffff44444444e99eeeeeeeeec51eeee898eeeee558eee74444551111111ceeee58ee689aa986
-07665555555555555555667004444440aa000000000000aa4444444444444444eeee999eeeeec51eeee88eeeeeeeeeee7eeeee5eccccccceeeeeeeee56899865
-07665555555555555555667004444440aa000000000000aa444444444444444499eeeeeeeeec551eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeceeee58ee58e568865e
+000000000000000000000000000000005555555555555555ffffffff44444444eeeebbeeeec551eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee5665ee
+07770777777777077777777004444440558aaaaaaaaaa855ffffffff44444444aeeebeeeeeec551eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee58e58e568865e
+07660666666666066666667004444440588aaaaaaaaaa885ffffffff44444444aeeebeeeeeeec51eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeceeeeeeeeee56899865
+07660666666666066666667004444440aaaaaaaaaaaaaaaaffffffff44444444aaeeeeeeeeeec51eeee88eeeeeeeeeee7eeeee5ecccccccee58eeeee689aa986
+07665555555555555555000004444440aaa0000000000aaaffffffff44444444eaaeeeeeeeeec51eeee898eeeee558eee74444551111111ceeee58ee689aa986
+07665555555555555555667004444440aa000000000000aa4444444444444444eeee333eeeeec51eeee88eeeeeeeeeee7eeeee5eccccccceeeeeeeee56899865
+07665555555555555555667004444440aa000000000000aa444444444444444488eeeeeeeeec551eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeceeee58ee58e568865e
 07665555555555555555667004044440aaa0000000000aaa4444444444444444eeeeeeeeeec551eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee5665ee
-07665555636363665555667004444440a0aaaaaaaaaaaa0a2666666644444444eeee99eeeeeeeeeeeeeeeeeeeeeeeeeeeee5eeeeeeeceeeeee8e8eeeee5665ee
-00005555663339365555667004444440a00aaaaaaaaaa00a26666666444444449eee9eeee111111eeeeeeeeeeeeeeeeeee555eeeeeccceeeee5e5eeee568865e
-07665555633b33365555667004444440aaaaaaaaaaaaaaaa26666666444444449eee9eee15555551eee8eeeeeee8eeeeeee4eeeeecc1cceeeeeeeeee56899865
+07665555636363665555667004444440a0aaaaaaaaaaaa0a2666666644444444eeeebbeeeeeeeeeeeeeeeeeeeeeeeeeeeee5eeeeeeeceeeeee8e8eeeee5665ee
+00005555663339365555667004444440a00aaaaaaaaaa00a26666666444444449eeebeeee111111eeeeeeeeeeeeeeeeeee555eeeeeccceeeee5e5eeee568865e
+07665555633b33365555667004444440aaaaaaaaaaaaaaaa26666666444444449eeebeee15555551eee8eeeeeee8eeeeeee4eeeeecc1cceeeeeeeeee56899865
 076655556363b3635555667004444440a00aaaaaaaaaa00a244444464444444499eeeeee55cccc55ee898eeeeee5eeeeeee4eeeeeec1ceeeeee8e8ee689aa986
 07665555611111165555667004444440a00aaaaaaaaaa00a2444444622222222e99eeeee5ceeeec5ee888eeeeee5eeeeeee4eeeeeec1ceeee8e5e5ee689aa986
-07665555611711165555667004444440a0aaaaaaaaaaaa0a6222222620000002eeee999eceeeeeeceeeeeeeeeeeeeeeeeee7eeeeeec1ceeee5eeeeee56899865
-07665555661111665555000004444440aaaaaaaaaaaaaaaa626666262000000299eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee7e7eeeeec1ceeeeeee8eeee568865e
+07665555611711165555667004444440a0aaaaaaaaaaaa0a6222222620000002eeeeaaaeceeeeeeceeeeeeeeeeeeeeeeeee7eeeeeec1ceeee5eeeeee56899865
+07665555661111665555000004444440aaaaaaaaaaaaaaaa626666262000000288eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee7e7eeeeec1ceeeeeee8eeee568865e
 07665555661111665555667004444440aaa0000000000aaa6266662620000002eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeec1ceeeeeee5eeeee5665ee
-07665555555555555555667070111106aa000000000000aa2222111166666666eeeeeeeeeeee1eeeeee8eeeeeeeeeeeeeeee4eeeeeee8eeeeeeeeeeeee888eee
-07665555555555555555667070111106aa000000000000aa2222111176666667eee99eeeeeec1eeeee828eeeeeeeeeeeeeede4eeeee88eeeeeeeeeeeee888eee
-07665555555555555555667070111106aa000000000000aa2222111177666677eee9e9eeeeec1eeeee48eeeeeeee8eeeeeedee4ee5555511eeee8eeeee8d8eee
-00005555555555555555667070111106aaa0000000000aaa2222111177766777eeee5e9eeeec1eeeeee4eeeeee55559eeeedee4ee5555511e5555a55ee8d8eee
-07666666606666666660667070111106aaaaaaaaaaaaaaaa2222111177766777eee5e99eeeec1eeeee4eeeeeeeddeeeeeeedee4eeeddeeeeeeddeaaeee8d8eee
-07666666606666666660667070111106aaaaaaaaaaaaaaaa2222111177666677e95eeeeeeeec1eeeeee4eeeeeedeeeeeeeede4eeeedeeeeeeedeeaaeeedddeee
-07777777707777777770777070111106566aaaaaaaaaa6652222111176666667ea9eeeeeeeeceeeeeee4eeeeeeeeeeeeeeee4eeeeeeeeeeeeeeeeeeeeeedeeee
-000000000000000000000000601111065566aaaaaaaa66552222111166666666eeeeeeeeeee5eeeeeee4eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeedeeee
+07665555555555555555667070111106aa000000000000aa2222111166666666eeeeeee0eeee1eeeeee8eeeeeeeeeeeeeeee4eeeeeee8eeeeeeeeeeeee888eee
+07665555555555555555667070111106aa000000000000aa2222111176666667eeeeeee0eeec1eeeee828eeeeeeeeeeeeeede4eeeee88eeeeeeeeeeeee888eee
+07665555555555555555667070111106aa000000000000aa2222111177666677eeeeeee0eeec1eeeee48eeeeeeee8eeeeeedee4ee5555511eeee8eeeee8d8eee
+00005555555555555555667070111106aaa0000000000aaa2222111177766777eeeeeee0eeec1eeeeee4eeeeee55559eeeedee4ee5555511e5555a55ee8d8eee
+07666666606666666660667070111106aaaaaaaaaaaaaaaa2222111177766777eeeeeee0eeec1eeeee4eeeeeeeddeeeeeeedee4eeeddeeeeeeddeaaeee8d8eee
+07666666606666666660667070111106aaaaaaaaaaaaaaaa2222111177666677eeeeeee0eeec1eeeeee4eeeeeedeeeeeeeede4eeeedeeeeeeedeeaaeeedddeee
+07777777707777777770777070111106566aaaaaaaaaa6652222111176666667e1111115eeeceeeeeee4eeeeeeeeeeeeeeee4eeeeeeeeeeeeeeeeeeeeeedeeee
+000000000000000000000000601111065566aaaaaaaa6655222211116666666600000055eee5eeeeeee4eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeedeeee
 555555551111111155555555622222265550055566666662ee0550ee666666755022226200000000000000000000000066666666000000007707707700000000
 555555551111111165555556622222265550055566666662ee0550ee66666675502222620000000007777770077777706666666666666666777cc77700000000
 555555551111111166555566622222265550055566666662ee0550ee6666667550222262ffffffff0777777007077770666666666666666677cccc7700000000
@@ -1914,3 +1914,4 @@ __music__
 03 08020355
 00 0b0c0e44
 00 0e0f1044
+
