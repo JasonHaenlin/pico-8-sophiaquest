@@ -190,6 +190,12 @@ function trig_btn(self)
  return btnp(self.arg)
 end
 
+function trig_dist(self, dist)
+  if (dist < 7) then
+   init_current_area(self.linkto)
+  end
+end
+
 -- make
 
 function make_game()
@@ -304,8 +310,8 @@ function make_all_npc()
 end
 
 function make_all_tp()
-  make_tp(281, 41, 46, 15, 15, 3)
-  make_tp(321, 41, 46, 15, 15, 3)
+  make_tp(281, 41, 46, 15, 15, 3, trig_dist)
+  make_tp(321, 41, 46, 15, 15, 3, trig_dist)
 end
 
 function make_npc(x, y, s)
@@ -373,7 +379,7 @@ function make_ennemies(nb, aspr)
  end
 end
 
-function make_tp(x, y, s, w, h, link)
+function make_tp(x, y, s, w, h, link, trigger)
  local n = make_actor({
   -- new player char
   entitie = newentitie(x, y, s, npc, invisible, down),
@@ -386,6 +392,8 @@ function make_tp(x, y, s, w, h, link)
  })
   -- add link
  n.linkto = link
+  -- add a trigger
+ n.trigger = trigger
  return n
 end
 
@@ -441,11 +449,12 @@ function make_anim(anim)
  }
 end
 
+function make_tp_hud()
+ make_hud({control = controls_tp, draw = draw_tp})
+end
+
 function make_pl_inv()
-  make_hud({
-    control = controls_pl_inv,
-    draw = draw_pl_inv
-  })
+ make_hud({control = controls_pl_inv, draw = draw_pl_inv})
 end
 
 function make_particles(a, n, c)
@@ -611,9 +620,7 @@ function controls_doors(self)
  if (dist < 10) then
   hint(self,"⬆️")
  end
- if (dist < 7) then
-  init_current_area(self.linkto)
- end
+ self:trigger(dist)
 end
 
 
@@ -1661,4 +1668,3 @@ __music__
 03 08020355
 00 0b0c0e44
 00 0e0f1044
-
