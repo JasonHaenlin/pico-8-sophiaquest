@@ -10,7 +10,7 @@ player, bullet, ennemy, item, npc, invisible, busstop, room = 0, 1, 2, 3, 4, 5, 
 immortal_object = 10000
 inf = 10000
 melee, ranged = 1, 20
-nb_of_ennemis = 2
+nb_of_ennemis = 5
 f_heal, f_item, f_door, f_inv, f_obst = 0, 1, 4, 5, 7
 l_player, l_ennemy, l_boss = 50, 10, 150
 walk, stay = "walk", "stay"
@@ -27,6 +27,18 @@ function _init()
  g_dialogs = {}
  g_menus = {}
  g_ennemies_left=1
+ g_loots = {
+  {
+   obj = "heal",
+   s = 175,
+   drop_rate = 30
+  },
+  {
+   obj = "coin",
+   s = 191,
+   drop_rate = 60
+  }
+ }
 
  _update = update_menu
  init_area()
@@ -380,6 +392,20 @@ function make_ennemies(nb, aspr)
  end
 end
 
+function make_loot(x, y, item)
+ local i = make_actor({
+  -- new player char
+  entitie = newentitie(x+((rnd(2)-1)*10), y+((rnd(2)-1)*10), item.s, invisible),
+  -- add a action controller
+  control = controls_loot,
+  -- add a draw controller
+  draw = draw_item,
+  -- set the hitbox
+  box = {x1 = 0, y1 = 0, x2 = 6, y2 = 6},
+ })
+ i.obj = item.obj
+end
+
 
 function trig_btn_hud(self, dist)
  if(btnp(fire2) and dist < 7) then
@@ -424,7 +450,7 @@ function make_items()
     -- add a draw controller
     draw = draw_item,
     -- set the hitbox
-    box = {x1 = 0, y1 = 0, x2 = 7, y2 = 7},
+    box = {x1 = 0, y1 = 0, x2 = 6, y2 = 6},
     })
   end
  end
@@ -586,6 +612,20 @@ function create_direction_frames(fl1, fl2, fr1, fr2, fu, fuflip, fd, fdflip)
   {{f = fu,  flip = false },{f = fu,  flip = fuflip }},
   {{f = fd,  flip = false },{f = fd,  flip = fdflip }}
  }
+end
+
+function controls_loot(self)
+ local dist = distance(self)
+ if (dist < 8) then
+  log(2, self.obj)
+  log(3, g_p.health)
+  if(self.obj == "heal" and g_p.health < l_player) then
+   g_p.health += 10
+   if (g_p.health > l_player) g_p.health = l_player
+   sfx(2)
+   del(g_actors,self)
+  end
+ end
 end
 
 function controls_hud(self)
@@ -812,8 +852,7 @@ function move(a, x, y, ox, oy)
  if(is_limit_of_map(x1,y1) or is_limit_of_map(x2,y2)) return
 
  for b in all(g_actors) do
-  if(check_collisions(a, b, x, y) and b.tag ~= invisible) then
-   log(2, "here!!"..rnd(1))
+  if(check_collisions(a, b, x, y) and b.tag ~= invisible and b.tag ~= item) then
    return
   end
  end
@@ -1092,7 +1131,18 @@ function check_collisions(a, b, newx, newy)
 end
 
 function is_dead(a)
- return a.health <= 0
+ if(a.health <= 0) then
+  drop_loot(a)
+  return true
+ end
+ return false
+end
+
+function drop_loot(a)
+ local rndv = flr(rnd(100))
+ for o in all(g_loots) do
+  if(o.drop_rate <= rndv) make_loot(a.x, a.y, o)
+ end
 end
 
 function is_game_done()
@@ -1112,7 +1162,7 @@ function controls_collisions()
  for a in all(g_actors) do
   for b in all(g_actors) do
    if (check_collisions(a, b)) then
-    if (a.tag == bullet and (b.tag == player or b.tab == player)) then
+    if (a.tag == bullet and (b.tag == player or b.tag == ennemy)) then
      b.health -= a.dmg
      local damaged_actor = b
      make_particles(b, 10, 5)
@@ -1220,6 +1270,7 @@ function draw_weapon(a,f)
 end
 
 function draw_item(self)
+ palt(black,false)
  spr(self.s,self.x,self.y)
 end
 
@@ -1609,20 +1660,20 @@ e111111eeee111eee111111ee111111eeeee11eee111111ee555d55eeee5deeee55d555ee111111e
 e511115eeee511eee511115ee11ee11eeeee11eee11ee11eeddeeddeeeeddeeeeddeeddee11ee11eeeee11eee11ee11ee00ee00eeeee00eee00ee00eeeeeeeee
 e55ee55eeee55eeee55ee55ee11ee11eeeee11eee11ee11ee44ee44eeee44eeee44ee44ee11ee11eeeee11eee11ee11ee00ee00eeeee00eee00ee00eeeeeeeee
 e55ee55eeee555eee55ee55ee55ee55eeeee555ee55ee55ee44ee44eeee444eee44ee44ee55ee55eeeee555ee55ee55ee00ee00eeeee000ee00ee00eeeeeeeee
-eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
-eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
-eccccccceccccceecccccccee166661eee11166ee111111ee88888c8ee8888ee8888888ee55f555eeee5555ee55ff55ee444444eee44444ee444444eeeeeeeee
-cccccccccccccccecccccccce161161eee11161ee114411e88888888ee88888e8882888ee55ff55eee55555ee5f5ff5ee444444eee44444ee444444eeeeeeeee
-cc66cc6cccccfccecccccccc1111111eee111111e111111e88228828e888288e8882888eeffffffeee55fffee5fff55ee4ffff4eee444f4ee444444eeeeeeeee
-c6fcfffcccccfffccccccccce4f4fffeee444f4ee444444e82ffff28e888fffe8888288eef0ff0feee55f0fee555555eef3ff3feee44f3fee444444eeeeeeeee
+eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee00e00ee
+eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee0880880e
+eccccccceccccceecccccccee166661eee11166ee111111ee88888c8ee8888ee8888888ee55f555eeee5555ee55ff55ee444444eee44444ee444444e0888880e
+cccccccccccccccecccccccce161161eee11161ee114411e88888888ee88888e8882888ee55ff55eee55555ee5f5ff5ee444444eee44444ee444444ee08880ee
+cc66cc6cccccfccecccccccc1111111eee111111e111111e88228828e888288e8882888eeffffffeee55fffee5fff55ee4ffff4eee444f4ee444444eee080eee
+c6fcfffcccccfffccccccccce4f4fffeee444f4ee444444e82ffff28e888fffe8888288eef0ff0feee55f0fee555555eef3ff3feee44f3fee444444eeee0eeee
 cf0ff0fcecfcf0fecc6cccccef0ff0feee44f0fee444444e8f1ff1f8eef8f1fe8888828eeffffffeee5ffffee555555eef3ff3feeee4f3fee444444eeeeeeeee
 cf0ff0fcccccf0feccc6c6ccef0ff0feee4ff0fee444444e8f1ff1feee28f1fe88288feeef4444feee5fff4ee555555eeffffffeeeeffffee444444eeeeeeeee
-ccffffcccccccffeeccc6ccceeffffeeeeeffffeef4444fe88ffffeeee828ffee882ffeee44ff44eeeeff44ee555555eeeffffeeeeeffffeef4444feeeeeeeee
-cc1dd1ceec6ccceee6cccc6f9995599eeee999ee999999998556655eee5856ee585555551147741eeee1774e115555115558855eeee555ee55555555eeeeeeee
-6c1ddf6eccf61deee16cc6fff9599ffeeeeffdeef99999ff2556655eee5556ee55555555f417411eeee1114e11111111f557755eeee555ee55555555eeeeeeee
-e1111ffeecfff1eee116611ee9999ffeeeefffeef99999ffe5556ffeee5ffeeef55555ffe1177ffeeee111eef11111ffe5577ffeeee5ffeef55555ffeeeeeeee
-e111111eee1111eee551e71ee111111eeee999eee111111ee555dddeee555eeee555d55ee111111eeee1ffeee111711ee550000eeee555eee555555eeeeeeeee
-e55ee55ee51111eee55ee55ee11ee11ee511111ee11ee11eeddeeddee4ddddeeeddeeddee11ee11ee511111ee11ee11ee00ee00ee000000ee00ee00eeeeeeeee
+ccffffcccccccffeeccc6ccceeffffeeeeeffffeef4444fe88ffffeeee828ffee882ffeee44ff44eeeeff44ee555555eeeffffeeeeeffffeef4444feee00eeee
+cc1dd1ceec6ccceee6cccc6f9995599eeee999ee999999998556655eee5856ee585555551147741eeee1774e115555115558855eeee555ee55555555e0440eee
+6c1ddf6eccf61deee16cc6fff9599ffeeeeffdeef99999ff2556655eee5556ee55555555f417411eeee1114e11111111f557755eeee555ee55555555049490ee
+e1111ffeecfff1eee116611ee9999ffeeeefffeef99999ffe5556ffeee5ffeeef55555ffe1177ffeeee111eef11111ffe5577ffeeee5ffeef55555ff044440ee
+e111111eee1111eee551e71ee111111eeee999eee111111ee555dddeee555eeee555d55ee111111eeee1ffeee111711ee550000eeee555eee555555ee0490eee
+e55ee55ee51111eee55ee55ee11ee11ee511111ee11ee11eeddeeddee4ddddeeeddeeddee11ee11ee511111ee11ee11ee00ee00ee000000ee00ee00eee00eeee
 e55ee55ee55ee55ee55ee55ee11ee55ee55ee11ee55ee11ee44ee44ee44eed4ee44ee44ee11ee55ee55ee11ee55ee11ee00ee00ee00ee00ee00ee00eeeeeeeee
 e55eeeeeeeeeee55eeeee55ee55eeeeeeeeeee55eeeee55ee44eeeeeeeeeee44eeeee44ee55eeeeeeeeeee55eeeee55ee00eeeeeeeeeee00eeeee00eeeeeeeee
 525252525252525252525252000066666666666666666666660000000000000000007474d0d09797d0d09797e3e397970000979797d0d0979797979797009797
@@ -1658,7 +1709,7 @@ b3b3b3b300000000b3b3b3b300000000000000000000000000007676d37676767676d3d300000000
 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
 00000000000000000000000000000000000000000000007676760000767676001576767676767676767676767676767676767676767600157676766575767600
 __gff__
-000080008000008080808080808000008000000080000080808080808000000080008080800000808080000000000000800080808000000082a000000080800000000080808080808000000000000000008000808080008080000000000000000000000080808080800000000000000085850505000000808080808000000000
+000080008000008080808080808000008000000080000080808080808000000080008080800000808080000000000000800080808000000002a000000080800000000080808080808000000000000000008000808080008080000000000000000000000080808080800000000000000085850505000000808080808000000000
 0000008080800000000000000000000500000080808000000000000000000000000000808080000000000000000000000000008080800000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
 __map__
 000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000171818070808080808080808080918181900000000002525252525003e3e3e3e3e3e3e007979790079797b7b797979
@@ -1715,4 +1766,3 @@ __music__
 03 08020355
 00 0b0c0e44
 00 0e0f1044
-
