@@ -177,7 +177,7 @@ end
 
 function scan_ennemies()
   -- spawn ennemies
- for y=0,63 do for x=0,127 do
+ for y=0,30 do for x=0,50 do
    local tile = mget(x,y)
    if (tile == 131) then
     make_ennemies(x*8, y*8, 131)
@@ -268,8 +268,15 @@ function to_trigger(self)
   self.actor.hint = true
   self.actor.line = 1
   g_p.control = controls_player
+  if(self.actor.furymode) go_in_fury(self.actor)
  end -- reset dialogs
 
+end
+
+function go_in_fury(a)
+ a.weapon = a.weapon_in_pocket
+ a.control = controls_ennemies
+ a.tag = ennemy
 end
 
 function trig_time(self)
@@ -334,8 +341,8 @@ function make_actor(cmpnttable)
   draw = cmpnttable.draw,
   weapon = cmpnttable.weapon or nil,
   box = cmpnttable.box,
-  dx = cmpnttable.entitie.mvn.dx or 0,
-  dy = cmpnttable.entitie.mvn.dy or 0,
+  dx = cmpnttable.entitie.mvn.dx or 0.9,
+  dy = cmpnttable.entitie.mvn.dy or 0.9,
   cd = 0,
   cdfx = 0
  }
@@ -542,10 +549,11 @@ function make_all_tp()
   make_tp(785, 55, 46, 5, 5, 3, trig_btn_hud,"❎")
 end
 
-function make_npc(x, y, s)
+function make_npc(x, y, s, health, fury, weapon)
+ local health = health or l_ennemy
  local n = make_actor({
   -- new player char
-  entitie = newentitie(x, y, s, npc, immortal_object, down),
+  entitie = newentitie(x, y, s, npc, health, down),
   -- add a action controller
   control = controls_npc,
   -- add a draw controller
@@ -559,6 +567,8 @@ function make_npc(x, y, s)
  n.stay = make_anim(make_stay_anim(s))
  -- dialogs creation
  n.create_dialogs = create_dialogs
+ n.furymode = fury or true
+ n.weapon_in_pocket = weapon or g_weapons[1]
  return n
 end
 
