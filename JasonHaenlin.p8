@@ -31,10 +31,6 @@ function log(tab,text)
  g_dbg[tab] = text
 end
 
-function display_collision_matrix(params)
- line(g_cl.x1,g_cl.y1,g_cl.x2,g_cl.y2,pink)
-end
-
 function _init()
  music(1)
 
@@ -126,6 +122,7 @@ end
        n_dialog("le directeur de l'ecole se trouve juste apres l'entree. ❎",trigger(200, trig_time)),
        n_dialog("ah ! et ne pensez meme pas aller vers l'est si vous n'etes pas prete. ❎",trigger(200, trig_time)),
        n_dialog("il y a des recruteurs sans vergogne qui rodent dans ces environs. ❎",trigger(200, trig_time)),
+       n_dialog('...', trigger(200, trig_time))
       })
 
       local npc_r1_biot = {}
@@ -134,6 +131,7 @@ end
        n_dialog("eh la, jeune fille ! ❎",trigger(200, trig_time)),
        n_dialog("ou pensez-vous aller comme ca ? ❎",trigger(200, trig_time)),
        n_dialog("quel est votre domaine de competence ? ❎",trigger(200, trig_time)),
+       n_dialog('...', trigger(200, trig_time))
       })
 
       local npc_r2_biot = {}
@@ -142,10 +140,11 @@ end
        n_dialog("tiens tiens, qu'est-ce qu'on a la ? ❎",trigger(200, trig_time)),
        n_dialog("vous etes sans emploi ? ❎",trigger(200, trig_time)),
        n_dialog("laissez-moi regarder votre cv ! ❎",trigger(200, trig_time)),
+       n_dialog('...', trigger(200, trig_time))
       })
 
       local npc_daminaca_sophiatech_biot = {}
-      npc_daminaca_sophiatech_biot = m_npc(185,171,201,immortal_object,false)
+      npc_daminaca_sophiatech_biot = m_npc(185,171,201,npc,immortal_object,false)
       npc_daminaca_sophiatech_biot:create_dialogs({
        n_dialog("hmm, une nouvelle tete ? ❎",trigger(200, trig_time)),
        n_dialog("je ne vous avais jamais vu jeune fille.❎",trigger(200, trig_time)),
@@ -174,6 +173,7 @@ end
        n_dialog("utilisez-le pour demontrer vos connaissances aux etudiants et aux professeurs qui veulent vous tester. ❎",trigger(200, trig_time)),
        n_dialog("et il y en a beaucoup sur le campus et sur les routes. ❎",trigger(200, trig_time)),
        n_dialog("ici, vos arguments et vos competences sont votre arme !❎",trigger(200, trig_time)),
+       n_dialog('...', trigger(200, trig_time))
      })
 
       local npc_st1_biot = {}
@@ -181,6 +181,7 @@ end
       npc_st1_biot:create_dialogs({
        n_dialog("ma specialite c'est genie de l'eau ! ❎",trigger(200, trig_time)),
        n_dialog("et toi ?! ❎",trigger(200, trig_time)),
+       n_dialog('...', trigger(200, trig_time))
       })
 
       local npc_st1_biot = {}
@@ -188,6 +189,7 @@ end
       npc_st1_biot:create_dialogs({
        n_dialog("tu sais que tu peux changer de materiel ❎",trigger(200, trig_time)),
        n_dialog("depuis le terminal derière le directeur ? ❎",trigger(200, trig_time)),
+       n_dialog('...', trigger(200, trig_time))
       })
 
       local npc_st2_biot = {}
@@ -195,6 +197,7 @@ end
       npc_st2_biot:create_dialogs({
        n_dialog("tu peux voyager entre les villes grace aux arrets de bus ❎",trigger(200, trig_time)),
        n_dialog("tu savais ? ❎",trigger(200, trig_time)),
+       n_dialog('...', trigger(200, trig_time))
       })
     end
    },
@@ -241,6 +244,7 @@ end
      n_dialog("est assez rude avec ses recrues. ❎",trigger(200, trig_time)),
      n_dialog("sois bien prete avant d'y entrer. ❎",trigger(200, trig_time)),
      n_dialog("je te conseille d'avoir effectue deux stages auparavant. ❎",trigger(200, trig_time)),
+     n_dialog('...', trigger(200, trig_time))
     })
    end
   },
@@ -255,6 +259,7 @@ end
     npc_drh_capgemo_biot = m_npc(346,425,204,boss)
     npc_drh_capgemo_biot:create_dialogs({
      n_dialog("presentez vous ! ❎",trigger(200, trig_time)),
+     n_dialog('...', trigger(200, trig_time))
     })
     local npc_st_capgemo_biot = {}
     npc_st_capgemo_biot = m_npc(349,304,195)
@@ -262,6 +267,7 @@ end
      n_dialog("tu vas passer un entretien a capgemo ? ❎",trigger(200, trig_time)),
      n_dialog("tu n'as pas l'air si douee que ça. ❎",trigger(200, trig_time)),
      n_dialog("laisse-moi t'evaluer rapidement. ❎",trigger(200, trig_time)),
+     n_dialog('...', trigger(200, trig_time))
     })
     m_enn(230, 295, 195)
     m_enn(273, 288, 195)
@@ -282,6 +288,7 @@ end
      n_dialog("vous cherchez un stage hein ? ❎",trigger(200, trig_time)),
      n_dialog("et qu'est ce qui vous fait dire que vous sortez de la masse d'etudiants qui postulent chez nous ? ❎",trigger(200, trig_time)),
      n_dialog(" j'espere que vous avez prepare cet entretien ! je n'aime pas du tout perdre mon temps… ❎",trigger(200, trig_time)),
+     n_dialog('...', trigger(200, trig_time))
     })
     m_enn(477, 276, 195)
     m_enn(437, 281, 198)
@@ -306,6 +313,7 @@ end
      n_dialog("attendez, oui c'est bien vous ! j'ai entendu parler de vous. ❎",trigger(200, trig_time)),
      n_dialog("mais thelas n'accepte que l'lite vous le savez ! ❎",trigger(200, trig_time)),
      n_dialog("parlez-moi de ce dont vous etes capable. presentez-vous ! ❎",trigger(200, trig_time)),
+     n_dialog('...', trigger(200, trig_time))
     })
     m_enn(839, 137, 195)
     m_enn(842, 105, 198)
@@ -329,6 +337,7 @@ end
      n_dialog("hmm… vous etes donc venus a sophia dans le seul but de me remplacer dans ma fonction… ❎",trigger(200, trig_time)),
      n_dialog("je vois. votre plan est temeraire. eh bien pour cela, ❎",trigger(200, trig_time)),
      n_dialog("vous allez devoir surpasser mes connaissances ! montrez-moi ce que vous savez faire ! ❎",trigger(200, trig_time)),
+     n_dialog('...', trigger(200, trig_time))
     })
     m_enn(619, 169, 195)
     m_enn(634, 179, 195)
@@ -459,7 +468,7 @@ function to_trigger(self)
   self.actor.hint = true
   self.actor.line = 1
   g_p.control = controls_pl
-  if(self.actor.furymode) go_in_fury(self.actor)
+  if(self.actor.furymode == true) go_in_fury(self.actor)
  end
 end
 
@@ -577,7 +586,8 @@ function m_npc(x, y, s, tag ,health, fury, weapon)
  n.walk = m_anim(m_walk_anim(s))
  n.stay = m_anim(m_stay_anim(s))
  n.create_dialogs = create_dialogs
- n.furymode = fury or true
+ n.furymode = true
+ if (fury ~= nil) n.furymode = fury
  n.weapon_in_pocket = weapon or g_weapons[1]
  n.super = tag or npc
  return n
@@ -1210,7 +1220,7 @@ function shoot(a, d)
  if(d == down) then
   fire({
    x = a.x,
-   y = a.y+9,
+   y = a.y+10,
    s = a.weapon.animv,
    dmg = a.weapon.dmg,
    type = a.weapon.type,
@@ -1580,7 +1590,6 @@ function draw_game()
  log(2, #g_actors)
  debug_log(g_fp.x+10, g_fp.y+10)
  log_cpu_mem(g_fp.x+70, g_fp.y+5)
- display_collision_matrix()
 end
 
 function update_menu()
@@ -1886,4 +1895,3 @@ __music__
 01 17184e44
 00 191a5051
 02 1a1b5455
-
