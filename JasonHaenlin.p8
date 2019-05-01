@@ -1591,6 +1591,7 @@ function draw_game()
  draw_dialogs()
  draw_hud()
  log_cpu_mem(g_fp.x+70, g_fp.y+5)
+ print(g_p.x..":"..g_p.y, g_fp.x+10,g_fp.y+10)
 end
 
 function update_menu()
