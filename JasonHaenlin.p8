@@ -13,22 +13,9 @@ f_heal, f_item, f_door, f_inv, f_obst = 0, 1, 4, 5, 7
 l_pl, l_ennemy, l_boss = 200, 20, 150
 walk, stay = "walk", "stay"
 
-g_dbg = {"","","","","","","","","",""}
-g_cl = {x1=0,y1=0,x2=0,y2=0}
-function debug_log(x, y)
- for i=1,#g_dbg do
-  print(g_dbg[i], x, y+(6*i), red)
- end
-end
-
 function log_cpu_mem(x, y)
  print("cpu "..flr(stat(1)*100).."%", x, y, red)
  print("mem "..stat(0), x, y+6, red)
-end
-
-function log(tab,text)
- if(tab < 0 or tab > #g_dbg) return
- g_dbg[tab] = text
 end
 
 function _init()
@@ -1508,7 +1495,7 @@ function draw_hud()
   m:draw()
  end
  draw_results()
- sfx(13)
+ -- sfx(13)
 end
 
 function draw_results()
@@ -1602,9 +1589,6 @@ function draw_game()
  draw_dfxs()
  draw_dialogs()
  draw_hud()
- log(1, g_p.x..":"..g_p.y)
- log(2, #g_actors)
- debug_log(g_fp.x+10, g_fp.y+10)
  log_cpu_mem(g_fp.x+70, g_fp.y+5)
 end
 
@@ -1911,4 +1895,3 @@ __music__
 01 17184e44
 00 191a5051
 02 1a1b5455
-
