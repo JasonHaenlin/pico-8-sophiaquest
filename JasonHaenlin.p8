@@ -114,8 +114,9 @@ end
        n_dialog("que… quoi ? ❎",trigger(200, trig_time)),
        n_dialog("vous arrivez a sophia sans aucune competence ?! ❎",trigger(200, trig_time)),
        n_dialog("vous devez avoir beaucoup de courage… ou de betise ❎",trigger(200, trig_time)),
-       n_dialog("pour survivre ici, il va vous falloir vous faire une place parmi les entreprises. et elles sont implacables. ❎",trigger(200, trig_time)),
-       n_dialog("le coin grouille de recruteurs qui sont prets à vous faire passer des entretiens en pleine rue. ❎",trigger(200, trig_time)),
+       n_dialog("pour survivre ici, il va vous falloir vous faire une place parmi les entreprises. ❎",trigger(200, trig_time)),
+       n_dialog("et elles sont implacables. ❎",trigger(200, trig_time)),
+       n_dialog("le coin grouille de recruteurs qui sont prets a vous faire passer des entretiens en pleine rue. ❎",trigger(200, trig_time)),
        n_dialog("sans competences, vous ne tiendrez pas 2h ici. ❎",trigger(200, trig_time)),
        n_dialog("je vous conseille de vous diriger vers l'ecole qui est juste de l'autre cote de cette route. ❎",trigger(200, trig_time)),
        n_dialog("sophiatech je crois que ca s'appelle. ❎",trigger(200, trig_time)),
@@ -156,10 +157,14 @@ end
        n_dialog("je vais vous laisser une chance. ❎",trigger(200, trig_time)),
        n_dialog("bienvenue a sophiatech ! ❎",trigger(200, trig_time)),
        n_dialog("laissez-moi vous expliquer le fonctionnement de cette ecole. ❎",trigger(200, trig_time)),
-       n_dialog("votre objectif est simple : obtenir votre diplome pour etre recrutee dans l'entreprise de vos reves. ❎",trigger(200, trig_time)),
-       n_dialog("pour se faire vous devez effectuer trois stages differents qui permettront d'ameliorer vos competences. ❎",trigger(200, trig_time)),
-       n_dialog("vous devrez aller parler aux recruteurs de chacune de ces entreprises et passer leurs epreuves afin d'etre recrutee. ❎",trigger(200, trig_time)),
-       n_dialog("dans le campus, des etudiants et professeurs viendront vous aborder pour vous aider a prendre de l'experience et tester vos connaissances. ❎",trigger(200, trig_time)),
+       n_dialog("votre objectif est simple : ❎",trigger(200, trig_time)),
+       n_dialog("obtenir votre diplome pour etre recrutee dans l'entreprise de vos reves. ❎",trigger(200, trig_time)),
+       n_dialog("pour se faire vous devez effectuer trois stages differents ❎",trigger(200, trig_time)),
+       n_dialog("qui permettront d'ameliorer vos competences. ❎",trigger(200, trig_time)),
+       n_dialog("vous devrez aller parler aux recruteurs de chacune de ces entreprises ❎",trigger(200, trig_time)),
+       n_dialog("passer leurs epreuves afin d'etre recrutee. ❎",trigger(200, trig_time)),
+       n_dialog("dans le campus, des etudiants et professeurs viendront vous aborder ❎",trigger(200, trig_time)),
+       n_dialog("pour vous aider a prendre de l'experience et tester vos connaissances. ❎",trigger(200, trig_time)),
        n_dialog("en cas de doute, durant votre parcours n'hesitez pas a revenir me voir et je vous repeterai tout cela. ❎",trigger(200, trig_time)),
        n_dialog("ah et n'oubliez pas votre materiel! ❎",trigger(200, trig_time)),
        n_dialog("vous pouvez le choisir sur le terminal derriere moi! ❎",trigger(200, trig_time)),
@@ -179,7 +184,7 @@ end
       local npc_st2_biot = {}
       npc_st2_biot = m_npc(103,136,195)
       npc_st2_biot:create_dialogs({
-       n_dialog("tu peux voyager entre les villes grace aux arrêts de bus ❎",trigger(200, trig_time)),
+       n_dialog("tu peux voyager entre les villes grace aux arrets de bus ❎",trigger(200, trig_time)),
        n_dialog("tu savais ? ❎",trigger(200, trig_time)),
       })
     end
@@ -240,7 +245,7 @@ end
     local npc_drh_capgemo_biot = {}
     npc_drh_capgemo_biot = m_npc(346,425,204,boss)
     npc_drh_capgemo_biot:create_dialogs({
-     n_dialog("présentez vous ! ❎",trigger(200, trig_time)),
+     n_dialog("presentez vous ! ❎",trigger(200, trig_time)),
     })
     local npc_st_capgemo_biot = {}
     npc_st_capgemo_biot = m_npc(349,304,195)
