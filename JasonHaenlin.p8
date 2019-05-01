@@ -549,19 +549,19 @@ end
 function m_weapons()
  m_weapon({
   wpm = n_weapon("ordinateur", 104, 3, {h = 72, v = 88}, 20, 10, melee, 2, 8, 5, -5),
-  dfx = n_dfx()
+  dfx = n_dfx(dfx_disapearance, draw_explosion, 20)
  })
  m_weapon({
   wpm = n_weapon("fiole graduee", 105, 4, {h = 73, v = 89}, 15, 7, melee, 2, 8, 5, -4),
-  dfx = n_dfx()
+  dfx = n_dfx(dfx_disapearance, draw_explosion, 20)
  })
  m_weapon({
   wpm = n_weapon("fougue", 106, 1, {h = 74, v = 90}, 11, 6, ranged, 3, 3, 5, -4),
-  dfx = n_dfx()
+  dfx = n_dfx(dfx_disapearance, draw_explosion, 20)
  })
  m_weapon({
-  wpm = n_weapon("diplomatie", 107, 5, {h = 75, v = 91}, 4, 3, ranged, 10, 2, 5, -5),
-  dfx = n_dfx()
+  wpm = n_weapon("diplomatie", 107, 5, {h = 75, v = 91}, 1, 1, ranged, 10, 2, 5, -5),
+  dfx = n_dfx(dfx_disapearance, draw_explosion, 20)
  })
  m_weapon({
   wpm = n_weapon("generateur electrique", 108, 8, {h = 76, v = 92}, 15, 8, melee, 2, 8, 5, -4),
@@ -612,13 +612,13 @@ function m_pl(x, y, s, weapon)
  g_p.current_area = 1
 end
 
-function m_enn(x, y, s)
+function m_enn(x, y, s, weapon)
  local e = m_actor({
   en = n_entitie(x, y, s, ennemy, l_ennemy, up, {dx = 0.9, dy = 0.9}),
   control = controls_enn,
   draw = draw_characters,
   box = {x1 = 0, y1 = 8, x2 = 7, y2 = 15},
-  weapon = g_weapons[5]
+  weapon = weapon or g_weapons[5]
  })
  e.anim = stay
  e.walk = m_anim(m_walk_anim(s))
@@ -840,7 +840,7 @@ function controls_loot(self)
  local dist = distance(self)
  if (dist < 8) then
   if(self.obj == "heal" and g_p.health < l_pl) then
-   g_p.health += 10
+   g_p.health += 40
    if (g_p.health > l_pl) g_p.health = l_pl
    sfx(2)
    del(g_actors,self)
@@ -1228,7 +1228,7 @@ function shoot(a, d)
    s = a.weapon.animv,
    dmg = a.weapon.dmg,
    type = a.weapon.type,
-   box = {x1 = 4 - center, y1 = 3, x2 = 4 + center, y2 = 8},
+   box = {x1 = 4 - center, y1 = 4, x2 = 4 + center, y2 = 8},
    mvn = {dx = 0, dy = speed},
    direction = down
   })
@@ -1899,3 +1899,4 @@ __music__
 01 17184e44
 00 191a5051
 02 1a1b5455
+
