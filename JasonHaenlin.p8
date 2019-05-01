@@ -249,16 +249,20 @@ end
      n_dialog('...', trigger(200, trig_time))
     })
     local npc_st_capgemo_biot = {}
-    npc_st_capgemo_biot = m_npc(349,304,195)
+    npc_st_capgemo_biot = m_npc(349,304,198)
     npc_st_capgemo_biot:create_dialogs({
-     n_dialog("tu vas passer un entretien a capgemo ? ❎",trigger(200, trig_time)),
-     n_dialog("tu n'as pas l'air si douee que ça. ❎",trigger(200, trig_time)),
-     n_dialog("laisse-moi t'evaluer rapidement. ❎",trigger(200, trig_time)),
-     n_dialog('...', trigger(200, trig_time))
+      n_dialog("hmm, vous venez passer un entretien ? ❎",trigger(200, trig_time)),
+      n_dialog("vous avez besoin d'un stage... ❎",trigger(200, trig_time)),
+      n_dialog("eh bien allez-y ! presentez-vous. ❎",trigger(200, trig_time)),
+      n_dialog('...', trigger(200, trig_time))
     })
-    m_enn(230, 295, 195)
-    m_enn(273, 288, 195)
-    m_enn(272, 274, 204)
+    m_enn(230, 295, 198)
+    m_enn(273, 288, 204)
+    m_enn(272, 274, 198)
+
+    m_enn(272, 274, 198)
+    m_enn(272, 274, 198)
+    m_enn(272, 274, 198)
    end
   },
   leonardoenergy = {
@@ -277,11 +281,15 @@ end
      n_dialog(" j'espere que vous avez prepare cet entretien ! je n'aime pas du tout perdre mon temps… ❎",trigger(200, trig_time)),
      n_dialog('...', trigger(200, trig_time))
     })
-    m_enn(477, 276, 195)
+    m_enn(477, 276, 198)
     m_enn(437, 281, 198)
     m_enn(544, 297, 204)
-    m_enn(564, 265, 195)
-    m_enn(640, 277, 195)
+    m_enn(564, 265, 204)
+    m_enn(640, 277, 198)
+    m_enn(552, 333, 204)
+    m_enn(530, 272, 204)
+    m_enn(576, 318, 204)
+    m_enn(586, 344, 204)
    end
   },
   thelas = {
@@ -298,7 +306,7 @@ end
      n_dialog("ici ? mais ca fait des mois que personne ne s'est presente ici pour un stage ! ❎",trigger(200, trig_time)),
      n_dialog("personne n'en a encore ete digne ! mais… ❎",trigger(200, trig_time)),
      n_dialog("attendez, oui c'est bien vous ! j'ai entendu parler de vous. ❎",trigger(200, trig_time)),
-     n_dialog("mais thelas n'accepte que l'lite vous le savez ! ❎",trigger(200, trig_time)),
+     n_dialog("mais thelas n'accepte que l'elite vous le savez ! ❎",trigger(200, trig_time)),
      n_dialog("parlez-moi de ce dont vous etes capable. presentez-vous ! ❎",trigger(200, trig_time)),
      n_dialog('...', trigger(200, trig_time))
     })
@@ -311,18 +319,18 @@ end
     m_enn(826, 168, 204)
     m_enn(832, 61, 204)
     m_enn(904, 126, 204)
-    m_enn(904, 135, 204)
+    m_enn(904, 135, 198)
     m_enn(904, 168, 204)
-    m_enn(1000, 149, 204)
+    m_enn(1000, 149, 198)
     m_enn(966, 149, 204)
-    m_enn(950, 129, 204)
+    m_enn(950, 129, 198)
     m_enn(944, 80, 204)
 
     m_enn(826, 21, 204)
     m_enn(838, 21, 204)
-    m_enn(838, 29, 204)
+    m_enn(838, 29, 198)
     m_enn(872, 10, 204)
-    m_enn(855, 31, 204)
+    m_enn(855, 31, 198)
     m_enn(855, 29, 204)
    end
   },
@@ -336,17 +344,16 @@ end
     local npc_daminaca_bestcorp = {}
     npc_daminaca_bestcorp = m_npc(772,176,201,boss,100,true,g_weapons[2])
     npc_daminaca_bestcorp:create_dialogs({
-     n_dialog("hein ? vous voulez etre directrice de sophiatech ? ❎",trigger(200, trig_time)),
-     n_dialog("hmm… vous etes donc venus a sophia dans le seul but de me remplacer dans ma fonction… ❎",trigger(200, trig_time)),
-     n_dialog("je vois. votre plan est temeraire. eh bien pour cela, ❎",trigger(200, trig_time)),
-     n_dialog("vous allez devoir surpasser mes connaissances ! montrez-moi ce que vous savez faire ! ❎",trigger(200, trig_time)),
+     n_dialog("hein ? non non je ne suis que le frere du directeur ! ❎",trigger(200, trig_time)),
+     n_dialog("mon frere vous a donc accepte dans son ecole ❎",trigger(200, trig_time)),
+     n_dialog("je suis curieux de savoir ce que vous valez, montrez-moi ce que vous savez faire ! ❎",trigger(200, trig_time)),
      n_dialog('...', trigger(200, trig_time))
     })
     m_enn(619, 169, 195)
     m_enn(634, 179, 195)
-    m_enn(649, 169, 198)
-    m_enn(693, 169, 198)
-    m_enn(755, 193, 201)
+    m_enn(649, 169, 195)
+    m_enn(693, 169, 204)
+    m_enn(755, 193, 195)
    end
   },
   sophiatechouest = {
@@ -360,9 +367,9 @@ end
     m_enn(728, 295, 195)
     m_enn(728, 279, 198)
     m_enn(751, 279, 198)
-    m_enn(786, 271, 201)
-    m_enn(975, 353, 201)
-    m_enn(914, 356, 201)
+    m_enn(786, 271, 195)
+    m_enn(975, 353, 195)
+    m_enn(914, 356, 195)
     m_enn(864, 356, 198)
    end
   },
@@ -376,9 +383,6 @@ end
     m_enn(131, 302, 195)
     m_enn(142, 302, 195)
     m_enn(157, 302, 195)
-    m_enn(174, 309, 198)
-    m_enn(173, 346, 201)
-    m_enn(183, 288, 204)
    end
   },
   carrouffe = {
@@ -391,7 +395,6 @@ end
     m_enn(43, 291, 195)
     m_enn(17, 296, 195)
     m_enn(17, 321, 201)
-    m_enn(11, 348, 204)
    end
   }
  }
@@ -1501,7 +1504,7 @@ end
 function draw_results()
   if(g_to_win < 1) then
     if(g_victory_sfx) sfx(13)
-     printoutline("Vous avez gagné!", g_p.x,g_p.y,white)
+     printoutline("vous avez gagne!", g_p.x,g_p.y,white)
      g_victory_sfx = false;
   end
 end
@@ -1729,29 +1732,29 @@ __gfx__
 51111115382833336656665633333224444333335557555555575555eee88eee444004448b0bbb08ec1eeeee77777776eeeeeeeecc7992296163dc8470555506
 55111155338333330000000033333334244333335557555555575555eeeeeeee0000000098888889e1eeeeee66666666eeeeeeee000000000000000060555506
 000000000000000000000000000000005555555555555555ffffffff44444444ee000e00eec551eeeeeeeeeeeeeeeeeeeeeeaaeeeeeeeeeeeeeeeeeee568865e
-07770777777777077777777004444440558aaaaaaaaaa855ffffffff44444444e01110eeeeec551eeeeeeeeeeeeeeeeeaeeeaeeeeeeeeeeeeeeeeeee56899865
+07770777777777077777777004444440558aaaaaaaaaa855ffffffff44444444e08110eeeeec551eeeeeeeeeeeeeeeeeaeeeaeeeeeeeeeeeeeeeeeee56899865
 07660666666666066666667004444440588aaaaaaaaaa885ffffffff444444440111110eeeeec51eeee8eeeeeeeeeeeeaeeeaeeeeeeeeceeeeeeeeee689aa986
-07660666666666066666667004444440aaaaaaaaaaaaaaaaffffffff444444440111110eeeeec51eee888eeecce88eccaaeeeeeeccccccceeeeeeeee89a77a98
+07660666666666066666667004444440aaaaaaaaaaaaaaaaffffffff444444440118180eeeeec51eee888eeecce88eccaaeeeeeeccccccceeeeeeeee89a77a98
 07665555555555555555000004444440aaa0000000000aaaffffffff444444440111110eeeeec51eee8a98eeee8eeceeeaaeeeee1111111ceeeeeeee89a77a98
-07665555555555555555667004444440aa000000000000aa4444444444444444e01110eeeeeec51eee8a88ee88ecce88eeeeaaaeccccccceeeeeeeee689aa986
+07665555555555555555667004444440aa000000000000aa4444444444444444e08110eeeeeec51eee8a88ee88ecce88eeeeaaaeccccccceeeeeeeee689aa986
 07665555555555555555667004444440aa000000000000aa4444444444444444ee000e00eeec551eeee98eeeeeeeeeeeaaeeeeeeeeeeeceeeeeeeeee56899865
 07665555555555555555667004044440aaa0000000000aaa4444444444444444eeeeeeeeeec551eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee568865e
 07665555636363665555667004444440a0aaaaaaaaaaaa0a26666666444444440eeeee0eeeeeeeeeeeeeeeeeee8eceeeeeeeaaeeeeeceeeeeeeeeeeee568865e
 00005555663339365555667004444440a00aaaaaaaaaa00a26666666444444440e000e0ee111111eeeeeeeeeee8eceeeaeeeaeeeeeccceeeeeeeeeee56899865
-07665555633b33365555667004444440aaaaaaaaaaaaaaaa2666666644444444e01110ee15555551eee8eeeeeeeceeeeaeeeaeeeecc1cceeeeeeeeee689aa986
+07665555633b33365555667004444440aaaaaaaaaaaaaaaa2666666644444444e01810ee15555551eee8eeeeeeeceeeeaeeeaeeeecc1cceeeeeeeeee689aa986
 076655556363b3635555667004444440a00aaaaaaaaaa00a24444446444444440111110e55cccc55ee898eeeeece8eeeaaeeeeeeeec1ceeeeeeeeeee89a77a98
-07665555611111165555667004444440a00aaaaaaaaaa00a24444446222222220111110e5ceeeec5e889a8eeeece8eeeeaaeeeeeeec1ceeeeeeeeeee89a77a98
-07665555611711165555667004444440a0aaaaaaaaaaaa0a62222226200000020111110eceeeeeecee888eeeeee8eeeeeeeeaaaeeec1ceeeeeeeeeee689aa986
+07665555611111165555667004444440a00aaaaaaaaaa00a24444446222222220811180e5ceeeec5e889a8eeeece8eeeeaaeeeeeeec1ceeeeeeeeeee89a77a98
+07665555611711165555667004444440a0aaaaaaaaaaaa0a62222226200000020118110eceeeeeecee888eeeeee8eeeeeeeeaaaeeec1ceeeeeeeeeee689aa986
 07665555661111665555000004444440aaaaaaaaaaaaaaaa6266662620000002e01110eeeeeeeeeeeeeeeeeeee8eceeeaaeeeeeeeec1ceeeeeeeeeee56899865
 07665555661111665555667004444440aaa0000000000aaa6266662620000002ee000eeeeeeeeeeeeeeeeeeeee8eceeeeeeeeeeeeec1ceeeeeeeeeeee568865e
-07665555555555555555667070111106aa000000000000aa2222111166666666eeeeeee0eeeddeeeeeee8eeeeeeeeeeee444744eeeeeeeee33111133ee0aa0ee
-07665555555555555555667070111106aa000000000000aa2222111176666667eeeeeee0eee0deeeeee898eeeeeeeeeee447774eee1cc1ee33111133e00aa00e
-07665555555555555555667070111106aa000000000000aa2222111177666677eeeeeee0eeeddeeee889a98eeeeeeeeee444744eee1cc1ee3311113300aaaa00
-00005555555555555555667070111106aaa0000000000aaa2222111177766777eeeeeee0eed0ddee89899998ee55111ee444444eee1111ee3311113300a00a00
-07666666606666666660667070111106aaaaaaaaaaaaaaaa2222111177766777eeeeeee0edccccde898989a8ee52eeeee444444eee1111ee33111133aaa00aaa
-07666666606666666660667070111106aaaaaaaaaaaaaaaa2222111177666677eeeeeee0edccccde899999a8ee1eeeeee000000eee1111ee31111113aaaaaaaa
-07777777707777777770777070111106566aaaaaaaaaa6652222111176666667e6666661dccccccde8a88a8eeeeeeeeee007770eee1111ee11111111eaa00aae
-000000000000000000000000601111065566aaaaaaaa6655222211116666666600000011ddddddddee8888eeeeeeeeeee000000eee1111ee33111133ee0000ee
+07665555555555555555667070111106aa000000000000aa2222111166666666eeeeeee0eeeddeeeeeee8eeeeeeeeeeeeeeeeeeeeeeeeeee33111133ee0aa0ee
+07665555555555555555667070111106aa000000000000aa2222111176666667eeeeeee0eee0deeeeee898eeeeeeeeeeeeeeeeeeeeeeeeee33111133e00aa00e
+07665555555555555555667070111106aa000000000000aa2222111177666677eeeeeee0eeeddeeee889a98eeeeeeeeeeeeeeeeeeeeeeeee3311113300aaaa00
+00005555555555555555667070111106aaa0000000000aaa2222111177766777eeeeeee0eed0ddee89899998ee55111e00044444eeeeeeee3311113300a00a00
+07666666606666666660667070111106aaaaaaaaaaaaaaaa2222111177766777eeeeeee0edccccde898989a8ee52eeee070444741111111133111133aaa00aaa
+07666666606666666660667070111106aaaaaaaaaaaaaaaa2222111177666677eeeeeee0edccccde899999a8ee1eeeee07044777111111cc31111113aaaaaaaa
+07777777707777777770777070111106566aaaaaaaaaa6652222111176666667e6666661dccccccde8a88a8eeeeeeeee07044474111111cc11111111eaa00aae
+000000000000000000000000601111065566aaaaaaaa6655222211116666666600000011ddddddddee8888eeeeeeeeee000444441111111133111133ee0000ee
 555555551111111155555555622222265550055566666662ee0550ee666666755022226200000000502222620000000066666666000000007707707700000000
 555555551111111165555556622222265550055566666662ee0550ee66666675502222620000000007777770077777706666666666666666777cc77700000000
 555555551111111166555566622222265550055566666662ee0550ee6666667550222262ffffffff0777777007077770666666666666666677cccc7700000000
@@ -1898,3 +1901,4 @@ __music__
 01 17184e44
 00 191a5051
 02 1a1b5455
+
