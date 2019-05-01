@@ -19,6 +19,9 @@ Une fois que vous avez "exposé vos compétences" à quelqu'un, il disparaît et
 Nous sommes des étudiants en troisième année du cycle ingénieur Polytech Nice-Sophia.
 L'équipe est constituée de trois membres : Younes Abdennadher, Jason Haenlin et Betsara Marcellin.
 
+### A SAVOIR
+Le fichier html ne comporte pas de son.
+
 ### sources et aides
 
 > source
