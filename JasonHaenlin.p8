@@ -44,7 +44,7 @@ function _init()
  g_weapons = {}
  g_to_win = 3
  g_loots = {
-  {obj = "heal", s = 239, drop_rate = 30},
+  {obj = "heal", s = 239, drop_rate = 50},
   {obj = "coin", s = 255, drop_rate = 100}
  }
  _update = update_menu
@@ -185,7 +185,7 @@ end
       npc_st1_biot = m_npc(51,217,195)
       npc_st1_biot:create_dialogs({
        n_dialog("tu sais que tu peux changer de materiel ❎",trigger(200, trig_time)),
-       n_dialog("depuis le terminal derière le directeur ? ❎",trigger(200, trig_time)),
+       n_dialog("depuis le terminal deriere le directeur ? ❎",trigger(200, trig_time)),
       })
 
       local npc_st2_biot = {}
@@ -214,10 +214,11 @@ end
     m_tp(569, 177, 46, 15, 10, "leonardoenergy",  "entrance", trig_dist_hud,"⬆️")
     m_enn(391, 171, 195)
     m_enn(413, 171, 198)
-    m_enn(439, 171, 201)
+    m_enn(439, 171, 204)
     m_enn(418, 199, 198)
     m_enn(408, 200, 201)
     m_enn(470, 201, 204)
+    m_enn(567, 32, 204)
    end
   },
   valbonne = {
@@ -238,7 +239,6 @@ end
      n_dialog("j'ai entendu dire que le drh de cet entreprise… thelas ❎",trigger(200, trig_time)),
      n_dialog("est assez rude avec ses recrues. ❎",trigger(200, trig_time)),
      n_dialog("sois bien prete avant d'y entrer. ❎",trigger(200, trig_time)),
-     n_dialog("je te conseille d'avoir effectue deux stages auparavant. ❎",trigger(200, trig_time)),
     })
    end
   },
@@ -305,12 +305,27 @@ end
      n_dialog("mais thelas n'accepte que l'lite vous le savez ! ❎",trigger(200, trig_time)),
      n_dialog("parlez-moi de ce dont vous etes capable. presentez-vous ! ❎",trigger(200, trig_time)),
     })
-    m_enn(839, 137, 195)
-    m_enn(842, 105, 198)
-    m_enn(909, 97, 198)
-    m_enn(943, 150, 201)
-    m_enn(1014, 100, 204)
-    m_enn(898, 17, 201)
+    m_enn(839, 137, 198)
+    m_enn(842, 105, 204)
+    m_enn(909, 97, 195)
+    m_enn(943, 150, 198)
+    m_enn(1014, 100, 198)
+    m_enn(898, 17, 198)
+    m_enn(826, 168, 204)
+    m_enn(832, 61, 204)
+    m_enn(904, 126, 204)
+    m_enn(904, 135, 204)
+    m_enn(904, 168, 204)
+    m_enn(1000, 149, 204)
+    m_enn(966, 149, 204)
+    m_enn(950, 129, 204)
+    m_enn(944, 80, 204)
+
+    m_enn(826, 21, 204)
+    m_enn(838, 21, 204)
+    m_enn(838, 29, 204)
+    m_enn(872, 10, 204)
+    m_enn(855, 31, 204)
    end
   },
   sophiatechest = {
@@ -1481,11 +1496,12 @@ function draw_hud()
   m:draw()
  end
  draw_results()
+ sfx(13)
 end
 
 function draw_results()
   if(g_to_win < 1) then
-    printoutline("bravo", g_p.x,g_p.y,white)
+    printoutline("Vous avez gagné!", g_p.x,g_p.y,white)
   end
 end
 
