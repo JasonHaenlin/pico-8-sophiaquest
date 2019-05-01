@@ -229,7 +229,7 @@ end
    instantiate_entities = function ()
     m_tp(257, 375, 46, 15, 10, "biot", "capgemo", trig_dist_hud,"⬇️")
     local npc_drh_capgemo_biot = {}
-    npc_drh_capgemo_biot = m_npc(349,304,204,boss)
+    npc_drh_capgemo_biot = m_npc(349,304,204,boss,100,true,g_weapons[8])
     npc_drh_capgemo_biot:create_dialogs({
       n_dialog("hmm, vous venez passer un entretien ? ❎",trigger(200, trig_time)),
       n_dialog("vous avez besoin d'un stage... ❎",trigger(200, trig_time)),
