@@ -55,9 +55,6 @@ end
 
 function init_current_area(area,s)
  local ca = g_area[area]
- log(1, ca)
- log(2, ca.name)
- log(3, ca.spawns[s].x..":"..ca.spawns[s].y)
  g_spawn = {}
  g_spawn.x = ca.spawns[s].x
  g_spawn.y = ca.spawns[s].y
@@ -598,6 +595,7 @@ function m_enn(x, y, s)
  e.anim = stay
  e.walk = m_anim(m_walk_anim(s))
  e.stay = m_anim(m_stay_anim(s))
+ e.intent = {}
 end
 
 function m_loot(x, y, item)
@@ -924,12 +922,12 @@ function controls_enn(self)
   warning(self)
   self.anim = walk
   if (dist >= self.weapon.type) then
-   local dir_m = going_forward(self)
-   move_on(self, dir_m)
+   local intent = going_forward(self)
+   move_on(self, intent)
   end
  elseif (dist < self.weapon.type*8.2) then
   local dir_m = gbest_direction(self)
-  move_on(self, dir_m)
+  move_on(self, {dir_m})
   local dir_a = prepare_attack_opportunity(self)
   self.d = dir_a
   act_enn(self, dir_a)
@@ -949,15 +947,21 @@ function controls_pl(self)
 end
 
 function going_forward(a)
+ local intent = {}
  local rx = a.x - g_p.x
  local ry = a.y - g_p.y
  if(abs(rx) > abs(ry)) then
-   if(rx < 0) return right
-   return left
+   if(rx < 0) then add(intent, right)
+   else add(intent, left) end
+   if(ry < 0) then add(intent, down)
+   else add(intent, up) end
  else
-   if(ry < 0) return down
-   return up
+   if(ry < 0) then add(intent, down)
+   else add(intent, up) end
+   if(rx < 0) then add(intent, right)
+   else add(intent, left) end
  end
+ return intent
 end
 
 function distance(a)
@@ -1008,12 +1012,20 @@ function tar_nearest_one(limit)
  return tar
 end
 
-function move_on(a, go)
- if (go == left)  move(a ,-a.dx, 0, a.box.x1, a.box.y2)
- if (go == right) move(a, a.dx, 0, a.box.x2, a.box.y2)
- if (go == up)    move(a, 0 ,-a.dy, a.box.x2, a.box.y2-a.box.y1)
- if (go == down)  move(a, 0, a.dy, a.box.x2, a.box.y2)
- if (go ~= none)  a.d = go
+function move_on(a, intent)
+ local chk = false
+ add(intent, a.intent)
+ for i in all(intent) do
+  if (i == left)  chk = move(a ,-a.dx, 0, a.box.x1, a.box.y2)
+  if (i == right) chk = move(a, a.dx, 0, a.box.x2, a.box.y2)
+  if (i == up)    chk = move(a, 0 ,-a.dy, a.box.x2, a.box.y2-a.box.y1)
+  if (i == down)  chk = move(a, 0, a.dy, a.box.x2, a.box.y2)
+  if (i ~= none and chk)  a.d = i
+  if (chk) then
+   a.intent = i
+   return
+  end
+ end
 end
 
 function is_moving(direction)
@@ -1039,23 +1051,23 @@ function move(a, x, y, ox, oy)
  local y1 = max(a.box.y1 + a.y, a.y + y + ((oy/2) * y) + oy/2 + (1*abs(x)))
  local x2 = (a.x + x + ox)
  local y2 = max(a.box.y1 + a.y, a.y + y + oy)
- log(6, x1..":"..y1)
- log(7, x2..":"..y2)
  g_cl = {x1=x1,y1=y1,x2=x2,y2=y2}
  local sp1 = mget(gtile(x1), gtile(y1))
  local sp2 = mget(gtile(x2), gtile(y2))
- if(is_limit_of_map(x1,y1) or is_limit_of_map(x2,y2)) return
+ if(is_limit_of_map(x1,y1) or is_limit_of_map(x2,y2)) return false
 
  for b in all(g_actors) do
   if(check_collisions(a, b, x, y) and b.tag ~= invisible and b.tag ~= item) then
-   return
+   return false
   end
  end
 
  if (not fget(sp1, f_obst) and not fget(sp2, f_obst))  then
   a.x += x
   a.y += y
+  return true
  end
+ return false
 end
 
 function act_pl()
@@ -1296,7 +1308,7 @@ function is_dead(a)
 end
 
 function drop_loot(a)
- local rndv = flr(rnd(100)) + 1
+ local rndv = flr(rnd(100)+1)
  for o in all(g_loots) do
   if(o.drop_rate <= rndv) m_loot(a.x, a.y, o)
  end
@@ -1341,6 +1353,7 @@ function printoutline(t,x,y,c)
   end
   print(t,x,y,c)
 end
+
 
 function rnd_color(colors)
  local rndv = flr(rnd(1000))
@@ -1548,8 +1561,8 @@ function draw_game()
  draw_dfxs()
  draw_dialogs()
  draw_hud()
- log(4, g_p.x..":"..g_p.y)
- log(5, #g_actors)
+ log(1, g_p.x..":"..g_p.y)
+ log(2, #g_actors)
  debug_log(g_fp.x+10, g_fp.y+10)
  log_cpu_mem(g_fp.x+70, g_fp.y+5)
  display_collision_matrix()
@@ -1844,4 +1857,3 @@ __music__
 03 08020355
 00 0b0c0e44
 00 0e0f1044
-
