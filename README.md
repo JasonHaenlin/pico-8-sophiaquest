@@ -7,7 +7,7 @@
 L'année des 50 ans de Sophia, Sofia décide de prendre sa vie en main et achète un ticket de bus pour trouver un travail au sein de la technopole.
 
 Comme expliqué dans le fichier Sophia_Quest.pdf, Sophia Quest est un RPG dont la héroïne est Sofia.
-Votre but est de vous faire embaucher au sein de trois entreprises : 
+Votre but est de vous faire embaucher au sein de trois entreprises :
 - Capgemo à Biot (ville de départ)
 - Leonardo Energie à Antibes
 - Thelas à Valbonne
@@ -24,4 +24,4 @@ L'équipe est constituée de trois membres : Younes Abdennadher, Jason Haenlin e
 > source
 musique : https://www.lexaloffle.com/bbs/?pid=62911
 tuto    : https://www.youtube.com/channel/UCfXg2GJZ0SSkFnb6dV_mqxg
-docu    : http://3di.dmayance.com/pico8/chap1-0/
+doc    : http://3di.dmayance.com/pico8/chap1-0/

@@ -24,7 +24,7 @@ function _init()
  g_weapons = {}
  g_to_win = 3
  g_loots = {
-  {obj = "heal", s = 239, drop_rate = 25},
+  {obj = "heal", s = 239, drop_rate = 30},
   {obj = "coin", s = 255, drop_rate = 100}
  }
  _update = update_menu
@@ -328,7 +328,7 @@ end
    instantiate_entities = function ()
     m_tp(713, 239, 46, 15, 10, "biot", "sophiatechest", trig_dist_hud,"⬇️")
     local npc_daminaca_bestcorp = {}
-    npc_daminaca_bestcorp = m_npc(772,176,201,boss,100,true,g_weapons[2])
+    npc_daminaca_bestcorp = m_npc(772,176,201,npc,100,true,g_weapons[2])
     npc_daminaca_bestcorp:create_dialogs({
      n_dialog("hein ? non non je ne suis que le frere du directeur ! ❎",trigger(200, trig_time)),
      n_dialog("mon frere vous a donc accepte dans son ecole ❎",trigger(200, trig_time)),
@@ -612,7 +612,7 @@ function m_enn(x, y, s, weapon)
   en = n_entitie(x, y, s, ennemy, l_ennemy, up, {dx = 0.9, dy = 0.9}),
   control = controls_enn,
   draw = draw_characters,
-  box = {x1 = 0, y1 = 8, x2 = 7, y2 = 15},
+  box = {x1 = 0, y1 = 7, x2 = 7, y2 = 14},
   weapon = weapon or g_weapons[1]
  })
  e.anim = stay
@@ -1662,7 +1662,6 @@ function check_game_state()
   g_dfx = {}
   g_weapons = {}
   g_dialogs = {}
-  g_p = {}
   m_game()
   reset_camera()
   _draw = draw_menu
