@@ -44,7 +44,7 @@ function _init()
  g_weapons = {}
  g_to_win = 3
  g_loots = {
-  {obj = "heal", s = 239, drop_rate = 40},
+  {obj = "heal", s = 239, drop_rate = 20},
   {obj = "coin", s = 255, drop_rate = 60}
  }
  _update = update_menu
@@ -205,6 +205,12 @@ end
     m_tp(465, 56, 46, 15, 10, "carrouffe",  "entrance", trig_dist_hud,"⬆️")
     m_tp(546, 177, 46, 15, 10, "leonardoenergy",  "entrance", trig_dist_hud,"⬆️")
     m_tp(569, 177, 46, 15, 10, "leonardoenergy",  "entrance", trig_dist_hud,"⬆️")
+    m_enn(391, 171, 195)
+    m_enn(413, 171, 198)
+    m_enn(439, 171, 201)
+    m_enn(418, 199, 198)
+    m_enn(408, 200, 201)
+    m_enn(470, 201, 204)
    end
   },
   valbonne = {
@@ -248,6 +254,9 @@ end
      n_dialog("tu n'as pas l'air si douee que ça. ❎",trigger(200, trig_time)),
      n_dialog("laisse-moi t'evaluer rapidement. ❎",trigger(200, trig_time)),
     })
+    m_enn(230, 295, 195)
+    m_enn(273, 288, 195)
+    m_enn(272, 274, 204)
    end
   },
   leonardoenergy = {
@@ -265,6 +274,11 @@ end
      n_dialog("et qu'est ce qui vous fait dire que vous sortez de la masse d'etudiants qui postulent chez nous ? ❎",trigger(200, trig_time)),
      n_dialog(" j'espere que vous avez prepare cet entretien ! je n'aime pas du tout perdre mon temps… ❎",trigger(200, trig_time)),
     })
+    m_enn(477, 276, 195)
+    m_enn(437, 281, 198)
+    m_enn(544, 297, 204)
+    m_enn(564, 265, 195)
+    m_enn(640, 277, 195)
    end
   },
   thelas = {
@@ -284,6 +298,12 @@ end
      n_dialog("mais thelas n'accepte que l'lite vous le savez ! ❎",trigger(200, trig_time)),
      n_dialog("parlez-moi de ce dont vous etes capable. presentez-vous ! ❎",trigger(200, trig_time)),
     })
+    m_enn(839, 137, 195)
+    m_enn(842, 105, 198)
+    m_enn(909, 97, 198)
+    m_enn(943, 150, 201)
+    m_enn(1014, 100, 204)
+    m_enn(898, 17, 201)
    end
   },
   sophiatechest = {
@@ -301,15 +321,28 @@ end
      n_dialog("je vois. votre plan est temeraire. eh bien pour cela, ❎",trigger(200, trig_time)),
      n_dialog("vous allez devoir surpasser mes connaissances ! montrez-moi ce que vous savez faire ! ❎",trigger(200, trig_time)),
     })
+    m_enn(619, 169, 195)
+    m_enn(634, 179, 195)
+    m_enn(649, 169, 198)
+    m_enn(693, 169, 198)
+    m_enn(755, 193, 201)
    end
   },
   sophiatechouest = {
    tag = inside,
    name = "sophiatech batiment ouest",
-   map = {x1 = 682, y1 = 256, x2 = 918, y2 = 256},
+   map = {x1 = 682, y1 = 256, x2 = 918, y2 = 258},
    spawns = { entrance = { x = 724, y = 360 }},
    instantiate_entities = function ()
     m_tp(721, 376, 46, 15, 10, "biot", "sophiatechouest", trig_dist_hud,"⬇️")
+    m_enn(713, 329, 195)
+    m_enn(728, 295, 195)
+    m_enn(728, 279, 198)
+    m_enn(751, 279, 198)
+    m_enn(786, 271, 201)
+    m_enn(975, 353, 201)
+    m_enn(914, 356, 201)
+    m_enn(864, 356, 198)
    end
   },
   sophiatechru = {
@@ -319,15 +352,25 @@ end
    spawns = { entrance = { x = 132, y = 335 }},
    instantiate_entities = function ()
     m_tp(129, 352, 46, 15, 10, "biot", "sophiatechru", trig_dist_hud,"⬇️")
+    m_enn(131, 302, 195)
+    m_enn(142, 302, 195)
+    m_enn(157, 302, 195)
+    m_enn(174, 309, 198)
+    m_enn(173, 346, 201)
+    m_enn(183, 288, 204)
    end
   },
   carrouffe = {
    tag = inside,
    name = "carrouffe",
    map = {x1 = -27, y1 = 259, x2 = -27, y2 = 259},
-   spawns = { entrance = { x = 43, y = 387 }},
+   spawns = { entrance = { x = 43, y = 350 }},
    instantiate_entities = function ()
     m_tp(40, 367, 46, 15, 10, "antibes", "carrouffe", trig_dist_hud,"⬇️")
+    m_enn(43, 291, 195)
+    m_enn(17, 296, 195)
+    m_enn(17, 321, 201)
+    m_enn(11, 348, 204)
    end
   }
  }
@@ -500,7 +543,7 @@ function m_weapons()
   dfx = n_dfx()
  })
  m_weapon({
-  wpm = n_weapon("arc", 108, 3, {h = 76, v = 92}, 6, 5, ranged, 6, 3, 5, -5),
+  wpm = n_weapon("cutter", 108, 3, {h = 76, v = 92}, 15, 10, melee, 2, 8, 5, -4),
   dfx = n_dfx()
  })
  m_weapon({
@@ -832,7 +875,7 @@ function warning(self)
  m_dialog(self, n_dialog("!", trigger(1, trig_time)))
 end
 
-function action_enn(a, d)
+function act_enn(a, d)
  if (a.tag ~= ennemy) return
  if (a.cd > 0) a.cd -= 1
  if (a.cd == 0) then
@@ -891,11 +934,11 @@ function controls_enn(self)
    move_on(self, dir_m)
   end
  elseif (dist < self.weapon.type*8.2) then
-  local dir_m = get_best_direction(self)
+  local dir_m = gbest_direction(self)
   move_on(self, dir_m)
   local dir_a = prepare_attack_opportunity(self)
   self.d = dir_a
-  action_enn(self, dir_a)
+  act_enn(self, dir_a)
  else
   self.anim = stay
  end
@@ -908,7 +951,7 @@ function controls_pl(self)
  if (is_moving(up))    move(self, 0,-1, self.box.x2, self.box.y2-self.box.y1)
  if (is_moving(down))  move(self, 0, 1, self.box.x2, self.box.y2)
  if (is_not_moving())  self.anim = stay
- action_pl()
+ act_pl()
 end
 
 function going_forward(a)
@@ -930,7 +973,7 @@ function distance(a)
  return (abs(rx) + abs(ry)) / 2
 end
 
-function get_best_direction(a)
+function gbest_direction(a)
  local rx = a.x - g_p.x
  local ry = a.y - g_p.y
  if((abs(rx) - abs(ry)) < 0 and abs(rx) > 1) then
@@ -958,17 +1001,17 @@ function is_pl_near(gap, lim)
  return gap <= lim and gap > 8
 end
 
-function target_nearest_one(limit)
+function tar_nearest_one(limit)
  limit = limit or inf
- local target = {npc = nil, enn = nil}
+ local tar = {npc = nil, enn = nil}
  for a in all(g_actors) do
   local dist = distance(a)
-  if(a.tag == ennemy and distance(target.enn) > dist) target.enn = a
-  if(a.tag == npc and distance(target.npc) > dist) target.npc = a
+  if(a.tag == ennemy and distance(tar.enn) > dist) tar.enn = a
+  if(a.tag == npc and distance(tar.npc) > dist) tar.npc = a
  end
- if (distance(target.enn) > limit) target.enn = nil
- if (distance(target.npc) > limit) target.npc = nil
- return target
+ if (distance(tar.enn) > limit) tar.enn = nil
+ if (distance(tar.npc) > limit) tar.npc = nil
+ return tar
 end
 
 function move_on(a, go)
@@ -1005,8 +1048,8 @@ function move(a, x, y, ox, oy)
  log(6, x1..":"..y1)
  log(7, x2..":"..y2)
  g_cl = {x1=x1,y1=y1,x2=x2,y2=y2}
- local sp1 = mget(get_tile(x1), get_tile(y1))
- local sp2 = mget(get_tile(x2), get_tile(y2))
+ local sp1 = mget(gtile(x1), gtile(y1))
+ local sp2 = mget(gtile(x2), gtile(y2))
  if(is_limit_of_map(x1,y1) or is_limit_of_map(x2,y2)) return
 
  for b in all(g_actors) do
@@ -1021,27 +1064,27 @@ function move(a, x, y, ox, oy)
  end
 end
 
-function action_pl()
+function act_pl()
  if (g_p.cd > 0) g_p.cd -= 1
  if ((g_p.cd == 0) and btn(fire1)) then
   shoot()
   g_p.cd = g_p.weapon.cd
  end
  if (g_p.cdfx > 0) g_p.cdfx -= 1
- local item_near = fget(mget(get_tile(g_p.x) ,get_tile(g_p.y + g_p.box.y1)), f_inv)
+ local item_near = fget(mget(gtile(g_p.x) ,gtile(g_p.y + g_p.box.y1)), f_inv)
  if (btnp(fire2)) then
-  local tile = mget(get_tile(g_p.x+((g_p.box.x2-g_p.box.x1)/2)) ,get_tile(g_p.y + (g_p.box.y1/2)))
+  local tile = mget(gtile(g_p.x+((g_p.box.x2-g_p.box.x1)/2)) ,gtile(g_p.y + (g_p.box.y1/2)))
   if (fget(tile, f_inv)) then
    m_hud({control = controls_pl_inv, draw = draw_pl_inv})
   else
-  local target = target_nearest_one(30)
-   if (target.enn ~= nil and g_p.cdfx == 0) then
+  local tar = tar_nearest_one(30)
+   if (tar.enn ~= nil and g_p.cdfx == 0) then
     g_p.cdfx = g_p.weapon.cdfx
-    g_p.weapon.dfx(target.enn.x, target.enn.y, 3, abs(g_fp.y - target.enn.y), g_p.weapon.draw)
-    target.enn.health -= 20
-    check_actor_health(target.enn)
-   elseif (target.npc ~= nil and distance(target.npc) < 10) then
-    begin_dialog(target.npc)
+    g_p.weapon.dfx(tar.enn.x, tar.enn.y, 3, abs(g_fp.y - tar.enn.y), g_p.weapon.draw)
+    tar.enn.health -= 20
+    check_actor_health(tar.enn)
+   elseif (tar.npc ~= nil and distance(tar.npc) < 10) then
+    bg_dialog(tar.npc)
    else
     sfx(9)
    end
@@ -1055,7 +1098,7 @@ function is_inventory_closed(a)
  end
 end
 
-function begin_dialog(a)
+function bg_dialog(a)
  g_p.talkto = a
  a.talking = true
  a.hint = false
@@ -1076,7 +1119,7 @@ function anim_pl(a)
 	end
 end
 
-function get_tile(a)
+function gtile(a)
  return ((a - (a % 8)) / 8)
 end
 
@@ -1147,7 +1190,7 @@ function shoot(a, d)
  if(d == down) then
   fire({
    x = a.x,
-   y = a.y+17,
+   y = a.y+15,
    s = a.weapon.animv,
    dmg = a.weapon.dmg,
    type = a.weapon.type,
@@ -1226,7 +1269,7 @@ function draw_border_on_entities(en, x, y, c)
  spr(en.f, x,   y,   1, 2, en.flip, false)
 end
 
-function get_box(a)
+function gbox(a)
  return {
   x1 = a.x + a.box.x1,
   y1 = a.y + a.box.y1,
@@ -1239,8 +1282,8 @@ function check_collisions(a, b, n_x, n_y)
  local n_x = n_x or 0
  local n_y = n_y or 0
  if(a == b or a.tag == b.tag) return false
- local box_a = get_box(a)
- local box_b = get_box(b)
+ local box_a = gbox(a)
+ local box_b = gbox(b)
  if (box_a.x1 + n_x > box_b.x2 or
      box_a.y1 + n_y > box_b.y2 or
      box_b.x1 > box_a.x2 + n_x or
@@ -1294,6 +1337,7 @@ function controls_collisions()
   end
  end
 end
+
 
 function printoutline(t,x,y,c)
   for xoff=-1,1 do
@@ -1502,7 +1546,7 @@ function draw_game()
  follow_pl()
 
  cls()
- map(0, 0, 0, 0, 128, 47)
+ map(0, 0, 0, 0, 128, 48)
 
  set_camera()
 
@@ -1541,7 +1585,7 @@ function controls_update()
  end
 end
 
-function get_formalised_position(mina, maxa, a)
+function gformalised_position(mina, maxa, a)
  return max(mina, min(maxa, a-64))
 end
 
@@ -1551,8 +1595,8 @@ end
 
 function follow_pl()
  g_fp = {
-  x = get_formalised_position(g_map.x1, g_map.x2, g_p.x),
-  y = get_formalised_position(g_map.y1, g_map.y2, g_p.y)
+  x = gformalised_position(g_map.x1, g_map.x2, g_p.x),
+  y = gformalised_position(g_map.y1, g_map.y2, g_p.y)
  }
 end
 
@@ -1654,27 +1698,27 @@ __gfx__
 55111155338333330000000033333334244333335557555555575555001111000000000098888889e1eeeeee66666666eeeeeeee000000000000000060555506
 000000000000000000000000000000005555555555555555ffffffff44444444eeeebbeeeec551eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee5665ee
 07770777777777077777777004444440558aaaaaaaaaa855ffffffff44444444aeeebeeeeeec551eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee58e58e568865e
-07660666666666066666667004444440588aaaaaaaaaa885ffffffff44444444aeeebeeeeeeec51eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeceeeeeeeeee56899865
-07660666666666066666667004444440aaaaaaaaaaaaaaaaffffffff44444444aaeeeeeeeeeec51eeee88eeeeeeeeeee7eeeee5ecccccccee58eeeee689aa986
-07665555555555555555000004444440aaa0000000000aaaffffffff44444444eaaeeeeeeeeec51eeee898eeeee558eee74444551111111ceeee58ee689aa986
-07665555555555555555667004444440aa000000000000aa4444444444444444eeee333eeeeec51eeee88eeeeeeeeeee7eeeee5eccccccceeeeeeeee56899865
+07660666666666066666667004444440588aaaaaaaaaa885ffffffff44444444aeeebeeeeeeec51eeeeeeeeeeeeeeeeeeee54eeeeeeeeceeeeeeeeee56899865
+07660666666666066666667004444440aaaaaaaaaaaaaaaaffffffff44444444aaeeeeeeeeeec51eeee88eeeeeeeeeeeeee454eecccccccee58eeeee689aa986
+07665555555555555555000004444440aaa0000000000aaaffffffff44444444eaaeeeeeeeeec51eeee898eeeee558eeeee454ee1111111ceeee58ee689aa986
+07665555555555555555667004444440aa000000000000aa4444444444444444eeee333eeeeec51eeee88eeeeeeeeeeeeee54eeeccccccceeeeeeeee56899865
 07665555555555555555667004444440aa000000000000aa444444444444444488eeeeeeeeec551eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeceeee58ee58e568865e
 07665555555555555555667004044440aaa0000000000aaa4444444444444444eeeeeeeeeec551eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee5665ee
-07665555636363665555667004444440a0aaaaaaaaaaaa0a2666666644444444eeeebbeeeeeeeeeeeeeeeeeeeeeeeeeeeee5eeeeeeeceeeeee8e8eeeee5665ee
-00005555663339365555667004444440a00aaaaaaaaaa00a26666666444444449eeebeeee111111eeeeeeeeeeeeeeeeeee555eeeeeccceeeee5e5eeee568865e
-07665555633b33365555667004444440aaaaaaaaaaaaaaaa26666666444444449eeebeee15555551eee8eeeeeee8eeeeeee4eeeeecc1cceeeeeeeeee56899865
-076655556363b3635555667004444440a00aaaaaaaaaa00a244444464444444499eeeeee55cccc55ee898eeeeee5eeeeeee4eeeeeec1ceeeeee8e8ee689aa986
-07665555611111165555667004444440a00aaaaaaaaaa00a2444444622222222e99eeeee5ceeeec5ee888eeeeee5eeeeeee4eeeeeec1ceeee8e5e5ee689aa986
-07665555611711165555667004444440a0aaaaaaaaaaaa0a6222222620000002eeeeaaaeceeeeeeceeeeeeeeeeeeeeeeeee7eeeeeec1ceeee5eeeeee56899865
-07665555661111665555000004444440aaaaaaaaaaaaaaaa626666262000000288eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee7e7eeeeec1ceeeeeee8eeee568865e
+07665555636363665555667004444440a0aaaaaaaaaaaa0a2666666644444444eeeebbeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeceeeeee8e8eeeee5665ee
+00005555663339365555667004444440a00aaaaaaaaaa00a26666666444444449eeebeeee111111eeeeeeeeeeeeeeeeeeee44eeeeeccceeeee5e5eeee568865e
+07665555633b33365555667004444440aaaaaaaaaaaaaaaa26666666444444449eeebeee15555551eee8eeeeeee8eeeeee4554eeecc1cceeeeeeeeee56899865
+076655556363b3635555667004444440a00aaaaaaaaaa00a244444464444444499eeeeee55cccc55ee898eeeeee5eeeeee5445eeeec1ceeeeee8e8ee689aa986
+07665555611111165555667004444440a00aaaaaaaaaa00a2444444622222222e99eeeee5ceeeec5ee888eeeeee5eeeeeeeeeeeeeec1ceeee8e5e5ee689aa986
+07665555611711165555667004444440a0aaaaaaaaaaaa0a6222222620000002eeeeaaaeceeeeeeceeeeeeeeeeeeeeeeeeeeeeeeeec1ceeee5eeeeee56899865
+07665555661111665555000004444440aaaaaaaaaaaaaaaa626666262000000288eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeec1ceeeeeee8eeee568865e
 07665555661111665555667004444440aaa0000000000aaa6266662620000002eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeec1ceeeeeee5eeeee5665ee
-07665555555555555555667070111106aa000000000000aa2222111166666666eeeeeee0eeee1eeeeee8eeeeeeeeeeeeeeee4eeeeeee8eeeeeeeeeeeee888eee
-07665555555555555555667070111106aa000000000000aa2222111176666667eeeeeee0eeec1eeeee828eeeeeeeeeeeeeede4eeeee88eeeeeeeeeeeee888eee
-07665555555555555555667070111106aa000000000000aa2222111177666677eeeeeee0eeec1eeeee48eeeeeeee8eeeeeedee4ee5555511eeee8eeeee8d8eee
-00005555555555555555667070111106aaa0000000000aaa2222111177766777eeeeeee0eeec1eeeeee4eeeeee55559eeeedee4ee5555511e5555a55ee8d8eee
-07666666606666666660667070111106aaaaaaaaaaaaaaaa2222111177766777eeeeeee0eeec1eeeee4eeeeeeeddeeeeeeedee4eeeddeeeeeeddeaaeee8d8eee
-07666666606666666660667070111106aaaaaaaaaaaaaaaa2222111177666677eeeeeee0eeec1eeeeee4eeeeeedeeeeeeeede4eeeedeeeeeeedeeaaeeedddeee
-07777777707777777770777070111106566aaaaaaaaaa6652222111176666667e1111115eeeceeeeeee4eeeeeeeeeeeeeeee4eeeeeeeeeeeeeeeeeeeeeedeeee
+07665555555555555555667070111106aa000000000000aa2222111166666666eeeeeee0eeee1eeeeee8eeeeeeeeeeeeeeedeeeeeeee8eeeeeeeeeeeee888eee
+07665555555555555555667070111106aa000000000000aa2222111176666667eeeeeee0eeec1eeeee828eeeeeeeeeeeee4d4eeeeee88eeeeeeeeeeeee888eee
+07665555555555555555667070111106aa000000000000aa2222111177666677eeeeeee0eeec1eeeee48eeeeeeee8eeeee4d4eeee5555511eeee8eeeee8d8eee
+00005555555555555555667070111106aaa0000000000aaa2222111177766777eeeeeee0eeec1eeeeee4eeeeee55559eee111eeee5555511e5555a55ee8d8eee
+07666666606666666660667070111106aaaaaaaaaaaaaaaa2222111177766777eeeeeee0eeec1eeeee4eeeeeeeddeeeeeee1eeeeeeddeeeeeeddeaaeee8d8eee
+07666666606666666660667070111106aaaaaaaaaaaaaaaa2222111177666677eeeeeee0eeec1eeeeee4eeeeeedeeeeeeeeeeeeeeedeeeeeeedeeaaeeedddeee
+07777777707777777770777070111106566aaaaaaaaaa6652222111176666667e1111115eeeceeeeeee4eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeedeeee
 000000000000000000000000601111065566aaaaaaaa6655222211116666666600000055eee5eeeeeee4eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeedeeee
 555555551111111155555555622222265550055566666662ee0550ee666666755022226200000000000000000000000066666666000000007707707700000000
 555555551111111165555556622222265550055566666662ee0550ee66666675502222620000000007777770077777706666666666666666777cc77700000000
@@ -1770,11 +1814,11 @@ __map__
 0012121205050512121212121212121212121212121212121212121212121212121212121212121212121212000000004141414141414141414112121212414141410708080808080808090000000000000000000000000000003e00000000000000003e000000797979797c7c7c7c0047757c7c007979797979797979797c7c
 00101010222222101010101010101010101010101010101012121010101010101010101010101010101010100000000012121212121212121212121212121202020217181818181818181900475647564756477700430b0b43003d56475647564756473d7c7700464638467c7c7c7c00387c7c7c007c7c7c7c7c7c7c7c7c7c7c
 00202020323232202020202020202020202020202020202012122020202020202020202020202020202020200000000061616161616161616161121212121202213117181818181818181900575657565756577700537e7e53007c56575657565756577c7c77007c57577c7c7c7c7c0038757c7c007c7c7c7c7c7c7c7c7c7c7c
-0002121212121212161212161212164445161212162121310e0f21212121212121212121212121212121210200000000444516444516121216121212121202212324272828282828282829007c7c7c1b7c7c7c77003b3b3b3b007c1b7c7c7c7c7c7c7c7c7c77007c7c7c7c7c7c7c7c0047757c7c007c7c797979797979797979
+0002121212121212161212161212164445161212162121310e0f21212121212121212121212121212121210200000000444516444516121216121212121202212324272828282828282829007c7c7c7c7c7c7c77003b3b3b3b007c7c7c7c7c7c7c7c7c7c7c77007c7c7c7c7c7c7c7c0047757c7c007c7c797979797979797979
 0002121212121212161212161212165455161212162139210e0f213102212121212121212121212121212102000000005455165455161212161212121212022133341d0d0d0d0d0d0d0d1f00797c3e3e3e3e3e3e79437979797979793e3e3e3e3e797c7c797900797979797c7c7c7c00387c7c7c007c7c7c7c7c7c7c7c7c7c7c
 0002070808080809161212161212166465161212162121210e0f212121210202020202020202020202020202000000006465166465161212161212121212022131212d0d0d0d0d0d0d0d2f00467c3d3d3d3d3d3d46534646464646463d3d3d3d3d467c7c4646003d3846467c7c7c7c0047757c7c007c7c7c7c7c7c7c7c7c7c7c
 0002171818181819121212121212121212121212121212121212212121210202020202020202020200000000000000001212121212121212121212121212022324212d1e1e1e1e1e1e1e2f007c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c51007c57577c7c7c7c7c00387c7c7c797979797979797979797c7c
-0002272828282829121207080808080808080808080912121212070808080808080808080809020200000000000000001212121212121212121212121212023334212d1e04041e04041e2f007c7c7c1b7c7c7c7c7c7c7c7c7272727c727272727c7c7c7c7c7c007c7c7c7c7c7c7c7c0047757c7c7c7c7c7c7c7c7c7c7c7c7c7c
+0002272828282829121207080808080808080808080912121212070808080808080808080809020200000000000000001212121212121212121212121212023334212d1e04041e04041e2f007c7c7c7c7c7c7c7c7c7c7c7c7272727c727272727c7c7c7c7c7c007c7c7c7c7c7c7c7c0047757c7c7c7c7c7c7c7c7c7c7c7c7c7c
 00020a666666660c121217181818181818181818181912121212171818181818181818181819020200000000000000002525362525362525362525261212022121022d1e14141e14141e2f007c7c7c7c7c7c7c7c7c7c7c7c727c7c7c727c7c727c7c7c7c7c51007c7c7c7c7c7c7c7c00577c7c7c7c7c7c7c7c7c7c7c7c7c7c7c
 00021a1b04041b1c12122728282828282828282828291212121227282828282828282828282902020000000000000000444516121216444516121216121212023102020212123012120202007c7c7c7c7c7c7c7c7c7c7c7c7272727c727c7c727c7c7c7c7c7c007c7c7c7c7c7f7f7c0000000000000000000000000000000000
 00021a1b14141b1c12120a0d0d0d0d0d0d0d0d0d0d0c121212120a0b0b0b0b0b0b0b0b0b0b0c0202000000000000000054551612121654551612121612121202213112121212121212121200797979797979797979007c7c7c7c727c727c7c727c7c7c7c7c5100000000007f7f7f7f0000000000000000000000000000000000
