@@ -11,6 +11,8 @@ Votre but est de vous faire embaucher au sein de trois entreprises :
 - Thelas à Valbonne
 Il vous suffit de "battre" les DRH de chacune des entreprises (en les éblouissant par la vasteté de vos compétences).
 
+Une fois que vous avez "exposé vos compétences" à quelqu'un, il disparaît et vous pouvez ramasser un cookie. Le nombre de cookies ne sert pas à grand chose, il vous sert de score pour connaitre le nombre de personnes que vous avez "convaincu".
+
 ## L'équipe
 Nous sommes des étudiants en troisième année du cycle ingénieur Polytech Nice-Sophia.
 L'équipe est constituée de trois membres : Younes Abdennadher, Jason Haenlin et Betsara Marcellin.
