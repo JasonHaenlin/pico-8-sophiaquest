@@ -14,6 +14,25 @@ f_heal, f_item, f_door, f_inv, f_obst = 0, 1, 4, 5, 7
 l_player, l_ennemy, l_boss = 200, 10, 150
 walk, stay = "walk", "stay"
 
+-- debug
+
+g_dbg = {"","","","","","","","","",""}
+function debug_log(x, y)
+ for i=1,#g_dbg do
+  print(g_dbg[i], x, y+(6*i), red)
+ end
+end
+
+function log_cpu_mem(x, y)
+ print("cpu "..flr(stat(1)*100).."%", x, y, red)
+ print("mem "..stat(0), x, y+6, red)
+end
+
+function log(tab,text)
+ if(tab < 0 or tab > #g_dbg) return
+ g_dbg[tab] = text
+end
+
 -- init
 function _init()
  g_actors = {}
@@ -35,14 +54,17 @@ end
 
 function init_current_area(area,s)
  local ca = g_area[area]
+ log(1, ca)
+ log(2, ca.name)
+ log(3, ca.spawns[s].x..":"..ca.spawns[s].y)
  g_spawn = {}
  g_spawn.x = ca.spawns[s].x
  g_spawn.y = ca.spawns[s].y
  clean_memory()
  ca.instantiate_entities()
  if(g_p)  then
-  g_p.x = g_spawn[s].x
-  g_p.y = g_spawn[s].y
+  g_p.x = g_spawn.x
+  g_p.y = g_spawn.y
   g_p.current_area = area
  end
  set_map_delimiter(ca.map.x1, ca.map.y1, ca.map.x2, ca.map.y2)
@@ -58,6 +80,7 @@ function clean_memory()
 end
 
  function init_area()
+  g_area_keys = {"biot", "antibes", "valbonne"}
   g_area = {
    cheat = {
     tag = nolimit,
@@ -292,7 +315,7 @@ end
 
 function make_game()
  make_weapons()
- init_current_area("cheat","default")
+ init_current_area("biot","bus")
  make_player(g_spawn.x, g_spawn.y, 192)
 end
 
@@ -844,13 +867,9 @@ function controls_pl_inv(self)
 end
 
 function controls_tp(self)
- local i = 0
- for a in all(g_area) do
-  if(a.tag == outside) i += 1
- end
- menu_selection(self,i)
+ menu_selection(self, #g_area_keys)
  if (btnp(fire1)) then
-  init_current_area(self.selected)
+  init_current_area(g_area_keys[self.selected], "bus")
   g_p.cd = 10
   del(g_menus,self)
  end
@@ -1526,18 +1545,15 @@ function draw_tp(self)
   local x1 = g_fp.x+32
   local y1 = g_fp.y+32
   local x2 = g_fp.x+118
-  local y2 = g_fp.y+96
   local tx = x1 + 7
   local ty = y1 + 10
-  rectfill(x1, y1, x2, y2, dark_blue)
-  for i = 1,#g_area do
-   if(g_area[i].tag == outside) then
-    print(g_area[i].name, tx + 12, ty - 2, white)
-    if (self.selected == i) then
-     spr(58, tx - 7, ty - 2)
-    end
-    ty += 12
+  rectfill(x1, y1, x2, y1 + (#g_area_keys*10) + 15, dark_blue)
+  for k in all(g_area_keys) do
+   print(k, tx + 12, ty - 2, white)
+   if (g_area_keys[self.selected] == k) then
+    spr(58, tx - 7, ty - 2)
    end
+   ty += 12
   end
 end
 
@@ -1575,7 +1591,7 @@ function draw_game()
  follow_player()
 
  cls()
- map(0, 0, 0, 0, 128, 64)
+ map(0, 0, 0, 0, 128, 47)
 
  set_camera()
 
@@ -1583,8 +1599,10 @@ function draw_game()
  draw_dfxs()
  draw_dialogs()
  draw_hud()
-
- print(g_p.x..":"..g_p.y, g_fp.x+10, g_fp.y+10, red)
+ log(4, g_p.x..":"..g_p.y)
+ log(5, #g_actors)
+ debug_log(g_fp.x+10, g_fp.y+10)
+ log_cpu_mem(g_fp.x+70, g_fp.y+5)
 end
 
 -- update
