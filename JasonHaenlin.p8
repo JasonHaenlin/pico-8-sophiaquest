@@ -55,9 +55,6 @@ end
 
 function init_current_area(area,s)
  local ca = g_area[area]
- log(1, ca)
- log(2, ca.name)
- log(3, ca.spawns[s].x..":"..ca.spawns[s].y)
  g_spawn = {}
  g_spawn.x = ca.spawns[s].x
  g_spawn.y = ca.spawns[s].y
@@ -117,8 +114,9 @@ end
        n_dialog("que… quoi ? ❎",trigger(200, trig_time)),
        n_dialog("vous arrivez a sophia sans aucune competence ?! ❎",trigger(200, trig_time)),
        n_dialog("vous devez avoir beaucoup de courage… ou de betise ❎",trigger(200, trig_time)),
-       n_dialog("pour survivre ici, il va vous falloir vous faire une place parmi les entreprises. et elles sont implacables. ❎",trigger(200, trig_time)),
-       n_dialog("le coin grouille de recruteurs qui sont prets à vous faire passer des entretiens en pleine rue. ❎",trigger(200, trig_time)),
+       n_dialog("pour survivre ici, il va vous falloir vous faire une place parmi les entreprises. ❎",trigger(200, trig_time)),
+       n_dialog("et elles sont implacables. ❎",trigger(200, trig_time)),
+       n_dialog("le coin grouille de recruteurs qui sont prets a vous faire passer des entretiens en pleine rue. ❎",trigger(200, trig_time)),
        n_dialog("sans competences, vous ne tiendrez pas 2h ici. ❎",trigger(200, trig_time)),
        n_dialog("je vous conseille de vous diriger vers l'ecole qui est juste de l'autre cote de cette route. ❎",trigger(200, trig_time)),
        n_dialog("sophiatech je crois que ca s'appelle. ❎",trigger(200, trig_time)),
@@ -159,10 +157,14 @@ end
        n_dialog("je vais vous laisser une chance. ❎",trigger(200, trig_time)),
        n_dialog("bienvenue a sophiatech ! ❎",trigger(200, trig_time)),
        n_dialog("laissez-moi vous expliquer le fonctionnement de cette ecole. ❎",trigger(200, trig_time)),
-       n_dialog("votre objectif est simple : obtenir votre diplome pour etre recrutee dans l'entreprise de vos reves. ❎",trigger(200, trig_time)),
-       n_dialog("pour se faire vous devez effectuer trois stages differents qui permettront d'ameliorer vos competences. ❎",trigger(200, trig_time)),
-       n_dialog("vous devrez aller parler aux recruteurs de chacune de ces entreprises et passer leurs epreuves afin d'etre recrutee. ❎",trigger(200, trig_time)),
-       n_dialog("dans le campus, des etudiants et professeurs viendront vous aborder pour vous aider a prendre de l'experience et tester vos connaissances. ❎",trigger(200, trig_time)),
+       n_dialog("votre objectif est simple : ❎",trigger(200, trig_time)),
+       n_dialog("obtenir votre diplome pour etre recrutee dans l'entreprise de vos reves. ❎",trigger(200, trig_time)),
+       n_dialog("pour se faire vous devez effectuer trois stages differents ❎",trigger(200, trig_time)),
+       n_dialog("qui permettront d'ameliorer vos competences. ❎",trigger(200, trig_time)),
+       n_dialog("vous devrez aller parler aux recruteurs de chacune de ces entreprises ❎",trigger(200, trig_time)),
+       n_dialog("passer leurs epreuves afin d'etre recrutee. ❎",trigger(200, trig_time)),
+       n_dialog("dans le campus, des etudiants et professeurs viendront vous aborder ❎",trigger(200, trig_time)),
+       n_dialog("pour vous aider a prendre de l'experience et tester vos connaissances. ❎",trigger(200, trig_time)),
        n_dialog("en cas de doute, durant votre parcours n'hesitez pas a revenir me voir et je vous repeterai tout cela. ❎",trigger(200, trig_time)),
        n_dialog("ah et n'oubliez pas votre materiel! ❎",trigger(200, trig_time)),
        n_dialog("vous pouvez le choisir sur le terminal derriere moi! ❎",trigger(200, trig_time)),
@@ -189,7 +191,7 @@ end
       local npc_st2_biot = {}
       npc_st2_biot = m_npc(103,136,195)
       npc_st2_biot:create_dialogs({
-       n_dialog("tu peux voyager entre les villes grace aux arrêts de bus ❎",trigger(200, trig_time)),
+       n_dialog("tu peux voyager entre les villes grace aux arrets de bus ❎",trigger(200, trig_time)),
        n_dialog("tu savais ? ❎",trigger(200, trig_time)),
       })
     end
@@ -250,7 +252,7 @@ end
     local npc_drh_capgemo_biot = {}
     npc_drh_capgemo_biot = m_npc(346,425,204,boss)
     npc_drh_capgemo_biot:create_dialogs({
-     n_dialog("présentez vous ! ❎",trigger(200, trig_time)),
+     n_dialog("presentez vous ! ❎",trigger(200, trig_time)),
     })
     local npc_st_capgemo_biot = {}
     npc_st_capgemo_biot = m_npc(349,304,195)
@@ -605,6 +607,7 @@ function m_enn(x, y, s)
  e.anim = stay
  e.walk = m_anim(m_walk_anim(s))
  e.stay = m_anim(m_stay_anim(s))
+ e.intent = {}
 end
 
 function m_loot(x, y, item)
@@ -931,12 +934,12 @@ function controls_enn(self)
   warning(self)
   self.anim = walk
   if (dist >= self.weapon.type) then
-   local dir_m = going_forward(self)
-   move_on(self, dir_m)
+   local intent = going_forward(self)
+   move_on(self, intent)
   end
  elseif (dist < self.weapon.type*8.2) then
   local dir_m = gbest_direction(self)
-  move_on(self, dir_m)
+  move_on(self, {dir_m})
   local dir_a = prepare_attack_opportunity(self)
   self.d = dir_a
   act_enn(self, dir_a)
@@ -956,15 +959,21 @@ function controls_pl(self)
 end
 
 function going_forward(a)
+ local intent = {}
  local rx = a.x - g_p.x
  local ry = a.y - g_p.y
  if(abs(rx) > abs(ry)) then
-   if(rx < 0) return right
-   return left
+   if(rx < 0) then add(intent, right)
+   else add(intent, left) end
+   if(ry < 0) then add(intent, down)
+   else add(intent, up) end
  else
-   if(ry < 0) return down
-   return up
+   if(ry < 0) then add(intent, down)
+   else add(intent, up) end
+   if(rx < 0) then add(intent, right)
+   else add(intent, left) end
  end
+ return intent
 end
 
 function distance(a)
@@ -1015,12 +1024,20 @@ function tar_nearest_one(limit)
  return tar
 end
 
-function move_on(a, go)
- if (go == left)  move(a ,-a.dx, 0, a.box.x1, a.box.y2)
- if (go == right) move(a, a.dx, 0, a.box.x2, a.box.y2)
- if (go == up)    move(a, 0 ,-a.dy, a.box.x2, a.box.y2-a.box.y1)
- if (go == down)  move(a, 0, a.dy, a.box.x2, a.box.y2)
- if (go ~= none)  a.d = go
+function move_on(a, intent)
+ local chk = false
+ add(intent, a.intent)
+ for i in all(intent) do
+  if (i == left)  chk = move(a ,-a.dx, 0, a.box.x1, a.box.y2)
+  if (i == right) chk = move(a, a.dx, 0, a.box.x2, a.box.y2)
+  if (i == up)    chk = move(a, 0 ,-a.dy, a.box.x2, a.box.y2-a.box.y1)
+  if (i == down)  chk = move(a, 0, a.dy, a.box.x2, a.box.y2)
+  if (i ~= none and chk)  a.d = i
+  if (chk) then
+   a.intent = i
+   return
+  end
+ end
 end
 
 function is_moving(direction)
@@ -1046,23 +1063,23 @@ function move(a, x, y, ox, oy)
  local y1 = max(a.box.y1 + a.y, a.y + y + ((oy/2) * y) + oy/2 + (1*abs(x)))
  local x2 = (a.x + x + ox)
  local y2 = max(a.box.y1 + a.y, a.y + y + oy)
- log(6, x1..":"..y1)
- log(7, x2..":"..y2)
  g_cl = {x1=x1,y1=y1,x2=x2,y2=y2}
  local sp1 = mget(gtile(x1), gtile(y1))
  local sp2 = mget(gtile(x2), gtile(y2))
- if(is_limit_of_map(x1,y1) or is_limit_of_map(x2,y2)) return
+ if(is_limit_of_map(x1,y1) or is_limit_of_map(x2,y2)) return false
 
  for b in all(g_actors) do
   if(check_collisions(a, b, x, y) and b.tag ~= invisible and b.tag ~= item) then
-   return
+   return false
   end
  end
 
  if (not fget(sp1, f_obst) and not fget(sp2, f_obst))  then
   a.x += x
   a.y += y
+  return true
  end
+ return false
 end
 
 function act_pl()
@@ -1191,7 +1208,7 @@ function shoot(a, d)
  if(d == down) then
   fire({
    x = a.x,
-   y = a.y+15,
+   y = a.y+9,
    s = a.weapon.animv,
    dmg = a.weapon.dmg,
    type = a.weapon.type,
@@ -1303,9 +1320,9 @@ function is_dead(a)
 end
 
 function drop_loot(a)
- local rndv = flr(rnd(100)) + 1
+ local rndv = flr(rnd(100)+1)
  for o in all(g_loots) do
-  if(o.drop_rate <= rndv) m_loot(a.x, a.y, o)
+  if(o.drop_rate >= rndv) m_loot(a.x, a.y, o)
  end
  if(a.super == boss) then
   for _=1,5 do
@@ -1348,6 +1365,7 @@ function printoutline(t,x,y,c)
   end
   print(t,x,y,c)
 end
+
 
 function rnd_color(colors)
  local rndv = flr(rnd(1000))
@@ -1480,11 +1498,12 @@ function draw_life(bx, by)
  local offsetlife = #spr_life - flr(((g_p.health * #spr_life) / l_pl))
  for y = 1 , #spr_life do
   for x = 1 , #spr_life[y] do
-   if (spr_life[y][x] ~= black) then
-    if (offsetlife >= y and spr_life[y][x] == red) then
+   local p = spr_life[y][x]
+   if (p ~= dark_green) then
+    if (offsetlife >= y and (p == red or p == dark_purple)) then
      pset(bx + x, by + y, light_gray)
     else
-     pset(bx + x, by + y, spr_life[y][x])
+     pset(bx + x, by + y, p)
     end
    end
   end
@@ -1536,10 +1555,10 @@ function draw_item_shape(x, y, s, cd, max)
  rectfill(x - 2, y - 5,  x + 9, y + 5, white)
  local curcd = ceil((cd*8)/max)
  rectfill(x - 2, y - 5 + curcd, x + 9, y + 5, light_gray)
- line(x - 2, y - 5, x - 2, y + 5, dark_gray)
- line(x - 2, y - 5, x + 9, y - 5, dark_gray)
- line(x + 9, y - 5, x + 9, y + 5, dark_gray)
- line(x + 9, y + 5, x - 2, y + 5, dark_gray)
+ line(x - 2, y - 5, x - 2, y + 5, black)
+ line(x - 2, y - 5, x + 9, y - 5, black)
+ line(x + 9, y - 5, x + 9, y + 5, black)
+ line(x + 9, y + 5, x - 2, y + 5, black)
  spr(s, x, y - 4)
 end
 
@@ -1555,8 +1574,8 @@ function draw_game()
  draw_dfxs()
  draw_dialogs()
  draw_hud()
- log(4, g_p.x..":"..g_p.y)
- log(5, #g_actors)
+ log(1, g_p.x..":"..g_p.y)
+ log(2, #g_actors)
  debug_log(g_fp.x+10, g_fp.y+10)
  log_cpu_mem(g_fp.x+70, g_fp.y+5)
  display_collision_matrix()
@@ -1648,20 +1667,18 @@ function screenshake(n)
 end
 
 spr_life = {
- {0, 0, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 0, 0},
- {0, 5, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 5, 0},
- {5, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 5},
- {5, 8, 8, 7, 7, 8, 8, 8, 8, 8, 8, 8, 8, 5},
- {5, 8, 8, 7, 7, 8, 8, 8, 8, 8, 8, 8, 8, 5},
- {5, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 5},
- {5, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 5},
- {5, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 5},
- {5, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 5},
- {5, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 5},
- {5, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 5},
- {5, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 5},
- {0, 5, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 5, 0},
- {0, 0, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 0, 0}
+ {3, 3, 0, 0, 0, 3, 3, 3, 0, 0, 0, 3, 3},
+ {3, 0, 8, 8, 8, 0, 3, 0, 8, 8, 2, 0, 3},
+ {0, 8, 7, 7, 8, 8, 0, 8, 8, 8, 8, 2, 0},
+ {0, 8, 7, 8, 8, 8, 8, 8, 8, 8, 8, 2, 0},
+ {0, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 2, 0},
+ {0, 8, 7, 8, 8, 8, 8, 8, 8, 8, 8, 2, 0},
+ {3, 0, 8, 8, 8, 8, 8, 8, 8, 8, 2, 0, 3},
+ {3, 3, 0, 8, 8, 8, 8, 8, 8, 2, 0, 3, 3},
+ {3, 3, 3, 0, 8, 8, 8, 8, 2, 0, 3, 3, 3},
+ {3, 3, 3, 3, 0, 8, 8, 2, 0, 3, 3, 3, 3},
+ {3, 3, 3, 3, 3, 0, 2, 0, 3, 3, 3, 3, 3},
+ {3, 3, 3, 3, 3, 3, 0, 3, 3, 3, 3, 3, 3}
 }
 
 __gfx__
@@ -1689,14 +1706,14 @@ __gfx__
 665656563b3333b3665666563bbbb33bbbbbb3bb55555555555755550600000000000000000000607055550670555506eeeeeeee50dd1666eeeeeeee6661dd05
 656565653b3333b366566656bb33bbbbbb333bbb55555555555755550066666666666666666666007055550670555506eeeeeeee50dd1666eeeeeeee6661dd05
 0000000033333333665666563b3bb444bbbbbbb355555555555755550600000000000000000000606055550660000006eeeeeeee50dd1666eeeeeeee6661dd05
-55bbb5b533333333665666563bbbbb4bbbbbbbb35557777777777777000880000000000098888898eceeeeee77777776eeeeeeee000000004444444470555506
-5b3b3b5533333a336656665633b3b44bb44b3b335557555555575555008998000666666080000b08ecceeeee77777776eeeeeeee2355dd450000000070555506
-5bb3b3b53333a9a3665666563b3bbb24b4bbb3b35557555555575555089aa980076676608bbbb0b8eccceeee77777776eeeeeeee235511454443141970555506
-55b34b5533333a3366566656b3bbbb2444bbbb3b555755555557555589aaaa9806766760800b0008ecccceee77777776eeeeeeee234411452243141970555506
-5111111533333333665666563333b344443b33335557555555575555089aa980066666608bbbb008eccc1eee77777776eeeeeeee000000000000000070555506
-51711115338333336656665633333324443333335557555555575555018998100000000080000b08ecc1eeee77777776eeeeeeeecc79922a6163dc8470555506
-5111111538283333665666563333322444433333555755555557555501188110444004448b0bbb08ec1eeeee77777776eeeeeeeecc7992296163dc8470555506
-55111155338333330000000033333334244333335557555555575555001111000000000098888889e1eeeeee66666666eeeeeeee000000000000000060555506
+55bbb5b533333333665666563bbbbb4bbbbbbbb35557777777777777eee88eee0000000098888898eceeeeee77777776eeeeeeee000000004444444470555506
+5b3b3b5533333a336656665633b3b44bb44b3b335557555555575555ee8998ee0666666080000b08ecceeeee77777776eeeeeeee2355dd450000000070555506
+5bb3b3b53333a9a3665666563b3bbb24b4bbb3b35557555555575555e89aa98e076676608bbbb0b8eccceeee77777776eeeeeeee235511454443141970555506
+55b34b5533333a3366566656b3bbbb2444bbbb3b5557555555575555e9aaaa9e06766760800b0008ecccceee77777776eeeeeeee234411452243141970555506
+5111111533333333665666563333b344443b33335557555555575555e89aa98e066666608bbbb008eccc1eee77777776eeeeeeee000000000000000070555506
+51711115338333336656665633333324443333335557555555575555ee8998ee0000000080000b08ecc1eeee77777776eeeeeeeecc79922a6163dc8470555506
+51111115382833336656665633333224444333335557555555575555eee88eee444004448b0bbb08ec1eeeee77777776eeeeeeeecc7992296163dc8470555506
+55111155338333330000000033333334244333335557555555575555eeeeeeee0000000098888889e1eeeeee66666666eeeeeeee000000000000000060555506
 000000000000000000000000000000005555555555555555ffffffff44444444ee000e00eec551eeeeeeeeeeeeeeeeeeeeeeaaeeeeeeeeeeeeeeeeeee568865e
 07770777777777077777777004444440558aaaaaaaaaa855ffffffff44444444e01110eeeeec551eeeeeeeeeeeeeeeeeaeeeaeeeeeeeeeeeeeeeeeee56899865
 07660666666666066666667004444440588aaaaaaaaaa885ffffffff444444440111110eeeeec51eeee8eeeeeeeeeeeeaeeeaeeeeeeeeceeeeeeeeee689aa986
@@ -1844,11 +1861,16 @@ __sfx__
 0110000f1305000000130500000000000130500000000000000001305000000000000000013550000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
 0110000f1855000000185500000000000155500000015550000000000015550000001355017550000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
 011000001c750000001c750000001c750000001a7501c7501d7501e7501e7501e7501f750000001f7501f7501f7501f7501f7501f7501f7401f7301f7201f7100000000000000000000000000000000000000000
-011000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
-011000002820028200000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
-011000002b20000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+011000000c0500c0500c050000001300013050130001805018050180001800013050110001105011050000000000005050050000c0500c0500000000000000001105000000150501505000000000000000010050
+0110000028200282001f0001f5501f5501f5001f5001f5001f5001f5501f5501f5000700000000000000000021550215500050000500005000050021550215500050000500005000050000500215502155000000
+011000002b20000000240002455024550245002450024500245002455024550245000000000000000000000024550245500050000500005000050024550245500050000500005000050000500245502455000000
+001000000000000000280002855028550285002850028500285002855028550285000000000000000000000029550295500050000500005000050029550295500050000500005000050000500285502855000000
+00100000000001305013050000000000007050000000c0500c0500000000000130500000018050180500000000000130500000018050180500000013050000001800015050180000900013000000000700013050
+001000000000000000000001f5501f550005000050000500005001f5501f550005000050000500005001f5501f5500000000000181000000021500215001f5501f55013500000001f5501f5501f5561f50000000
+001000000000000000000002355023550005000050000500005002455024550005000050000500005002455024550000000000018100000002450024500245502455018500000002455124550245562450000000
+00100000000000000000000265502655000500005000050000500285502855000500005000050000500285502855000000000001810000000295002950028550285501c500000002855128550285562850000000
 __music__
 03 08020355
 00 0b0c0e44
-00 0e0f1044
-
+01 0e0f1011
+02 12131415
