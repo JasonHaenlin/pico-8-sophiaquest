@@ -3,18 +3,15 @@ version 16
 __lua__
 
 
--- const
 left, right, up, down, fire1, fire2, none = 0, 1, 2, 3, 4, 5, 6
 black, dark_blue, dark_purple, dark_green, brown, dark_gray, light_gray, white, red, orange, yellow, green, blue, indigo, pink, peach = 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15
-player, bullet, ennemy, item, npc, invisible, outside, inside,  boss = 0, 1, 2, 3, 4, 5, 6, 7, 8
+pl, bullet, ennemy, item, npc, invisible, outside, inside,  boss = 0, 1, 2, 3, 4, 5, 6, 7, 8
 immortal_object = 10000
 inf = 10000
 melee, ranged = 1, 20
 f_heal, f_item, f_door, f_inv, f_obst = 0, 1, 4, 5, 7
-l_player, l_ennemy, l_boss = 200, 10, 150
+l_pl, l_ennemy, l_boss = 200, 20, 150
 walk, stay = "walk", "stay"
-
--- debug
 
 g_dbg = {"","","","","","","","","",""}
 g_cl = {x1=0,y1=0,x2=0,y2=0}
@@ -38,7 +35,6 @@ function display_collision_matrix(params)
  line(g_cl.x1,g_cl.y1,g_cl.x2,g_cl.y2,pink)
 end
 
--- init
 function _init()
  g_actors = {}
  g_dfx = {}
@@ -54,7 +50,7 @@ function _init()
  _update = update_menu
  init_area()
  init_screen()
- make_game()
+ m_game()
 end
 
 function init_current_area(area,s)
@@ -108,88 +104,88 @@ end
      sophiatechru = { x = 36, y = 211 }
     },
     instantiate_entities = function ()
-     make_tp(138, 71, 46, 5, 5, "biot", "bus", trig_btn_hud,"❎")
-     make_tp(281, 41, 46, 15, 10, "capgemo", "entrance", trig_dist_hud,"⬆️")
-     make_tp(321, 41, 46, 15, 10, "capgemo", "entrance", trig_dist_hud,"⬆️")
-     make_tp(250, 225, 46, 15, 10, "sophiatechest", "entrance", trig_dist_hud,"⬆️")
-     make_tp(105, 224, 46, 15, 10, "sophiatechouest", "entrance", trig_dist_hud,"⬆️")
-     make_tp(136, 224, 46, 15, 10, "sophiatechouest", "entrance", trig_dist_hud,"⬆️")
-     make_tp(33, 192, 46, 15, 10, "sophiatechru", "entrance", trig_dist_hud,"⬆️")
+     m_tp(138, 71, 46, 5, 5, "biot", "bus", trig_btn_hud,"❎")
+     m_tp(281, 41, 46, 15, 10, "capgemo", "entrance", trig_dist_hud,"⬆️")
+     m_tp(321, 41, 46, 15, 10, "capgemo", "entrance", trig_dist_hud,"⬆️")
+     m_tp(250, 225, 46, 15, 10, "sophiatechest", "entrance", trig_dist_hud,"⬆️")
+     m_tp(105, 224, 46, 15, 10, "sophiatechouest", "entrance", trig_dist_hud,"⬆️")
+     m_tp(136, 224, 46, 15, 10, "sophiatechouest", "entrance", trig_dist_hud,"⬆️")
+     m_tp(33, 192, 46, 15, 10, "sophiatechru", "entrance", trig_dist_hud,"⬆️")
      local npc_outside_man_biot = {}
-     npc_outside_man_biot = make_npc(108,71,204)
+     npc_outside_man_biot = m_npc(108,71,204)
      npc_outside_man_biot:create_dialogs({
-       newdialog("que… quoi ? ❎",trigger(200, trig_time)),
-       newdialog("vous arrivez a sophia sans aucune competence ?! ❎",trigger(200, trig_time)),
-       newdialog("vous devez avoir beaucoup de courage… ou de betise ❎",trigger(200, trig_time)),
-       newdialog("pour survivre ici, il va vous falloir vous faire une place parmi les entreprises. et elles sont implacables. ❎",trigger(200, trig_time)),
-       newdialog("le coin grouille de recruteurs qui sont prets à vous faire passer des entretiens en pleine rue. ❎",trigger(200, trig_time)),
-       newdialog("sans competences, vous ne tiendrez pas 2h ici. ❎",trigger(200, trig_time)),
-       newdialog("je vous conseille de vous diriger vers l'ecole qui est juste de l'autre cote de cette route. ❎",trigger(200, trig_time)),
-       newdialog("sophiatech je crois que ca s'appelle. ❎",trigger(200, trig_time)),
-       newdialog("la-bas, vous devriez en apprendre assez pour survivre ici assez longtemps. ❎",trigger(200, trig_time)),
-       newdialog("le directeur de l'ecole se trouve juste apres l'entree. ❎",trigger(200, trig_time)),
-       newdialog("ah ! et ne pensez meme pas aller vers l'est si vous n'etes pas prete. ❎",trigger(200, trig_time)),
-       newdialog("il y a des recruteurs sans vergogne qui rodent dans ces environs. ❎",trigger(200, trig_time)),
+       n_dialog("que… quoi ? ❎",trigger(200, trig_time)),
+       n_dialog("vous arrivez a sophia sans aucune competence ?! ❎",trigger(200, trig_time)),
+       n_dialog("vous devez avoir beaucoup de courage… ou de betise ❎",trigger(200, trig_time)),
+       n_dialog("pour survivre ici, il va vous falloir vous faire une place parmi les entreprises. et elles sont implacables. ❎",trigger(200, trig_time)),
+       n_dialog("le coin grouille de recruteurs qui sont prets à vous faire passer des entretiens en pleine rue. ❎",trigger(200, trig_time)),
+       n_dialog("sans competences, vous ne tiendrez pas 2h ici. ❎",trigger(200, trig_time)),
+       n_dialog("je vous conseille de vous diriger vers l'ecole qui est juste de l'autre cote de cette route. ❎",trigger(200, trig_time)),
+       n_dialog("sophiatech je crois que ca s'appelle. ❎",trigger(200, trig_time)),
+       n_dialog("la-bas, vous devriez en apprendre assez pour survivre ici assez longtemps. ❎",trigger(200, trig_time)),
+       n_dialog("le directeur de l'ecole se trouve juste apres l'entree. ❎",trigger(200, trig_time)),
+       n_dialog("ah ! et ne pensez meme pas aller vers l'est si vous n'etes pas prete. ❎",trigger(200, trig_time)),
+       n_dialog("il y a des recruteurs sans vergogne qui rodent dans ces environs. ❎",trigger(200, trig_time)),
       })
 
-      local npc_recruiter1_biot = {}
-      npc_recruiter1_biot = make_npc(341,86,204)
-      npc_recruiter1_biot:create_dialogs({
-       newdialog("eh la, jeune fille ! ❎",trigger(200, trig_time)),
-       newdialog("ou pensez-vous aller comme ca ? ❎",trigger(200, trig_time)),
-       newdialog("quel est votre domaine de competence ? ❎",trigger(200, trig_time)),
+      local npc_r1_biot = {}
+      npc_r1_biot = m_npc(341,86,204)
+      npc_r1_biot:create_dialogs({
+       n_dialog("eh la, jeune fille ! ❎",trigger(200, trig_time)),
+       n_dialog("ou pensez-vous aller comme ca ? ❎",trigger(200, trig_time)),
+       n_dialog("quel est votre domaine de competence ? ❎",trigger(200, trig_time)),
       })
 
-      local npc_recruiter2_biot = {}
-      npc_recruiter2_biot = make_npc(239,12,198)
-      npc_recruiter2_biot:create_dialogs({
-       newdialog("tiens tiens, qu'est-ce qu'on a la ? ❎",trigger(200, trig_time)),
-       newdialog("vous etes sans emploi ? ❎",trigger(200, trig_time)),
-       newdialog("vous savez quoi ? laissez-moi regarder votre cv ! ❎",trigger(200, trig_time)),
+      local npc_r2_biot = {}
+      npc_r2_biot = m_npc(239,12,198)
+      npc_r2_biot:create_dialogs({
+       n_dialog("tiens tiens, qu'est-ce qu'on a la ? ❎",trigger(200, trig_time)),
+       n_dialog("vous etes sans emploi ? ❎",trigger(200, trig_time)),
+       n_dialog("vous savez quoi ? laissez-moi regarder votre cv ! ❎",trigger(200, trig_time)),
       })
 
       local npc_daminaca_sophiatech_biot = {}
-      npc_daminaca_sophiatech_biot = make_npc(179,163,201,immortal_object,false)
+      npc_daminaca_sophiatech_biot = m_npc(179,163,201,immortal_object,false)
       npc_daminaca_sophiatech_biot:create_dialogs({
-       newdialog("hmm, une nouvelle tete ? ❎",trigger(200, trig_time)),
-       newdialog("je ne vous avais jamais vu jeune fille.❎",trigger(200, trig_time)),
-       newdialog("et pourtant je connais tous mes etudiants ! ❎",trigger(200, trig_time)),
-       newdialog("vous ne faites pas partie de cette ecole n'est-ce pas ? ❎",trigger(200, trig_time)),
-       newdialog("c'est bien ce que je me disais. ❎",trigger(200, trig_time)),
-       newdialog("que venez-vous faire ici ? ❎",trigger(200, trig_time)),
-       newdialog("en temps normal ma prestigieuse ecole n'accepte personne sans inscription prealable. ❎",trigger(200, trig_time)),
-       newdialog("mais je percois chez vous une certaine flamme. ❎",trigger(200, trig_time)),
-       newdialog("vous savez quoi ? ❎",trigger(200, trig_time)),
-       newdialog("je vais vous laisser une chance. ❎",trigger(200, trig_time)),
-       newdialog("bienvenue a sophiatech ! ❎",trigger(200, trig_time)),
-       newdialog("laissez-moi vous expliquer le fonctionnement de cette ecole. ❎",trigger(200, trig_time)),
-       newdialog("votre objectif est simple : obtenir votre diplome pour etre recrutee dans l'entreprise de vos reves. ❎",trigger(200, trig_time)),
-       newdialog("pour se faire vous devez effectuer trois stages differents qui permettront d'ameliorer vos competences et votre materiel. ❎",trigger(200, trig_time)),
-       newdialog("l'ordre que je vous conseil pour les stages est le suivant : d'abord capgemo qui se trouve a biot, puis leonardo energie a antibes et enfin thelas à valbonne. ❎",trigger(200, trig_time)),
-       newdialog("vous devrez aller parler aux recruteurs de chacune de ces entreprises et passer leurs epreuves afin d'etre recrutee. ❎",trigger(200, trig_time)),
-       newdialog("dans le campus, des etudiants et professeurs viendront vous aborder pour vous aider a prendre de l�█▥experience et tester vos connaissances. ❎",trigger(200, trig_time)),
-       newdialog("et noublies pas de récupérer ton équipement sur le terminal à côté. ❎",trigger(200, trig_time)),
-       newdialog("en cas de doute, durant votre parcours n'hesitez pas a revenir me voir et je vous repeterai tout cela. ❎",trigger(200, trig_time)),
-       newdialog("n'oubliez pas votre materiel! ❎",trigger(200, trig_time)),
-       newdialog("vous pouvez le choisir sur le terminal derriere moi! ❎",trigger(200, trig_time)),
-       newdialog("votre materiel est extremement precieux. ❎",trigger(200, trig_time)),
-       newdialog("sans materiel vous ne pourrez jamais terminer vos etudes et realiser votre reve à sophia. ❎",trigger(200, trig_time)),
-       newdialog("votre materiel constitue l'outil principal de votre connaissance. ❎",trigger(200, trig_time)),
-       newdialog("utilisez-le pour demontrer vos connaissances aux etudiants et aux professeurs qui veulent vous tester. ❎",trigger(200, trig_time)),
-       newdialog("et il y en a beaucoup sur le campus et sur les routes. ❎",trigger(200, trig_time)),
+       n_dialog("hmm, une nouvelle tete ? ❎",trigger(200, trig_time)),
+       n_dialog("je ne vous avais jamais vu jeune fille.❎",trigger(200, trig_time)),
+       n_dialog("et pourtant je connais tous mes etudiants ! ❎",trigger(200, trig_time)),
+       n_dialog("vous ne faites pas partie de cette ecole n'est-ce pas ? ❎",trigger(200, trig_time)),
+       n_dialog("c'est bien ce que je me disais. ❎",trigger(200, trig_time)),
+       n_dialog("que venez-vous faire ici ? ❎",trigger(200, trig_time)),
+       n_dialog("en temps normal ma prestigieuse ecole n'accepte personne sans inscription prealable. ❎",trigger(200, trig_time)),
+       n_dialog("mais je percois chez vous une certaine flamme. ❎",trigger(200, trig_time)),
+       n_dialog("vous savez quoi ? ❎",trigger(200, trig_time)),
+       n_dialog("je vais vous laisser une chance. ❎",trigger(200, trig_time)),
+       n_dialog("bienvenue a sophiatech ! ❎",trigger(200, trig_time)),
+       n_dialog("laissez-moi vous expliquer le fonctionnement de cette ecole. ❎",trigger(200, trig_time)),
+       n_dialog("votre objectif est simple : obtenir votre diplome pour etre recrutee dans l'entreprise de vos reves. ❎",trigger(200, trig_time)),
+       n_dialog("pour se faire vous devez effectuer trois stages differents qui permettront d'ameliorer vos competences et votre materiel. ❎",trigger(200, trig_time)),
+       n_dialog("l'ordre que je vous conseil pour les stages est le suivant : d'abord capgemo qui se trouve a biot, puis leonardo energie a antibes et enfin thelas à valbonne. ❎",trigger(200, trig_time)),
+       n_dialog("vous devrez aller parler aux recruteurs de chacune de ces entreprises et passer leurs epreuves afin d'etre recrutee. ❎",trigger(200, trig_time)),
+       n_dialog("dans le campus, des etudiants et professeurs viendront vous aborder pour vous aider a prendre de l�█▥experience et tester vos connaissances. ❎",trigger(200, trig_time)),
+       n_dialog("et noublies pas de récupérer ton équipement sur le terminal à côté. ❎",trigger(200, trig_time)),
+       n_dialog("en cas de doute, durant votre parcours n'hesitez pas a revenir me voir et je vous repeterai tout cela. ❎",trigger(200, trig_time)),
+       n_dialog("n'oubliez pas votre materiel! ❎",trigger(200, trig_time)),
+       n_dialog("vous pouvez le choisir sur le terminal derriere moi! ❎",trigger(200, trig_time)),
+       n_dialog("votre materiel est extremement precieux. ❎",trigger(200, trig_time)),
+       n_dialog("sans materiel vous ne pourrez jamais terminer vos etudes et realiser votre reve à sophia. ❎",trigger(200, trig_time)),
+       n_dialog("votre materiel constitue l'outil principal de votre connaissance. ❎",trigger(200, trig_time)),
+       n_dialog("utilisez-le pour demontrer vos connaissances aux etudiants et aux professeurs qui veulent vous tester. ❎",trigger(200, trig_time)),
+       n_dialog("et il y en a beaucoup sur le campus et sur les routes. ❎",trigger(200, trig_time)),
      })
 
-      local npc_student1_biot = {}
-      npc_student1_biot = make_npc(199,214,195)
-      npc_student1_biot:create_dialogs({
-       newdialog("ma specialite c'est genie de l'eau ! et toi ?! ❎",trigger(200, trig_time)),
+      local npc_st1_biot = {}
+      npc_st1_biot = m_npc(199,214,195)
+      npc_st1_biot:create_dialogs({
+       n_dialog("ma specialite c'est genie de l'eau ! et toi ?! ❎",trigger(200, trig_time)),
       })
 
-      local npc_student2_biot = {}
-      npc_student2_biot = make_npc(103,136,195)
-      npc_student2_biot:create_dialogs({
-       newdialog("il parait que le restaurant universitaire se trouve a l'ouest d'ici… ❎",trigger(200, trig_time)),
-       newdialog("va y faire un tour, la nourriture va te requinquer. ❎",trigger(200, trig_time)),
+      local npc_st2_biot = {}
+      npc_st2_biot = m_npc(103,136,195)
+      npc_st2_biot:create_dialogs({
+       n_dialog("il parait que le restaurant universitaire se trouve a l'ouest d'ici… ❎",trigger(200, trig_time)),
+       n_dialog("va y faire un tour, la nourriture va te requinquer. ❎",trigger(200, trig_time)),
       })
     end
    },
@@ -203,12 +199,12 @@ end
     leonardoenergy = { x = 545, y = 191 }
    },
    instantiate_entities = function ()
-    make_tp(538, 79, 46, 5, 5, "antibes", 'bus',trig_btn_hud,"❎")
-    make_tp(425, 56, 46, 15, 10, "carrouffe",  "entrance", trig_dist_hud,"⬆️")
-    make_tp(504, 56, 46, 15, 10, "carrouffe",  "entrance", trig_dist_hud,"⬆️")
-    make_tp(465, 56, 46, 15, 10, "carrouffe",  "entrance", trig_dist_hud,"⬆️")
-    make_tp(546, 177, 46, 15, 10, "leonardoenergy",  "entrance", trig_dist_hud,"⬆️")
-    make_tp(569, 177, 46, 15, 10, "leonardoenergy",  "entrance", trig_dist_hud,"⬆️")
+    m_tp(538, 79, 46, 5, 5, "antibes", 'bus',trig_btn_hud,"❎")
+    m_tp(425, 56, 46, 15, 10, "carrouffe",  "entrance", trig_dist_hud,"⬆️")
+    m_tp(504, 56, 46, 15, 10, "carrouffe",  "entrance", trig_dist_hud,"⬆️")
+    m_tp(465, 56, 46, 15, 10, "carrouffe",  "entrance", trig_dist_hud,"⬆️")
+    m_tp(546, 177, 46, 15, 10, "leonardoenergy",  "entrance", trig_dist_hud,"⬆️")
+    m_tp(569, 177, 46, 15, 10, "leonardoenergy",  "entrance", trig_dist_hud,"⬆️")
    end
   },
   valbonne = {
@@ -220,16 +216,16 @@ end
     thelas = { x = 693, y = 55 }
    },
    instantiate_entities = function ()
-    make_tp(785, 55, 46, 5, 5, "valbonne", "bus",trig_btn_hud,"❎")
-    make_tp(689, 40, 46, 15, 10, "thelas",  "entrance", trig_dist_hud,"⬆️")
-    make_tp(729, 40, 46, 15, 10, "thelas",  "entrance", trig_dist_hud,"⬆️")
-    local npc_student_valbonne = {}
-    npc_student_valbonne = make_npc(712,43,195)
-    npc_student_valbonne:create_dialogs({
-     newdialog("j'ai entendu dire que le drh de cet entreprise… thelas ❎",trigger(200, trig_time)),
-     newdialog("est assez rude avec ses recrues. ❎",trigger(200, trig_time)),
-     newdialog("sois bien prete avant d'y entrer. ❎",trigger(200, trig_time)),
-     newdialog("je te conseille d'avoir effectue deux stages auparavant. ❎",trigger(200, trig_time)),
+    m_tp(785, 55, 46, 5, 5, "valbonne", "bus",trig_btn_hud,"❎")
+    m_tp(689, 40, 46, 15, 10, "thelas",  "entrance", trig_dist_hud,"⬆️")
+    m_tp(729, 40, 46, 15, 10, "thelas",  "entrance", trig_dist_hud,"⬆️")
+    local npc_st_valbonne = {}
+    npc_st_valbonne = m_npc(712,43,195)
+    npc_st_valbonne:create_dialogs({
+     n_dialog("j'ai entendu dire que le drh de cet entreprise… thelas ❎",trigger(200, trig_time)),
+     n_dialog("est assez rude avec ses recrues. ❎",trigger(200, trig_time)),
+     n_dialog("sois bien prete avant d'y entrer. ❎",trigger(200, trig_time)),
+     n_dialog("je te conseille d'avoir effectue deux stages auparavant. ❎",trigger(200, trig_time)),
     })
    end
   },
@@ -239,18 +235,18 @@ end
    map = {x1 = 206, y1 = 258, x2 = 294, y2 = 258},
    spawns = { entrance = { x = 260, y = 360 }},
    instantiate_entities = function ()
-    make_tp(257, 375, 46, 15, 10, "biot", "capgemo", trig_dist_hud,"⬇️")
+    m_tp(257, 375, 46, 15, 10, "biot", "capgemo", trig_dist_hud,"⬇️")
     local npc_drh_capgemo_biot = {}
-    npc_drh_capgemo_biot = make_npc(346,425,204,boss)
+    npc_drh_capgemo_biot = m_npc(346,425,204,boss)
     npc_drh_capgemo_biot:create_dialogs({
-     newdialog("présentez vous ! ❎",trigger(200, trig_time)),
+     n_dialog("présentez vous ! ❎",trigger(200, trig_time)),
     })
-    local npc_student_capgemo_biot = {}
-    npc_student_capgemo_biot = make_npc(349,304,195)
-    npc_student_capgemo_biot:create_dialogs({
-     newdialog("tu vas passer un entretien a capgemo ? ❎",trigger(200, trig_time)),
-     newdialog("tu n'as pas l'air si douee que ça. ❎",trigger(200, trig_time)),
-     newdialog("laisse-moi t'evaluer rapidement. ❎",trigger(200, trig_time)),
+    local npc_st_capgemo_biot = {}
+    npc_st_capgemo_biot = m_npc(349,304,195)
+    npc_st_capgemo_biot:create_dialogs({
+     n_dialog("tu vas passer un entretien a capgemo ? ❎",trigger(200, trig_time)),
+     n_dialog("tu n'as pas l'air si douee que ça. ❎",trigger(200, trig_time)),
+     n_dialog("laisse-moi t'evaluer rapidement. ❎",trigger(200, trig_time)),
     })
    end
   },
@@ -260,14 +256,14 @@ end
    map = {x1 = 402, y1 = 256, x2 = 563, y2 = 256},
    spawns = { entrance = { x = 444, y = 360 }},
    instantiate_entities = function ()
-    make_tp(441, 374, 46, 15, 10, "antibes", "leonardoenergy", trig_dist_hud,"⬇️")
+    m_tp(441, 374, 46, 15, 10, "antibes", "leonardoenergy", trig_dist_hud,"⬇️")
     local npc_drh_leonardo_antibes = {}
-    npc_drh_leonardo_antibes = make_npc(638,344,204,boss,100,true,g_weapons[7])
+    npc_drh_leonardo_antibes = m_npc(638,344,204,boss,100,true,g_weapons[8])
     npc_drh_leonardo_antibes:create_dialogs({
-     newdialog("hola ! qu'est-ce qu'on a la ? ❎",trigger(200, trig_time)),
-     newdialog("vous cherchez un stage hein ? ❎",trigger(200, trig_time)),
-     newdialog("et qu'est ce qui vous fait dire que vous sortez de la masse d'etudiants qui postulent chez nous ? ❎",trigger(200, trig_time)),
-     newdialog(" j'espere que vous avez prepare cet entretien ! je n'aime pas du tout perdre mon temps… ❎",trigger(200, trig_time)),
+     n_dialog("hola ! qu'est-ce qu'on a la ? ❎",trigger(200, trig_time)),
+     n_dialog("vous cherchez un stage hein ? ❎",trigger(200, trig_time)),
+     n_dialog("et qu'est ce qui vous fait dire que vous sortez de la masse d'etudiants qui postulent chez nous ? ❎",trigger(200, trig_time)),
+     n_dialog(" j'espere que vous avez prepare cet entretien ! je n'aime pas du tout perdre mon temps… ❎",trigger(200, trig_time)),
     })
    end
   },
@@ -277,16 +273,16 @@ end
    map = {x1 = 821, y1 = -30, x2 = 960, y2 = 107},
    spawns = { entrance = { x = 868, y = 180 }},
    instantiate_entities = function ()
-    make_tp(864, 192, 46, 15, 10, "valbonne", "thelas", trig_dist_hud,"⬇️")
+    m_tp(864, 192, 46, 15, 10, "valbonne", "thelas", trig_dist_hud,"⬇️")
     local npc_thelas_drh_valbonne = {}
-    npc_thelas_drh_valbonne = make_npc(999,53,198,boss,100,true,g_weapons[6])
+    npc_thelas_drh_valbonne = m_npc(999,53,198,boss,100,true,g_weapons[6])
     npc_thelas_drh_valbonne:create_dialogs({
-     newdialog("zzzzz… zzzzz… zz… hein ? quoi ? quelqu'un ! ❎",trigger(200, trig_time)),
-     newdialog("ici ? mais ca fait des mois que personne ne s'est presente ici pour un stage ! ❎",trigger(200, trig_time)),
-     newdialog("personne n'en a encore ete digne ! mais… ❎",trigger(200, trig_time)),
-     newdialog("attendez, oui c'est bien vous ! j'ai entendu parler de vous. ❎",trigger(200, trig_time)),
-     newdialog("mais thelas n'accepte que l'lite vous le savez ! ❎",trigger(200, trig_time)),
-     newdialog("parlez-moi de ce dont vous etes capable. presentez-vous ! ❎",trigger(200, trig_time)),
+     n_dialog("zzzzz… zzzzz… zz… hein ? quoi ? quelqu'un ! ❎",trigger(200, trig_time)),
+     n_dialog("ici ? mais ca fait des mois que personne ne s'est presente ici pour un stage ! ❎",trigger(200, trig_time)),
+     n_dialog("personne n'en a encore ete digne ! mais… ❎",trigger(200, trig_time)),
+     n_dialog("attendez, oui c'est bien vous ! j'ai entendu parler de vous. ❎",trigger(200, trig_time)),
+     n_dialog("mais thelas n'accepte que l'lite vous le savez ! ❎",trigger(200, trig_time)),
+     n_dialog("parlez-moi de ce dont vous etes capable. presentez-vous ! ❎",trigger(200, trig_time)),
     })
    end
   },
@@ -296,14 +292,14 @@ end
    map = {x1 = 602, y1 = 122, x2 = 695, y2 = 129},
    spawns = { entrance = { x = 717, y = 227 }},
    instantiate_entities = function ()
-    make_tp(713, 239, 46, 15, 10, "biot", "sophiatechest", trig_dist_hud,"⬇️")
+    m_tp(713, 239, 46, 15, 10, "biot", "sophiatechest", trig_dist_hud,"⬇️")
     local npc_daminaca_bestcorp = {}
-    npc_daminaca_bestcorp = make_npc(772,176,201,boss,100,true,g_weapons[8])
+    npc_daminaca_bestcorp = m_npc(772,176,201,boss,100,true,g_weapons[2])
     npc_daminaca_bestcorp:create_dialogs({
-     newdialog("hein ? vous voulez etre directrice de sophiatech ? ❎",trigger(200, trig_time)),
-     newdialog("hmm… vous etes donc venus a sophia dans le seul but de me remplacer dans ma fonction… ❎",trigger(200, trig_time)),
-     newdialog("je vois. votre plan est temeraire. eh bien pour cela, ❎",trigger(200, trig_time)),
-     newdialog("vous allez devoir surpasser mes connaissances ! montrez-moi ce que vous savez faire ! ❎",trigger(200, trig_time)),
+     n_dialog("hein ? vous voulez etre directrice de sophiatech ? ❎",trigger(200, trig_time)),
+     n_dialog("hmm… vous etes donc venus a sophia dans le seul but de me remplacer dans ma fonction… ❎",trigger(200, trig_time)),
+     n_dialog("je vois. votre plan est temeraire. eh bien pour cela, ❎",trigger(200, trig_time)),
+     n_dialog("vous allez devoir surpasser mes connaissances ! montrez-moi ce que vous savez faire ! ❎",trigger(200, trig_time)),
     })
    end
   },
@@ -313,7 +309,7 @@ end
    map = {x1 = 682, y1 = 256, x2 = 918, y2 = 256},
    spawns = { entrance = { x = 724, y = 360 }},
    instantiate_entities = function ()
-    make_tp(721, 376, 46, 15, 10, "biot", "sophiatechouest", trig_dist_hud,"⬇️")
+    m_tp(721, 376, 46, 15, 10, "biot", "sophiatechouest", trig_dist_hud,"⬇️")
    end
   },
   sophiatechru = {
@@ -322,7 +318,7 @@ end
    map = {x1 = 96, y1 = 258, x2 = 96, y2 = 258},
    spawns = { entrance = { x = 132, y = 335 }},
    instantiate_entities = function ()
-    make_tp(129, 352, 46, 15, 10, "biot", "sophiatechru", trig_dist_hud,"⬇️")
+    m_tp(129, 352, 46, 15, 10, "biot", "sophiatechru", trig_dist_hud,"⬇️")
    end
   },
   carrouffe = {
@@ -331,7 +327,7 @@ end
    map = {x1 = -27, y1 = 259, x2 = -27, y2 = 259},
    spawns = { entrance = { x = 43, y = 387 }},
    instantiate_entities = function ()
-    make_tp(40, 367, 46, 15, 10, "antibes", "carrouffe", trig_dist_hud,"⬇️")
+    m_tp(40, 367, 46, 15, 10, "antibes", "carrouffe", trig_dist_hud,"⬇️")
    end
   }
  }
@@ -341,9 +337,7 @@ function init_screen()
  g_scr = {x = 0, y = 0, shake = 0, intensity = 2}
 end
 
--- new
-
-function newentitie(x, y, sprite, tag, health, direction, mvn)
+function n_entitie(x, y, sprite, tag, health, direction, mvn)
  return {
   x = x,
   y = y,
@@ -355,7 +349,7 @@ function newentitie(x, y, sprite, tag, health, direction, mvn)
  }
 end
 
-function newdfx(pattern, draw, cd)
+function n_dfx(pattern, draw, cd)
  return {
   pattern = pattern or function (self) end,
   draw = draw or function (self) end,
@@ -363,7 +357,7 @@ function newdfx(pattern, draw, cd)
  }
 end
 
-function newweapon(name, sprite, sfx, anim, cd, dmg, type, speed, hitbox, offsetx, offsety)
+function n_weapon(name, sprite, sfx, anim, cd, dmg, type, speed, hitbox, offsetx, offsety)
  return {
   name = name,
   sprite = sprite,
@@ -379,7 +373,7 @@ function newweapon(name, sprite, sfx, anim, cd, dmg, type, speed, hitbox, offset
  }
 end
 
-function newdialog(text, trigger)
+function n_dialog(text, trigger)
  return {
   text = text,
   is_triggered = to_trigger,
@@ -387,7 +381,6 @@ function newdialog(text, trigger)
   arg = trigger.arg
  }
 end
--- trigger
 
 function trigger(arg, type)
  return {arg = arg, type = type}
@@ -413,15 +406,14 @@ function to_trigger(self)
   self.actor.talking = false
   self.actor.hint = true
   self.actor.line = 1
-  g_p.control = controls_player
+  g_p.control = controls_pl
   if(self.actor.furymode) go_in_fury(self.actor)
- end -- reset dialogs
-
+ end
 end
 
 function go_in_fury(a)
  a.weapon = a.weapon_in_pocket
- a.control = controls_ennemies
+ a.control = controls_enn
  a.tag = ennemy
 end
 
@@ -430,61 +422,59 @@ function trig_time(self)
  return self.arg <= 0
 end
 
--- make
-
-function make_game()
- make_weapons()
+function m_game()
+ m_weapons()
  init_current_area("biot","bus")
- make_player(g_spawn.x, g_spawn.y, 192)
+ m_pl(g_spawn.x, g_spawn.y, 192)
 end
 
-function make_weapon(cmpnttable)
+function m_weapon(t)
  local item = {
-  name = cmpnttable.wpm.name,
-  spr = cmpnttable.wpm.sprite,
-  animh = cmpnttable.wpm.anim.h,
-  animv = cmpnttable.wpm.anim.v,
-  cd = cmpnttable.wpm.cd,
-  speed = cmpnttable.wpm.speed,
-  dmg = cmpnttable.wpm.dmg,
-  type = cmpnttable.wpm.type,
-  hb = cmpnttable.wpm.hitbox,
-  ox = cmpnttable.wpm.offsetx,
-  oy = cmpnttable.wpm.offsety,
-  sfx = cmpnttable.wpm.sfx,
-  dfx = cmpnttable.dfx.pattern,
-  draw = cmpnttable.dfx.draw,
-  cdfx = cmpnttable.dfx.cd
+  name = t.wpm.name,
+  spr = t.wpm.sprite,
+  animh = t.wpm.anim.h,
+  animv = t.wpm.anim.v,
+  cd = t.wpm.cd,
+  speed = t.wpm.speed,
+  dmg = t.wpm.dmg,
+  type = t.wpm.type,
+  hb = t.wpm.hitbox,
+  ox = t.wpm.offsetx,
+  oy = t.wpm.offsety,
+  sfx = t.wpm.sfx,
+  dfx = t.dfx.pattern,
+  draw = t.dfx.draw,
+  cdfx = t.dfx.cd
  }
  add(g_weapons, item)
 end
 
 
-function make_hud(cmpnttable)
+function m_hud(t)
   local hud = {
-    control = cmpnttable.control,
-    draw = cmpnttable.draw,
+    control = t.control,
+    draw = t.draw,
     selected = 1
   }
   add(g_menus, hud)
 end
 
-function make_actor(cmpnttable)
+function m_actor(t)
  local actor = {
-  tag = cmpnttable.entitie.tag,
-  d = cmpnttable.entitie.direction or none,
-  bx = cmpnttable.entitie.x,
-  by = cmpnttable.entitie.y,
-  x = cmpnttable.entitie.x,
-  y = cmpnttable.entitie.y,
-  s = cmpnttable.entitie.s,
-  health = cmpnttable.entitie.health,
-  control = cmpnttable.control,
-  draw = cmpnttable.draw,
-  weapon = cmpnttable.weapon or nil,
-  box = cmpnttable.box,
-  dx = cmpnttable.entitie.mvn.dx or 0.9,
-  dy = cmpnttable.entitie.mvn.dy or 0.9,
+  tag = t.en.tag,
+  d = t.en.direction or none,
+  bx = t.en.x,
+  by = t.en.y,
+  x = t.en.x,
+  y = t.en.y,
+  s = t.en.s,
+  health = t.en.health,
+  control = t.control,
+  draw = t.draw,
+  weapon = t.weapon or nil,
+  box = t.box,
+  dx = t.en.mvn.dx or 0.9,
+  dy = t.en.mvn.dy or 0.9,
   cd = 0,
   cdfx = 0
  }
@@ -492,58 +482,52 @@ function make_actor(cmpnttable)
  return actor
 end
 
-function make_weapons()
- make_weapon({
-  wpm = newweapon("laptop", 104, 8, {h = 72, v = 88}, 20, 15, melee, 2, 8, 5, -5),
-  dfx = newdfx(dfx_thunder, draw_thunder, 100)
+function m_weapons()
+ m_weapon({
+  wpm = n_weapon("laptop", 104, 8, {h = 72, v = 88}, 20, 15, melee, 2, 8, 5, -5),
+  dfx = n_dfx(dfx_thunder, draw_thunder, 100)
  })
- make_weapon({
-  wpm = newweapon("justice", 105, 4, {h = 73, v = 89}, 15, 7, melee, 2, 8, 5, -4),
-  dfx = newdfx()
+ m_weapon({
+  wpm = n_weapon("justice", 105, 4, {h = 73, v = 89}, 15, 7, melee, 2, 8, 5, -4),
+  dfx = n_dfx()
  })
- make_weapon({
-  wpm = newweapon("feu", 106, 1, {h = 74, v = 90}, 8, 8, ranged, 3, 3, 5, -4),
-  dfx = newdfx()
+ m_weapon({
+  wpm = n_weapon("feu", 106, 1, {h = 74, v = 90}, 8, 8, ranged, 3, 3, 5, -4),
+  dfx = n_dfx()
  })
- make_weapon({
-  wpm = newweapon("diplomatie", 107, 5, {h = 75, v = 91}, 3, 3, ranged, 10, 2, 5, -5),
-  dfx = newdfx()
+ m_weapon({
+  wpm = n_weapon("diplomatie", 107, 5, {h = 75, v = 91}, 3, 3, ranged, 10, 2, 5, -5),
+  dfx = n_dfx()
  })
- make_weapon({
-  wpm = newweapon("arc", 108, 3, {h = 76, v = 92}, 6, 5, ranged, 6, 3, 5, -5),
-  dfx = newdfx()
+ m_weapon({
+  wpm = n_weapon("arc", 108, 3, {h = 76, v = 92}, 6, 5, ranged, 6, 3, 5, -5),
+  dfx = n_dfx()
  })
- make_weapon({
-  wpm = newweapon("biohazard", 109, 6, {h = 77, v = 93}, 4, 5, ranged, 5, 1, 5, -5),
-  dfx = newdfx(dfx_waterfall, draw_waterfall, 100)
+ m_weapon({
+  wpm = n_weapon("biohazard", 109, 6, {h = 77, v = 93}, 4, 5, ranged, 5, 1, 5, -5),
+  dfx = n_dfx(dfx_waterfall, draw_waterfall, 100)
  })
- make_weapon({
-  wpm = newweapon("tatata", 110, 7, {h = 78, v = 94}, 2, 2, ranged, 10, 1, 5, -5),
-  dfx = newdfx()
+ m_weapon({
+  wpm = n_weapon("tatata", 110, 7, {h = 78, v = 94}, 2, 2, ranged, 10, 1, 5, -5),
+  dfx = n_dfx()
  })
- make_weapon({
-  wpm = newweapon("boom", 111, 8, {h = 79, v = 95}, 18, 10, melee, 2, 8, 5, -4),
-  dfx = newdfx(dfx_explosion, draw_explosion, 100)
- })
+ m_weapon({
+  wpm = n_weapon("boom", 111, 8, {h = 79, v = 95}, 18, 10, melee, 2, 8, 5, -4),
+  dfx = n_dfx(dfx_explosion, draw_explosion, 100)
+})
 end
 
-function make_npc(x, y, s, tag ,health, fury, weapon)
+function m_npc(x, y, s, tag ,health, fury, weapon)
  local health = health or l_ennemy
- local n = make_actor({
-  -- new player char
-  entitie = newentitie(x, y, s, npc, health, down),
-  -- add a action controller
+ local n = m_actor({
+  en = n_entitie(x, y, s, npc, health, down),
   control = controls_npc,
-  -- add a draw controller
   draw = draw_characters,
-  -- set the hitbox
   box = {x1 = 0, y1 = 8, x2 = 7, y2 = 15},
  })
-  -- add animations
  n.anim = stay
- n.walk = make_anim(make_walk_anim(s))
- n.stay = make_anim(make_stay_anim(s))
- -- dialogs creation
+ n.walk = m_anim(m_walk_anim(s))
+ n.stay = m_anim(m_stay_anim(s))
  n.create_dialogs = create_dialogs
  n.furymode = fury or true
  n.weapon_in_pocket = weapon or g_weapons[1]
@@ -551,55 +535,39 @@ function make_npc(x, y, s, tag ,health, fury, weapon)
  return n
 end
 
-function make_player(x, y, s)
- g_p = make_actor({
-  -- new player char
-  entitie = newentitie(x, y, s, player, l_player),
-  -- add a action controller
-  control = controls_player,
-  -- add a draw controller
+function m_pl(x, y, s)
+ g_p = m_actor({
+  en = n_entitie(x, y, s, pl, l_pl),
+  control = controls_pl,
   draw = draw_characters,
-  -- set the hitbox
   box = {x1 = 0, y1 = 7, x2 = 7, y2 = 14},
-  -- add weapon
   weapon = g_weapons[1]
  })
- -- add animations
  g_p.anim = stay
- g_p.walk = make_anim(make_walk_anim(s))
- g_p.stay = make_anim(make_stay_anim(s))
+ g_p.walk = m_anim(m_walk_anim(s))
+ g_p.stay = m_anim(m_stay_anim(s))
  g_p.coins = 0
  g_p.current_area = 1
 end
 
-function make_ennemies(x, y, s)
- local e = make_actor({
-  -- new player char
-  entitie = newentitie(x, y, s, ennemy, l_ennemy, up, {dx = 0.9, dy = 0.9}),
-  -- add a action controller
-  control = controls_ennemies,
-  -- add a draw controller
+function m_enn(x, y, s)
+ local e = m_actor({
+  en = n_entitie(x, y, s, ennemy, l_ennemy, up, {dx = 0.9, dy = 0.9}),
+  control = controls_enn,
   draw = draw_characters,
-  -- set the hitbox
   box = {x1 = 0, y1 = 8, x2 = 7, y2 = 15},
-  -- add weapon
   weapon = g_weapons[5]
  })
- -- add animations
  e.anim = stay
- e.walk = make_anim(make_walk_anim(s))
- e.stay = make_anim(make_stay_anim(s))
+ e.walk = m_anim(m_walk_anim(s))
+ e.stay = m_anim(m_stay_anim(s))
 end
 
-function make_loot(x, y, item)
- local i = make_actor({
-  -- new player char
-  entitie = newentitie(x+((rnd(2)-1)*10), y+((rnd(2)-1)*10), item.s, invisible),
-  -- add a action controller
+function m_loot(x, y, item)
+ local i = m_actor({
+  en = n_entitie(x+((rnd(2)-1)*10), y+((rnd(2)-1)*10), item.s, invisible),
   control = controls_loot,
-  -- add a draw controller
   draw = draw_item,
-  -- set the hitbox
   box = {x1 = 0, y1 = 0, x2 = 6, y2 = 6},
  })
  i.obj = item.obj
@@ -608,7 +576,7 @@ end
 
 function trig_btn_hud(self, dist)
  if(btnp(fire2) and dist < 7) then
-  make_hud({control = controls_tp, draw = draw_tp})
+  m_hud({control = controls_tp, draw = draw_tp})
  end
 end
 
@@ -619,21 +587,15 @@ function trig_dist_hud(self, dist)
 end
 
 
-function make_tp(x, y, s, w, h, link, spawn, trigger, hint)
- local n = make_actor({
-  -- new player char
-  entitie = newentitie(x, y, s, invisible, invisible, down),
-  -- add a action controller
+function m_tp(x, y, s, w, h, link, spawn, trigger, hint)
+ local n = m_actor({
+  en = n_entitie(x, y, s, invisible, invisible, down),
   control = controls_doors,
-  -- add a draw controller
   draw = draw_item,
-  -- set the hitbox
   box = {x1 = 0, y1 = 0, x2 = w, y2 = h},
  })
-  -- add link
  n.linkto = link
  n.spawn = spawn
-  -- add a trigger
  n.trigger = trigger
  n.sign = hint
  return n
@@ -649,7 +611,7 @@ function create_dialogs(self, dialogs)
  end
 end
 
-function make_walk_anim(s)
+function m_walk_anim(s)
  return {
   name = walk,
   frames = create_direction_frames(s+33, s+1, s+33, s+1, s+34, true, s+32, true),
@@ -657,7 +619,7 @@ function make_walk_anim(s)
  }
 end
 
-function make_stay_anim(s)
+function m_stay_anim(s)
  return {
   name = stay,
   frames = create_direction_frames(s+1, s+1, s+1, s+1, s+2, false, s, false),
@@ -665,7 +627,7 @@ function make_stay_anim(s)
  }
 end
 
-function make_anim(anim)
+function m_anim(anim)
  return {
   time = 0,
   anim = anim.name,
@@ -674,7 +636,7 @@ function make_anim(anim)
  }
 end
 
-function make_particles(a, n, c)
+function m_particles(a, n, c)
  local c = c or 8
 	while (n > 0) do
  	part = {
@@ -711,7 +673,7 @@ function format_text(text)
  return {text = ftext, offset = offsety}
 end
 
-function make_dialog(self, dialog, margin)
+function m_dialog(self, dialog, margin)
  local margin = margin or "default"
  local dialog = dialog or self.dialogs[self.line]
  local t = format_text(dialog.text)
@@ -721,7 +683,7 @@ function make_dialog(self, dialog, margin)
   x = g_fp.x + 32
   y = g_fp.y + 40
  end
- local newdialog = {
+ local n_dialog = {
   x = x,
   y = y,
   text = t.text,
@@ -730,14 +692,12 @@ function make_dialog(self, dialog, margin)
   arg = dialog.arg,
  }
  if (self.talking) then
-  newdialog.actor = self
+  n_dialog.actor = self
   self.talking = false
   self.next = false
  end
- add(g_dialogs, newdialog)
+ add(g_dialogs, n_dialog)
 end
-
--- draw effect
 
 function dfx_explosion(x, y, a, h, draw)
 	while (a > 0) do
@@ -804,8 +764,6 @@ function dfx_disapearance(x, y, a, h, draw)
 	end
 end
 
--- move
-
 function create_direction_frames(fl1, fl2, fr1, fr2, fu, fuflip, fd, fdflip)
  return {
   {{f = fl1, flip = true  },{f = fl2, flip = true }},
@@ -818,9 +776,9 @@ end
 function controls_loot(self)
  local dist = distance(self)
  if (dist < 8) then
-  if(self.obj == "heal" and g_p.health < l_player) then
+  if(self.obj == "heal" and g_p.health < l_pl) then
    g_p.health += 10
-   if (g_p.health > l_player) g_p.health = l_player
+   if (g_p.health > l_pl) g_p.health = l_pl
    sfx(2)
    del(g_actors,self)
   end
@@ -867,19 +825,19 @@ end
 
 function hint(self,sign)
  local sign = sign or "❎"
- make_dialog(self, newdialog(sign, trigger(5, trig_time)))
+ m_dialog(self, n_dialog(sign, trigger(5, trig_time)))
 end
 
 function warning(self)
- make_dialog(self, newdialog("!", trigger(1, trig_time)))
+ m_dialog(self, n_dialog("!", trigger(1, trig_time)))
 end
 
-function action_ennemies(a, d)
+function action_enn(a, d)
  if (a.tag ~= ennemy) return
  if (a.cd > 0) a.cd -= 1
  if (a.cd == 0) then
   shoot(a, d)
-  a.cd = 50
+  a.cd = a.weapon.cd*2
  end
 end
 
@@ -897,13 +855,13 @@ function controls_dialogs(self)
  local a = self.talkto
  if(btnp(fire2)) then
   if(self.talkto.line >= #self.talkto.dialogs) then
-   self.control = controls_player
+   self.control = controls_pl
   else
    a.next = true
   end
  end
  if(btnp(fire1)) then
-  self.control = controls_player
+  self.control = controls_pl
   self.talkto.hint = true
   g_p.cd = 20
  end
@@ -918,39 +876,39 @@ end
 function controls_npc(self)
  local dist = distance(self)
  if (dist < 10) then
-  if(self.talking) make_dialog(self, nil, "center")
+  if(self.talking) m_dialog(self, nil, "center")
   if (self.hint) hint(self)
  end
 end
 
-function controls_ennemies(self)
+function controls_enn(self)
  local dist = distance(self)
- if(is_player_near(dist)) then
+ if(is_pl_near(dist)) then
   warning(self)
   self.anim = walk
   if (dist >= self.weapon.type) then
    local dir_m = going_forward(self)
    move_on(self, dir_m)
-  end -- dist >= weapon type
+  end
  elseif (dist < self.weapon.type*8.2) then
   local dir_m = get_best_direction(self)
   move_on(self, dir_m)
   local dir_a = prepare_attack_opportunity(self)
   self.d = dir_a
-  action_ennemies(self, dir_a)
+  action_enn(self, dir_a)
  else
   self.anim = stay
- end -- is player near
+ end
 end
 
-function controls_player(self)
+function controls_pl(self)
  self.anim = walk
  if (is_moving(left))  move(self,-1, 0, self.box.x1, self.box.y2)
  if (is_moving(right)) move(self, 1, 0, self.box.x2, self.box.y2)
  if (is_moving(up))    move(self, 0,-1, self.box.x2, self.box.y2-self.box.y1)
  if (is_moving(down))  move(self, 0, 1, self.box.x2, self.box.y2)
  if (is_not_moving())  self.anim = stay
- action_player()
+ action_pl()
 end
 
 function going_forward(a)
@@ -995,7 +953,7 @@ function prepare_attack_opportunity(a, d)
  end
 end
 
-function is_player_near(gap, lim)
+function is_pl_near(gap, lim)
  local lim = lim or 30
  return gap <= lim and gap > 8
 end
@@ -1007,7 +965,7 @@ function target_nearest_one(limit)
   local dist = distance(a)
   if(a.tag == ennemy and distance(target.enn) > dist) target.enn = a
   if(a.tag == npc and distance(target.npc) > dist) target.npc = a
- end -- for all actors
+ end
  if (distance(target.enn) > limit) target.enn = nil
  if (distance(target.npc) > limit) target.npc = nil
  return target
@@ -1060,12 +1018,10 @@ function move(a, x, y, ox, oy)
  if (not fget(sp1, f_obst) and not fget(sp2, f_obst))  then
   a.x += x
   a.y += y
- end -- check obstacles on map
+ end
 end
 
--- action
-
-function action_player()
+function action_pl()
  if (g_p.cd > 0) g_p.cd -= 1
  if ((g_p.cd == 0) and btn(fire1)) then
   shoot()
@@ -1076,7 +1032,7 @@ function action_player()
  if (btnp(fire2)) then
   local tile = mget(get_tile(g_p.x+((g_p.box.x2-g_p.box.x1)/2)) ,get_tile(g_p.y + (g_p.box.y1/2)))
   if (fget(tile, f_inv)) then
-   make_hud({control = controls_pl_inv, draw = draw_pl_inv})
+   m_hud({control = controls_pl_inv, draw = draw_pl_inv})
   else
   local target = target_nearest_one(30)
    if (target.enn ~= nil and g_p.cdfx == 0) then
@@ -1088,9 +1044,9 @@ function action_player()
     begin_dialog(target.npc)
    else
     sfx(9)
-   end -- is target present
-  end -- case is inv else cdfx is over
- end -- fire 2 button triggered
+   end
+  end
+ end
 end
 
 function is_inventory_closed(a)
@@ -1112,15 +1068,13 @@ function anim_state(a, f)
 	return f.f[a.d+1][flr(f.time)+1]
 end
 
-function anim_player(a)
+function anim_pl(a)
 	if(a.anim == stay) then
 		return anim_state(a, a.stay)
 	else
 		return anim_state(a, a.walk)
 	end
 end
-
--- util
 
 function get_tile(a)
  return ((a - (a % 8)) / 8)
@@ -1156,83 +1110,63 @@ function shoot(a, d)
  local b = {}
  if(d == left) then
   fire({
-   -- new bullet
    x = a.x-6,
    y = a.y+4,
    s = a.weapon.animh,
    dmg = a.weapon.dmg,
    type = a.weapon.type,
-   -- add hitbox
    box = {x1 = 0, y1 = 4-center, x2 = 5, y2 = 4 + center},
-   -- set the speed
    mvn = {dx = -speed, dy = 0},
-   -- set the direction
    direction = left
   })
  end
  if(d == right) then
   fire({
-   -- new bullet
    x = a.x+6,
    y = a.y+4,
    s = a.weapon.animh,
    dmg = a.weapon.dmg,
    type = a.weapon.type,
-   -- add hitbox
    box = {x1 = 0, y1 = 4 - center, x2 = 5, y2 = 4 + center},
-   -- set the speed
    mvn = {dx = speed, dy = 0},
-   -- set the direction
    direction = right
   })
  end
  if(d == up) then
   fire({
-   -- new bullet
    x = a.x,
    y = a.y-3,
    s = a.weapon.animv,
    dmg = a.weapon.dmg,
    type = a.weapon.type,
-   -- add hitbox
    box = {x1 = 4 - center, y1 = 0, x2 = 4 + center, y2 = 8},
-   -- set the speed
    mvn = {dx = 0, dy = -speed},
-   -- set the direction
    direction = up
   })
  end
  if(d == down) then
   fire({
-   -- new bullet
    x = a.x,
    y = a.y+17,
    s = a.weapon.animv,
    dmg = a.weapon.dmg,
    type = a.weapon.type,
-   -- add hitbox
    box = {x1 = 4 - center, y1 = 3, x2 = 4 + center, y2 = 8},
-   -- set the speed
    mvn = {dx = 0, dy = speed},
-   -- set the direction
    direction = down
   })
  end
- if (d ~= none or a.tag == player) then
+ if (d ~= none or a.tag == pl) then
   sfx(a.weapon.sfx)
  end
 
 end
 
 function fire(en)
- local b = make_actor({
-  -- new player char
-  entitie = newentitie(en.x, en.y, en.s, bullet, immortal_object, en.direction, en.mvn),
-  -- add a action controller
+ local b = m_actor({
+  en = n_entitie(en.x, en.y, en.s, bullet, immortal_object, en.direction, en.mvn),
   control = controls_bullets,
-  -- add a draw controller
   draw = draw_bullets,
-  -- set the hitbox
   box = en.box,
  })
  b.dmg = en.dmg
@@ -1278,21 +1212,19 @@ function manage_aim_direction(direction)
  return inv
 end
 
-function draw_border_on_entities(entitie, x, y, c)
+function draw_border_on_entities(en, x, y, c)
 	for i=1, 16 do
 		pal(i, c)
  end
- spr(entitie.f, x,   y+1, 1, 2, entitie.flip, false)
- spr(entitie.f, x,   y-1, 1, 2, entitie.flip, false)
- spr(entitie.f, x-1, y,   1, 2, entitie.flip, false)
- spr(entitie.f, x+1, y,   1, 2, entitie.flip, false)
+ spr(en.f, x,   y+1, 1, 2, en.flip, false)
+ spr(en.f, x,   y-1, 1, 2, en.flip, false)
+ spr(en.f, x-1, y,   1, 2, en.flip, false)
+ spr(en.f, x+1, y,   1, 2, en.flip, false)
  pal()
  palt(black,false)
  palt(pink,true)
- spr(entitie.f, x,   y,   1, 2, entitie.flip, false)
+ spr(en.f, x,   y,   1, 2, en.flip, false)
 end
-
--- collisions
 
 function get_box(a)
  return {
@@ -1303,16 +1235,16 @@ function get_box(a)
  }
 end
 
-function check_collisions(a, b, newx, newy)
- local newx = newx or 0
- local newy = newy or 0
+function check_collisions(a, b, n_x, n_y)
+ local n_x = n_x or 0
+ local n_y = n_y or 0
  if(a == b or a.tag == b.tag) return false
  local box_a = get_box(a)
  local box_b = get_box(b)
- if (box_a.x1 + newx > box_b.x2 or
-     box_a.y1 + newy > box_b.y2 or
-     box_b.x1 > box_a.x2 + newx or
-     box_b.y1 > box_a.y2 + newy ) then
+ if (box_a.x1 + n_x > box_b.x2 or
+     box_a.y1 + n_y > box_b.y2 or
+     box_b.x1 > box_a.x2 + n_x or
+     box_b.y1 > box_a.y2 + n_y ) then
   return false
  end
  return true
@@ -1329,7 +1261,12 @@ end
 function drop_loot(a)
  local rndv = flr(rnd(100))
  for o in all(g_loots) do
-  if(o.drop_rate <= rndv) make_loot(a.x, a.y, o)
+  if(o.drop_rate <= rndv) m_loot(a.x, a.y, o)
+ end
+ if(a.super == boss) then
+  for _=1,5 do
+   m_loot(a.x, a.y, g_loots[2])
+  end
  end
 end
 
@@ -1346,26 +1283,24 @@ function controls_collisions()
  for a in all(g_actors) do
   for b in all(g_actors) do
    if (check_collisions(a, b)) then
-    if (a.tag == bullet and (b.tag == player or b.tag == ennemy)) then
+    if (a.tag == bullet and (b.tag == pl or b.tag == ennemy)) then
      b.health -= a.dmg
      local damaged_actor = b
-     make_particles(b, 10, 5)
+     m_particles(b, 10, 5)
      del(g_actors, a)
      check_actor_health(damaged_actor)
-    end -- collision from bullet
-   end -- if collision
+    end
+   end
   end
  end
 end
 
 function printoutline(t,x,y,c)
-  -- draw the outline
   for xoff=-1,1 do
     for yoff=-1,1 do
       print(t,x+xoff,y+yoff,0)
     end
   end
-  --draw the text
   print(t,x,y,c)
 end
 
@@ -1376,8 +1311,6 @@ function rnd_color(colors)
  end
  return colors[1]
 end
-
--- draw
 
 function _draw()
  cls()
@@ -1440,7 +1373,7 @@ function draw_skills(bx, by)
 end
 
 function draw_characters(self)
- draw_border_on_entities(anim_player(self), self.x, self.y, black)
+ draw_border_on_entities(anim_pl(self), self.x, self.y, black)
  if(self.tag ~= npc) draw_weapon(self,manage_weapon_direction(self.d))
 end
 
@@ -1499,7 +1432,7 @@ function draw_coins(x, y)
 end
 
 function draw_life(bx, by)
- local offsetlife = #spr_life - flr(((g_p.health * #spr_life) / l_player))
+ local offsetlife = #spr_life - flr(((g_p.health * #spr_life) / l_pl))
  for y = 1 , #spr_life do
   for x = 1 , #spr_life[y] do
    if (spr_life[y][x] ~= black) then
@@ -1566,7 +1499,7 @@ function draw_item_shape(x, y, s, cd, max)
 end
 
 function draw_game()
- follow_player()
+ follow_pl()
 
  cls()
  map(0, 0, 0, 0, 128, 47)
@@ -1583,8 +1516,6 @@ function draw_game()
  log_cpu_mem(g_fp.x+70, g_fp.y+5)
  display_collision_matrix()
 end
-
--- update
 
 function update_menu()
  if (btn(fire1) and btn(fire2)) then
@@ -1609,7 +1540,7 @@ function controls_update()
   a:control()
  end
 end
--- camera
+
 function get_formalised_position(mina, maxa, a)
  return max(mina, min(maxa, a-64))
 end
@@ -1618,7 +1549,7 @@ function lerp(a,b,t)
  return (1-t)*a + t*b
 end
 
-function follow_player()
+function follow_pl()
  g_fp = {
   x = get_formalised_position(g_map.x1, g_map.x2, g_p.x),
   y = get_formalised_position(g_map.y1, g_map.y2, g_p.y)
@@ -1660,7 +1591,7 @@ function check_game_state()
   g_weapons = {}
   g_dialogs = {}
 
-  make_game()
+  m_game()
   reset_camera()
   _draw = draw_menu
   _update = update_menu
@@ -1670,8 +1601,6 @@ end
 function screenshake(n)
  g_scr.shake = n
 end
-
--- sprites
 
 spr_life = {
  {0, 0, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 0, 0},
@@ -1715,14 +1644,14 @@ __gfx__
 665656563b3333b3665666563bbbb33bbbbbb3bb55555555555755550600000000000000000000607055550670555506eeeeeeee50dd1666eeeeeeee6661dd05
 656565653b3333b366566656bb33bbbbbb333bbb55555555555755550066666666666666666666007055550670555506eeeeeeee50dd1666eeeeeeee6661dd05
 0000000033333333665666563b3bb444bbbbbbb355555555555755550600000000000000000000606055550660000006eeeeeeee50dd1666eeeeeeee6661dd05
-55bbb5b533333333665666563bbbbb4bbbbbbbb35557777777777777000000000000000098888898eceeeeee77777776eeeeeeee000000004444444470555506
-5b3b3b5533333a336656665633b3b44bb44b3b3355575555555755550aaaaaa006666660855dd558ecceeeee77777776eeeeeeee2355dd450000000070555506
-5bb3b3b53333a9a3665666563b3bbb24b4bbb3b355575555555755550a9999a007667660855d5d58eccceeee77777776eeeeeeee235511454443141970555506
-55b34b5533333a3366566656b3bbbb2444bbbb3b55575555555755550a9889a006766760855565d8ecccceee77777776eeeeeeee234411452243141970555506
-5111111533333333665666563333b344443b333355575555555755550a9889a00666666085565dd8eccc1eee77777776eeeeeeee000000000000000070555506
-517111153383333366566656333333244433333355575555555755550a9999a00000000081655558ecc1eeee77777776eeeeeeeecc79922a6163dc8470555506
-511111153828333366566656333332244443333355575555555755550aaaaaa0444004448c155558ec1eeeee77777776eeeeeeeecc7992296163dc8470555506
-55111155338333330000000033333334244333335557555555575555000000000000000098888889e1eeeeee66666666eeeeeeee000000000000000060555506
+55bbb5b533333333665666563bbbbb4bbbbbbbb35557777777777777000880000000000098888898eceeeeee77777776eeeeeeee000000004444444470555506
+5b3b3b5533333a336656665633b3b44bb44b3b3355575555555755550089980006666660855dd558ecceeeee77777776eeeeeeee2355dd450000000070555506
+5bb3b3b53333a9a3665666563b3bbb24b4bbb3b35557555555575555089aa98007667660855d5d58eccceeee77777776eeeeeeee235511454443141970555506
+55b34b5533333a3366566656b3bbbb2444bbbb3b555755555557555589aaaa9806766760855565d8ecccceee77777776eeeeeeee234411452243141970555506
+5111111533333333665666563333b344443b33335557555555575555089aa9800666666085565dd8eccc1eee77777776eeeeeeee000000000000000070555506
+51711115338333336656665633333324443333335557555555575555018998100000000081655558ecc1eeee77777776eeeeeeeecc79922a6163dc8470555506
+5111111538283333665666563333322444433333555755555557555501188110444004448c155558ec1eeeee77777776eeeeeeeecc7992296163dc8470555506
+55111155338333330000000033333334244333335557555555575555001111000000000098888889e1eeeeee66666666eeeeeeee000000000000000060555506
 000000000000000000000000000000005555555555555555ffffffff44444444eeeebbeeeec551eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee5665ee
 07770777777777077777777004444440558aaaaaaaaaa855ffffffff44444444aeeebeeeeeec551eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee58e58e568865e
 07660666666666066666667004444440588aaaaaaaaaa885ffffffff44444444aeeebeeeeeeec51eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeceeeeeeeeee56899865
@@ -1779,14 +1708,14 @@ b336b3b336b3b336b30000000000c7c7c7c7c7c7c7c7c7c7c7000000767676767676767676760000
 272727270027270065272700a7a77615767683767600006576767676767676767676767676760097979797979797979797979797979797979797979797979700
 b3b3b3b3b3b3b3b3b30000000000c7c7c7c7c7c7c7c7c7c7c70000009797e39776769797e3e30000000000000000000000000000002727646464640027979797
 97979797972727007676760076767676766574577600006576767676767676009797979776760064646464646464a7a7a7d3d364646464646464646464646400
-b3b3b3b3b3b3b3b3b3000000000000f7c7c7f70000000000000000006464d36476766464d3d30000000000000000000000000000002727373737370027646464
+b3b3b3b3b3b3b3b3b30000000000c7c7f7f7c7c7c7c7c7c7c70000006464d36476766464d3d30000000000000000000000000000002727373737370027646464
 64646464642727001576760076767676767675767600000000000000007676006464646476760076767676767676a7a7a7d3d376767676767676767676767600
 b3b3b3b3b3b3b3b3b3000000000000f7f7f7f70000000000000000007676d37676767676d3d30000000000000000000000000000002727272727270027272727
 15152727272727001576760076767676767676767600007676767676767676001537371576769776767676767676767676767676767600767676767683767600
-00000000f7b3b3f70000000000000000000000000000000000000000767676767676767676760000000000000000000000000000002727272727270027272727
+b3b3b3b3b3f7f7b3b300000000000000000000000000000000000000767676767676767676760000000000000000000000000000002727272727270027272727
 27272727272727007676767676767615767676767600007676767676767676007676767676766476767676767676767676767676767600767676766574577600
-00000000f7f7f7f70000000000000000000000000000000000000000000000f77676f700000000000000000000000000000000000000f72727f7000000000000
-0000000000000000000000000000000000000000000000767676f7f7767676001576767676767676767676767676767676767676767600157676766575767600
+00000000f7f7f7f7000000000000000000000000000000000000000076767676f7f776767676f70000000000000000000000000000272727f727270027272727
+2727272727272700000000000000000000000000000000767676f7f7767676001576767676767676767676767676767676767676767600157676766575767600
 eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee67d7d7d6
 eccccccceccccceecccccccee166661eee11166ee111111ee88888c8ee8888ee88888c8ee55f555eeee5555ee55ff55ee444444eee44444ee444444e67d7d7d6
 cccccccccccccccecccccccce161161eee11161ee114411e88888888ee88888e8882888ee55ff55eee55555ee5f5ff5ee444444eee44444ee444444e6ffffff6
@@ -1820,22 +1749,22 @@ e55ee55ee51111eee55ee55ee11ee11ee511111ee11ee11eeddeeddee4ddddeeeddeeddee11ee11e
 e55ee55ee55ee55ee55ee55ee11ee55ee55ee11ee55ee11ee44ee44ee44eed4ee44ee44ee11ee55ee55ee11ee55ee11ee00ee00ee00ee00ee00ee00eeeeeeeee
 e55eeeeeeeeeee55eeeee55ee55eeeeeeeeeee55eeeee55ee44eeeeeeeeeee44eeeee44ee55eeeeeeeeeee55eeeee55ee00eeeeeeeeeee00eeeee00eeeeeeeee
 __gff__
-800080800000008080808080808000008000008000000080808080808080808080008080800000808080000000800000800080808000000002a000000080800000000080808080808000000000000000008000808080008080000000000000000000008080808000800000000000000085850505000000008080808000808000
+800080000000008080808080808000008000000000000080808080808080808080008080800000808080000000800000800080808000000002a000000080800000000080808080808000000000000000008000808080008080000000000000000000008080808000800000000000000085850505000000008080808000808000
 0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
 __map__
 000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000171818070808080808080808080918181900000000002525252525003e3e3e3e3e3e3e007979790079797b7b797979
 00000000000000000000000000000000000000000002022112521215125012212107080808080808080808090000000002020207080808080808080808080808080809121252121512500200000000000027282817181818181818181818192828290000000000301212127a003d3d3d3d3d3d3d004646460046467b7b464646
-0000000000000000000000000000000000000000000202211252121512501221211718181818181818181819000000002324021718181818181818181818181818181912125212151250020000000000000a0d0d27282828282828282828290d0d1c0202000000575757577b005657755657757c007c7c7c7c7c7c7c7c7c1230
-0000000000000000000000000000000000000000000202311252121512501202212728282828282828282829000000003334021718181818181818181818181818181912125212151250020000000000001a1b1b1d0d0d1e0d0d0d1e0d0d1f1b1b1c02020000003b3b3b3b3b7c7c7c7c7c7c7c7c7c7c7c7c007c7c7c7c7c1212
-0000000000000000000000000000000000000000000202211252121512501202211d1e1e1e1e0d1e1e1e1e1f000000002324021718181818181818181818181818181912125212151250020000000000001a1b1b2d1e1e1e1e1e1e1e1e1e2f1b431c02020000003b3b3b3b3b007c7c7c7c7c7c7c007c7c7c0043003e797c793e
-0000000000000000000000000000000000000000000202211252121512501202212d1e04041e0d1e04041e2f000000003334022728282828282828282828282828282912125212151250020000000202021a1b1b2d1e04041e1e1e04041e2f1b531c02020202003b3b3b3b3b0079474779797979007c7c7c0053003d467c463d
-0002020202020202020202020202020202020202020202311252121512501223242d1e14141e1e1e14141e2f000000002324020a666666660b666666660b666666660c12125212151250020000002121212121212d1e14141e1e1e14141e2f12121221212121003e3e79797979464343463e3e3e00477c7c007c003d67676767
-0002020202020202020202020202020202020202020202211252121512501233343131121231313112123131000000003334021a1b04041b1b1b04041b1b1b04041b1c1212521215125002000000121212121212121212121212121212121212121203121212003d3d464646467c53537c3d3d3d0038757c007c006767674767
-0021212121212121212121212121213121212121213121311252121512501202020202121202020212120202000000000202021a1b14141b1b1b14141b1b1b14141b1c1212521215125002000000616161616161616161616161616161616161616113616161007c7c7c7c7c7c7c7c7c7c7c7c7c00477c7c007c006767674775
-00121212121212121212121212121212120312121212121212520505055012121212121212121212121212120000000012121212121212303030121230303012121212121252121512500200000012121212121212121212121212121212121206060606061200567c477c7c7c7c7c7c7c7c7c7c00387c7c007c006757575767
-00616161616161616161616161616161611361616161616161620505056061616161616161616161616161610000000012121212121212121212121212121212121212031252121512500200000011111111111111111111111111111111111111111111111100567c577c7c7c7c7c7c7c7c7c7c0047757c007c006767676767
-00121212121212121212121212120606060606121212121201011212120101121212121212121212121212120000000061616161616161616161616161616161616161136162121512500200000012121212121212121212121212121212121212121212121200797979797c7c7c7c7c7c7c7c7c0038757c007c797979797979
-00111111111111111111111111111111111111111111111101011212120101111111111111111111111111110000000012121212121212121212010112121212060606060612121512500200000041414141414141414141414141414141414141414141414100463846467c7c7c7c007c7c7c7c00477c7c007c464646464646
+0000000000000000000000000000000000000000000202211252121512501221211718181818181818181819000000002324021718181818181818181818181818181912125212151250020000000000000a0d0d27282828282828282828290d0d1c0202000000575757577b005657755657757c007c7c7c6767676767671230
+0000000000000000000000000000000000000000000202311252121512501202212728282828282828282829000000003334021718181818181818181818181818181912125212151250020000000000001a1b1b1d0d0d1e0d0d0d1e0d0d1f1b1b1c02020000003b3b3b3b3b3b7c7c7c7c7c7c7c7c7c7c7c0067676767671212
+0000000000000000000000000000000000000000000202211252121512501202211d1e1e1e1e0d1e1e1e1e1f000000002324021718181818181818181818181818181912125212151250020000000000001a1b1b2d1e1e1e1e1e1e1e1e1e2f1b431c02020000003b3b3b3b3b007c7c7c7c7c7c7c007c7c7c0000003e7967793e
+0000000000000000000000000000000000000000000202211252121512501202212d1e04041e0d1e04041e2f000000003334022728282828282828282828282828282912125212151250020000000202021a1b1b2d1e04041e1e1e04041e2f1b531c02020202003b3b3b3b3b0079474779797979007c7c7c7c7c003d4667463d
+0002020202020202020202020202020202020202020202311252121512501223242d1e14141e1e1e14141e2f000000002324020a666666660b666666660b666666660c12125212151250020000002121212121212d1e14141e1e1e14141e2f12121221212121003e3e79797979464343463e3e3e00477c7c7c7c003d67676767
+0002020202020202020202020202020202020202020202211252121512501233343131121231313112123131000000003334021a1b04041b1b1b04041b1b1b04041b1c1212521215125002000000121212121212121212121212121212121212121203121212003d3d464646467c53537c3d3d3d0038757c7c7c006767674767
+0021212121212121212121212121213121212121213121311252121512501202020202121202020212120202000000000202021a1b14141b1b1b14141b1b1b14141b1c1212521215125002000000616161616161616161616161616161616161616113616161007c7c7c7c7c7c7c7c7c7c7c7c7c00477c7c7c7c006767674775
+00121212121212121212121212121212120312121212121212520505055012121212121212121212121212120000000012121212121212303030121230303012121212121252121512500200000012121212121212121212121212121212121206060606061200567c477c7c7c7c7c7c7c7c7c7c00387c7c7c7c006757575767
+00616161616161616161616161616161611361616161616161620505056061616161616161616161616161610000000012121212121212121212121212121212121212031252121512500200000011111111111111111111111111111111111111111111111100567c577c7c7c7c7c7c7c7c7c7c0047757c7c7c006767676767
+00121212121212121212121212120606060606121212121201011212120101121212121212121212121212120000000061616161616161616161616161616161616161136162121512500200000012121212121212121212121212121212121212121212121200797979797c7c7c7c7c7c7c7c7c0038757c7c7c797979797979
+00111111111111111111111111111111111111111111111101011212120101111111111111111111111111110000000012121212121212121212010112121212060606060612121512500200000041414141414141414141414141414141414141414141414100463846467c7c7c7c007c7c7c7c00477c7c7c7c464646464646
 001212121212121212121212121212121212121212121212010112121201011212121212121212121212121200000000111111111111111111110101111111111111111111111112125002000000232423242324232423242324232423242324232423242324003d57577c7c7c7c7c007c7c7c7c00477c7c7c7c7c7c7c7c7c7c
 004141411215124141414141414141414141414141414141414141414141414141414141414141414141414100000000121212121212121212120101121212121212121212121212125002000000333433343334333433343334333433343334333433343334007c7c7c7c7c7c7c7c00387c7c7c00577c7c7c7c7c7c7c7c7c7c
 0012121205050512121212121212121212121212121212121212121212121212121212121212121212121212000000004141414141414141414112121212414141410708080808080808090000000000000000000000000000003e00000000000000003e000000797979797c7c7c7c0047757c7c007979797979797979797c7c
@@ -1847,7 +1776,7 @@ __map__
 0002171818181819121212121212121212121212121212121212212121210202020202020202020200000000000000001212121212121212121212121212022324212d1e1e1e1e1e1e1e2f007c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c51007c57577c7c7c7c7c00387c7c7c797979797979797979797c7c
 0002272828282829121207080808080808080808080912121212070808080808080808080809020200000000000000001212121212121212121212121212023334212d1e04041e04041e2f007c7c7c1b7c7c7c7c7c7c7c7c7272727c727272727c7c7c7c7c7c007c7c7c7c7c7c7c7c0047757c7c7c7c7c7c7c7c7c7c7c7c7c7c
 00020a666666660c121217181818181818181818181912121212171818181818181818181819020200000000000000002525362525362525362525261212022121022d1e14141e14141e2f007c7c7c7c7c7c7c7c7c7c7c7c727c7c7c727c7c727c7c7c7c7c51007c7c7c7c7c7c7c7c00577c7c7c7c7c7c7c7c7c7c7c7c7c7c7c
-00021a1b04041b1c12122728282828282828282828291212121227282828282828282828282902020000000000000000444516121216444516121216121212023102020212123012120202007c7c7c7c7c7c7c7c7c7c7c7c7272727c727c7c727c7c7c7c7c7c00000000007f7c7c7f0000000000000000000000000000000000
+00021a1b04041b1c12122728282828282828282828291212121227282828282828282828282902020000000000000000444516121216444516121216121212023102020212123012120202007c7c7c7c7c7c7c7c7c7c7c7c7272727c727c7c727c7c7c7c7c7c007c7c7c7c7c7f7f7c0000000000000000000000000000000000
 00021a1b14141b1c12120a0d0d0d0d0d0d0d0d0d0d0c121212120a0b0b0b0b0b0b0b0b0b0b0c0202000000000000000054551612121654551612121612121202213112121212121212121200797979797979797979007c7c7c7c727c727c7c727c7c7c7c7c5100000000007f7f7f7f0000000000000000000000000000000000
 000231121212121212121a0d0d1b1b0d0d1b1b0d0d1c121212121a0d0d1b1b0d0d1b1b0d0d1c0202000000000000000064651612121664651612121612121212020212121240414212121200464646464646464646007c7c7272727c72727272727c7c7c7c7c0000000000000000000000000000000000000000000000000000
 000231121212121212121a1b1b1b1b1b1b1b1b1b1b1c121212121a1b1b1b1b1b1b1b1b1b1b1c0202000000000000000012121212121212121212121212121212121212121250305212121200564756475647564777007c7c7c7c7c7c7c0079797979797979790000000000000000000000000000000000000000000000000000
