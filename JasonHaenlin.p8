@@ -268,7 +268,7 @@ end
      n_dialog('...', trigger(200, trig_time))
     })
     m_enn(477, 276, 195)
-    m_enn(437, 281, 198, g_weapons[7])
+    m_enn(437, 281, 198)
     m_enn(544, 297, 204, g_weapons[7])
     m_enn(564, 265, 195)
     m_enn(640, 277, 195, g_weapons[7])
@@ -335,7 +335,7 @@ end
      n_dialog("je suis curieux de savoir ce que vous valez, montrez-moi ce que vous savez faire ! ❎",trigger(200, trig_time)),
      n_dialog('...', trigger(200, trig_time))
     })
-    m_enn(619, 169, 195)
+    m_enn(619, 169, 195, g_weapons[2])
     m_enn(634, 179, 195)
     m_enn(649, 169, 198, g_weapons[2])
     m_enn(693, 169, 198)
@@ -367,11 +367,13 @@ end
    instantiate_entities = function ()
     m_tp(129, 352, 46, 15, 10, "biot", "sophiatechru", trig_dist_hud,"⬇️")
     m_enn(131, 302, 195)
-    m_enn(142, 302, 195)
+    m_enn(142, 302, 195, g_weapons[7])
     m_enn(157, 302, 195)
     m_enn(174, 309, 198, g_weapons[7])
     m_enn(173, 346, 201)
     m_enn(183, 288, 204, g_weapons[7])
+    m_enn(173, 309, 201)
+    m_enn(156, 306, 204, g_weapons[7])
    end
   },
   carrouffe = {
