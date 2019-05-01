@@ -137,7 +137,7 @@ end
       })
 
       local npc_r2_biot = {}
-      npc_r2_biot = m_npc(137,77,198)
+      npc_r2_biot = m_npc(237,77,198)
       npc_r2_biot:create_dialogs({
        n_dialog("tiens tiens, qu'est-ce qu'on a la ? ❎",trigger(200, trig_time)),
        n_dialog("vous etes sans emploi ? ❎",trigger(200, trig_time)),
@@ -177,6 +177,13 @@ end
       npc_st1_biot:create_dialogs({
        n_dialog("ma specialite c'est genie de l'eau ! ❎",trigger(200, trig_time)),
        n_dialog("et toi ?! ❎",trigger(200, trig_time)),
+      })
+
+      local npc_st1_biot = {}
+      npc_st1_biot = m_npc(51,217,195)
+      npc_st1_biot:create_dialogs({
+       n_dialog("tu sais que tu peux changer de materiel ❎",trigger(200, trig_time)),
+       n_dialog("depuis le terminal derière le directeur ? ❎",trigger(200, trig_time)),
       })
 
       local npc_st2_biot = {}
