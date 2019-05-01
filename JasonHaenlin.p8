@@ -110,6 +110,82 @@ end
      make_tp(105, 224, 46, 15, 10, "sophiatechouest", "entrance", trig_dist_hud,"⬆️")
      make_tp(136, 224, 46, 15, 10, "sophiatechouest", "entrance", trig_dist_hud,"⬆️")
      make_tp(33, 192, 46, 15, 10, "sophiatechru", "entrance", trig_dist_hud,"⬆️")
+     local npc_outside_man_biot = {}
+     npc_outside_man_biot = make_npc(108,71,204)
+     npc_outside_man_biot:create_dialogs({
+       newdialog("que… quoi ? ❎",trigger(200, trig_time)),
+       newdialog("vous arrivez a sophia sans aucune competence ?! ❎",trigger(200, trig_time)),
+       newdialog("vous devez avoir beaucoup de courage… ou de betise ❎",trigger(200, trig_time)),
+       newdialog("pour survivre ici, il va vous falloir vous faire une place parmi les entreprises. et elles sont implacables. ❎",trigger(200, trig_time)),
+       newdialog("le coin grouille de recruteurs qui sont prets à vous faire passer des entretiens en pleine rue. ❎",trigger(200, trig_time)),
+       newdialog("sans competences, vous ne tiendrez pas 2h ici. ❎",trigger(200, trig_time)),
+       newdialog("je vous conseille de vous diriger vers l'ecole qui est juste de l'autre cote de cette route. ❎",trigger(200, trig_time)),
+       newdialog("sophiatech je crois que ca s'appelle. ❎",trigger(200, trig_time)),
+       newdialog("la-bas, vous devriez en apprendre assez pour survivre ici assez longtemps. ❎",trigger(200, trig_time)),
+       newdialog("le directeur de l'ecole se trouve juste apres l'entree. ❎",trigger(200, trig_time)),
+       newdialog("ah ! et ne pensez meme pas aller vers l'est si vous n'etes pas prete. ❎",trigger(200, trig_time)),
+       newdialog("il y a des recruteurs sans vergogne qui rodent dans ces environs. ❎",trigger(200, trig_time)),
+      })
+
+      local npc_recruiter1_biot = {}
+      npc_recruiter1_biot = make_npc(341,86,204)
+      npc_recruiter1_biot:create_dialogs({
+       newdialog("eh la, jeune fille ! ❎",trigger(200, trig_time)),
+       newdialog("ou pensez-vous aller comme ca ? ❎",trigger(200, trig_time)),
+       newdialog("quel est votre domaine de competence ? ❎",trigger(200, trig_time)),
+      })
+
+      local npc_recruiter2_biot = {}
+      npc_recruiter2_biot = make_npc(239,12,198)
+      npc_recruiter2_biot:create_dialogs({
+       newdialog("tiens tiens, qu'est-ce qu'on a la ? ❎",trigger(200, trig_time)),
+       newdialog("vous etes sans emploi ? ❎",trigger(200, trig_time)),
+       newdialog("vous savez quoi ? laissez-moi regarder votre cv ! ❎",trigger(200, trig_time)),
+      })
+
+      local npc_daminaca_sophiatech_biot = {}
+      npc_daminaca_sophiatech_biot = make_npc(179,163,201)
+      npc_daminaca_sophiatech_biot:create_dialogs({
+       newdialog("hmm, une nouvelle tete ? ❎",trigger(200, trig_time)),
+       newdialog("je ne vous avais jamais vu jeune fille.❎",trigger(200, trig_time)),
+       newdialog("et pourtant je connais tous mes etudiants ! ❎",trigger(200, trig_time)),
+       newdialog("vous ne faites pas partie de cette ecole n'est-ce pas ? ❎",trigger(200, trig_time)),
+       newdialog("c'est bien ce que je me disais. ❎",trigger(200, trig_time)),
+       newdialog("que venez-vous faire ici ? ❎",trigger(200, trig_time)),
+       newdialog("en temps normal ma prestigieuse ecole n'accepte personne sans inscription prealable. ❎",trigger(200, trig_time)),
+       newdialog("mais je percois chez vous une certaine flamme. ❎",trigger(200, trig_time)),
+       newdialog("vous savez quoi ? ❎",trigger(200, trig_time)),
+       newdialog("je vais vous laisser une chance. ❎",trigger(200, trig_time)),
+       newdialog("bienvenue a sophiatech ! ❎",trigger(200, trig_time)),
+       newdialog("laissez-moi vous expliquer le fonctionnement de cette ecole. ❎",trigger(200, trig_time)),
+       newdialog("votre objectif est simple : obtenir votre diplome pour etre recrutee dans l'entreprise de vos reves. ❎",trigger(200, trig_time)),
+       newdialog("pour se faire vous devez effectuer trois stages differents qui permettront d'ameliorer vos competences et votre materiel. ❎",trigger(200, trig_time)),
+       newdialog("l'ordre que je vous conseil pour les stages est le suivant : d'abord capgemo qui se trouve a biot, puis leonardo energie a antibes et enfin thelas à valbonne. ❎",trigger(200, trig_time)),
+       newdialog("vous devrez aller parler aux recruteurs de chacune de ces entreprises et passer leurs epreuves afin d'etre recrutee. ❎",trigger(200, trig_time)),
+       newdialog("dans le campus, des etudiants et professeurs viendront vous aborder pour vous aider a prendre de l�█▥experience et tester vos connaissances. ❎",trigger(200, trig_time)),
+       newdialog("et noublies pas de récupérer ton équipement sur le terminal à côté. ❎",trigger(200, trig_time)),
+       newdialog("en cas de doute, durant votre parcours n'hesitez pas a revenir me voir et je vous repeterai tout cela. ❎",trigger(200, trig_time)),
+       newdialog("n'oubliez pas votre materiel! ❎",trigger(200, trig_time)),
+       newdialog("vous pouvez le choisir sur le terminal derriere moi! ❎",trigger(200, trig_time)),
+       newdialog("votre materiel est extremement precieux. ❎",trigger(200, trig_time)),
+       newdialog("sans materiel vous ne pourrez jamais terminer vos etudes et realiser votre reve à sophia. ❎",trigger(200, trig_time)),
+       newdialog("votre materiel constitue l'outil principal de votre connaissance. ❎",trigger(200, trig_time)),
+       newdialog("utilisez-le pour demontrer vos connaissances aux etudiants et aux professeurs qui veulent vous tester. ❎",trigger(200, trig_time)),
+       newdialog("et il y en a beaucoup sur le campus et sur les routes. ❎",trigger(200, trig_time)),
+     })
+
+      local npc_student1_biot = {}
+      npc_student1_biot = make_npc(199,214,195)
+      npc_student1_biot:create_dialogs({
+       newdialog("ma specialite c'est genie de l'eau ! et toi ?! ❎",trigger(200, trig_time)),
+      })
+
+      local npc_student2_biot = {}
+      npc_student2_biot = make_npc(103,136,195)
+      npc_student2_biot:create_dialogs({
+       newdialog("il parait que le restaurant universitaire se trouve a l'ouest d'ici… ❎",trigger(200, trig_time)),
+       newdialog("va y faire un tour, la nourriture va te requinquer. ❎",trigger(200, trig_time)),
+      })
     end
    },
    antibes = {
@@ -142,6 +218,14 @@ end
     make_tp(785, 55, 46, 5, 5, "valbonne", "bus",trig_btn_hud,"❎")
     make_tp(689, 40, 46, 15, 10, "thelas",  "entrance", trig_dist_hud,"⬆️")
     make_tp(729, 40, 46, 15, 10, "thelas",  "entrance", trig_dist_hud,"⬆️")
+    local npc_student_valbonne = {}
+    npc_student_valbonne = make_npc(712,43,195)
+    npc_student_valbonne:create_dialogs({
+     newdialog("j'ai entendu dire que le drh de cet entreprise… thelas ❎",trigger(200, trig_time)),
+     newdialog("est assez rude avec ses recrues. ❎",trigger(200, trig_time)),
+     newdialog("sois bien prete avant d'y entrer. ❎",trigger(200, trig_time)),
+     newdialog("je te conseille d'avoir effectue deux stages auparavant. ❎",trigger(200, trig_time)),
+    })
    end
   },
   capgemo = {
@@ -151,6 +235,18 @@ end
    spawns = { entrance = { x = 260, y = 360 }},
    instantiate_entities = function ()
     make_tp(257, 375, 46, 15, 10, "biot", "capgemo", trig_dist_hud,"⬇️")
+    local npc_drh_capgemo_biot = {}
+    npc_drh_capgemo_biot = make_npc(346,425,204,boss)
+    npc_drh_capgemo_biot:create_dialogs({
+     newdialog("présentez vous ! ❎",trigger(200, trig_time)),
+    })
+    local npc_student_capgemo_biot = {}
+    npc_student_capgemo_biot = make_npc(349,304,195)
+    npc_student_capgemo_biot:create_dialogs({
+     newdialog("tu vas passer un entretien a capgemo ? ❎",trigger(200, trig_time)),
+     newdialog("tu n'as pas l'air si douee que ça. ❎",trigger(200, trig_time)),
+     newdialog("laisse-moi t'evaluer rapidement. ❎",trigger(200, trig_time)),
+    })
    end
   },
   leonardoenergy = {
@@ -160,6 +256,14 @@ end
    spawns = { entrance = { x = 444, y = 360 }},
    instantiate_entities = function ()
     make_tp(441, 374, 46, 15, 10, "antibes", "leonardoenergy", trig_dist_hud,"⬇️")
+    local npc_drh_leonardo_antibes = {}
+    npc_drh_leonardo_antibes = make_npc(638,344,204,boss,100,true,g_weapons[7])
+    npc_drh_leonardo_antibes:create_dialogs({
+     newdialog("hola ! qu'est-ce qu'on a la ? ❎",trigger(200, trig_time)),
+     newdialog("vous cherchez un stage hein ? ❎",trigger(200, trig_time)),
+     newdialog("et qu'est ce qui vous fait dire que vous sortez de la masse d'etudiants qui postulent chez nous ? ❎",trigger(200, trig_time)),
+     newdialog(" j'espere que vous avez prepare cet entretien ! je n'aime pas du tout perdre mon temps… ❎",trigger(200, trig_time)),
+    })
    end
   },
   thelas = {
@@ -169,6 +273,16 @@ end
    spawns = { entrance = { x = 868, y = 180 }},
    instantiate_entities = function ()
     make_tp(864, 192, 46, 15, 10, "valbonne", "thelas", trig_dist_hud,"⬇️")
+    local npc_thelas_drh_valbonne = {}
+    npc_thelas_drh_valbonne = make_npc(999,53,198,boss,100,true,g_weapons[6])
+    npc_thelas_drh_valbonne:create_dialogs({
+     newdialog("zzzzz… zzzzz… zz… hein ? quoi ? quelqu'un ! ❎",trigger(200, trig_time)),
+     newdialog("ici ? mais ca fait des mois que personne ne s'est presente ici pour un stage ! ❎",trigger(200, trig_time)),
+     newdialog("personne n'en a encore ete digne ! mais… ❎",trigger(200, trig_time)),
+     newdialog("attendez, oui c'est bien vous ! j'ai entendu parler de vous. ❎",trigger(200, trig_time)),
+     newdialog("mais thelas n'accepte que l'lite vous le savez ! ❎",trigger(200, trig_time)),
+     newdialog("parlez-moi de ce dont vous etes capable. presentez-vous ! ❎",trigger(200, trig_time)),
+    })
    end
   },
   sophiatechest = {
@@ -178,6 +292,14 @@ end
    spawns = { entrance = { x = 717, y = 227 }},
    instantiate_entities = function ()
     make_tp(713, 239, 46, 15, 10, "biot", "sophiatechest", trig_dist_hud,"⬇️")
+    local npc_daminaca_bestcorp = {}
+    npc_daminaca_bestcorp = make_npc(772,176,201,boss,100,true,g_weapons[8])
+    npc_daminaca_bestcorp:create_dialogs({
+     newdialog("hein ? vous voulez etre directrice de sophiatech ? ❎",trigger(200, trig_time)),
+     newdialog("hmm… vous etes donc venus a sophia dans le seul but de me remplacer dans ma fonction… ❎",trigger(200, trig_time)),
+     newdialog("je vois. votre plan est temeraire. eh bien pour cela, ❎",trigger(200, trig_time)),
+     newdialog("vous allez devoir surpasser mes connaissances ! montrez-moi ce que vous savez faire ! ❎",trigger(200, trig_time)),
+    })
    end
   },
   sophiatechouest = {
@@ -211,12 +333,7 @@ end
 end
 
 function init_screen()
- g_scr = {
-  x = 0,
-  y = 0,
-  shake = 0,
-  intensity = 2
- }
+ g_scr = {x = 0, y = 0, shake = 0, intensity = 2}
 end
 
 -- new
@@ -268,10 +385,7 @@ end
 -- trigger
 
 function trigger(arg, type)
- return {
-  arg = arg,
-  type = type
- }
+ return {arg = arg, type = type}
 end
 
 function to_trigger(self)
@@ -315,7 +429,7 @@ end
 
 function make_game()
  make_weapons()
- init_current_area("biot","bus")
+ init_current_area("cheat","default")
  make_player(g_spawn.x, g_spawn.y, 192)
 end
 
@@ -408,140 +522,6 @@ function make_weapons()
  })
 end
 
-function init_all_npc()
-
-  local npc_outside_man_biot = {}
-  npc_outside_man_biot = make_npc(108,71,204)
-  npc_outside_man_biot:create_dialogs({
-    newdialog("que… quoi ? ❎",trigger(200, trig_time)),
-    newdialog("vous arrivez a sophia sans aucune competence ?! ❎",trigger(200, trig_time)),
-    newdialog("vous devez avoir beaucoup de courage… ou de betise ❎",trigger(200, trig_time)),
-    newdialog("pour survivre ici, il va vous falloir vous faire une place parmi les entreprises. et elles sont implacables. ❎",trigger(200, trig_time)),
-    newdialog("le coin grouille de recruteurs qui sont prets à vous faire passer des entretiens en pleine rue. ❎",trigger(200, trig_time)),
-    newdialog("sans competences, vous ne tiendrez pas 2h ici. ❎",trigger(200, trig_time)),
-    newdialog("je vous conseille de vous diriger vers l'ecole qui est juste de l'autre cote de cette route. ❎",trigger(200, trig_time)),
-    newdialog("sophiatech je crois que ca s'appelle. ❎",trigger(200, trig_time)),
-    newdialog("la-bas, vous devriez en apprendre assez pour survivre ici assez longtemps. ❎",trigger(200, trig_time)),
-    newdialog("le directeur de l'ecole se trouve juste apres l'entree. ❎",trigger(200, trig_time)),
-    newdialog("ah ! et ne pensez meme pas aller vers l'est si vous n'etes pas prete. ❎",trigger(200, trig_time)),
-    newdialog("il y a des recruteurs sans vergogne qui rodent dans ces environs. ❎",trigger(200, trig_time)),
-   })
-
-   local npc_recruiter1_biot = {}
-   npc_recruiter1_biot = make_npc(341,86,204)
-   npc_recruiter1_biot:create_dialogs({
-    newdialog("eh la, jeune fille ! ❎",trigger(200, trig_time)),
-    newdialog("ou pensez-vous aller comme ca ? ❎",trigger(200, trig_time)),
-    newdialog("quel est votre domaine de competence ? ❎",trigger(200, trig_time)),
-   })
-
-   local npc_recruiter2_biot = {}
-   npc_recruiter2_biot = make_npc(239,12,198)
-   npc_recruiter2_biot:create_dialogs({
-    newdialog("tiens tiens, qu'est-ce qu'on a la ? ❎",trigger(200, trig_time)),
-    newdialog("vous etes sans emploi ? ❎",trigger(200, trig_time)),
-    newdialog("vous savez quoi ? laissez-moi regarder votre cv ! ❎",trigger(200, trig_time)),
-   })
-
-   local npc_student_capgemo_biot = {}
-   npc_student_capgemo_biot = make_npc(304,43,195)
-   npc_student_capgemo_biot:create_dialogs({
-    newdialog("tu vas passer un entretien a capgemo ? ❎",trigger(200, trig_time)),
-    newdialog("tu n'as pas l'air si douee que ça. ❎",trigger(200, trig_time)),
-    newdialog("laisse-moi t'evaluer rapidement. ❎",trigger(200, trig_time)),
-   })
-
-   local npc_drh_capgemo_biot = {}
-   npc_drh_capgemo_biot = make_npc(346,425,204,boss)
-   npc_drh_capgemo_biot:create_dialogs({
-    newdialog("présentez vous ! ❎",trigger(200, trig_time)),
-   })
-
-   local npc_daminaca_sophiatech_biot = {}
-   npc_daminaca_sophiatech_biot = make_npc(179,163,201)
-   npc_daminaca_sophiatech_biot:create_dialogs({
-    newdialog("hmm, une nouvelle tete ? ❎",trigger(200, trig_time)),
-    newdialog("je ne vous avais jamais vu jeune fille.❎",trigger(200, trig_time)),
-    newdialog("et pourtant je connais tous mes etudiants ! ❎",trigger(200, trig_time)),
-    newdialog("vous ne faites pas partie de cette ecole n'est-ce pas ? ❎",trigger(200, trig_time)),
-    newdialog("c'est bien ce que je me disais. ❎",trigger(200, trig_time)),
-    newdialog("que venez-vous faire ici ? ❎",trigger(200, trig_time)),
-    newdialog("en temps normal ma prestigieuse ecole n'accepte personne sans inscription prealable. ❎",trigger(200, trig_time)),
-    newdialog("mais je percois chez vous une certaine flamme. ❎",trigger(200, trig_time)),
-    newdialog("vous savez quoi ? ❎",trigger(200, trig_time)),
-    newdialog("je vais vous laisser une chance. ❎",trigger(200, trig_time)),
-    newdialog("bienvenue a sophiatech ! ❎",trigger(200, trig_time)),
-    newdialog("laissez-moi vous expliquer le fonctionnement de cette ecole. ❎",trigger(200, trig_time)),
-    newdialog("votre objectif est simple : obtenir votre diplome pour etre recrutee dans l'entreprise de vos reves. ❎",trigger(200, trig_time)),
-    newdialog("pour se faire vous devez effectuer trois stages differents qui permettront d'ameliorer vos competences et votre materiel. ❎",trigger(200, trig_time)),
-    newdialog("l'ordre que je vous conseil pour les stages est le suivant : d'abord capgemo qui se trouve a biot, puis leonardo energie a antibes et enfin thelas à valbonne. ❎",trigger(200, trig_time)),
-    newdialog("vous devrez aller parler aux recruteurs de chacune de ces entreprises et passer leurs epreuves afin d'etre recrutee. ❎",trigger(200, trig_time)),
-    newdialog("dans le campus, des etudiants et professeurs viendront vous aborder pour vous aider a prendre de l�█▥experience et tester vos connaissances. ❎",trigger(200, trig_time)),
-    newdialog("et noublies pas de récupérer ton équipement sur le terminal à côté. ❎",trigger(200, trig_time)),
-    newdialog("en cas de doute, durant votre parcours n'hesitez pas a revenir me voir et je vous repeterai tout cela. ❎",trigger(200, trig_time)),
-    newdialog("n'oubliez pas votre materiel! ❎",trigger(200, trig_time)),
-    newdialog("vous pouvez le choisir sur le terminal derriere moi! ❎",trigger(200, trig_time)),
-    newdialog("votre materiel est extremement precieux. ❎",trigger(200, trig_time)),
-    newdialog("sans materiel vous ne pourrez jamais terminer vos etudes et realiser votre reve à sophia. ❎",trigger(200, trig_time)),
-    newdialog("votre materiel constitue l'outil principal de votre connaissance. ❎",trigger(200, trig_time)),
-    newdialog("utilisez-le pour demontrer vos connaissances aux etudiants et aux professeurs qui veulent vous tester. ❎",trigger(200, trig_time)),
-    newdialog("et il y en a beaucoup sur le campus et sur les routes. ❎",trigger(200, trig_time)),
-  })
-
-   local npc_student1_biot = {}
-   npc_student1_biot = make_npc(199,214,195)
-   npc_student1_biot:create_dialogs({
-    newdialog("ma specialite c'est genie de l'eau ! et toi ?! ❎",trigger(200, trig_time)),
-   })
-
-   local npc_student2_biot = {}
-   npc_student2_biot = make_npc(103,136,195)
-   npc_student2_biot:create_dialogs({
-    newdialog("il parait que le restaurant universitaire se trouve a l'ouest d'ici… ❎",trigger(200, trig_time)),
-    newdialog("va y faire un tour, la nourriture va te requinquer. ❎",trigger(200, trig_time)),
-   })
-
-   local npc_student_valbonne = {}
-   npc_student_valbonne = make_npc(712,43,195)
-   npc_student_valbonne:create_dialogs({
-    newdialog("j'ai entendu dire que le drh de cet entreprise… thelas ❎",trigger(200, trig_time)),
-    newdialog("est assez rude avec ses recrues. ❎",trigger(200, trig_time)),
-    newdialog("sois bien prete avant d'y entrer. ❎",trigger(200, trig_time)),
-    newdialog("je te conseille d'avoir effectue deux stages auparavant. ❎",trigger(200, trig_time)),
-   })
-
-   local npc_thelas_drh_valbonne = {}
-   npc_thelas_drh_valbonne = make_npc(999,53,198,boss,100,true,g_weapons[6])
-   npc_thelas_drh_valbonne:create_dialogs({
-    newdialog("zzzzz… zzzzz… zz… hein ? quoi ? quelqu'un ! ❎",trigger(200, trig_time)),
-    newdialog("ici ? mais ca fait des mois que personne ne s'est presente ici pour un stage ! ❎",trigger(200, trig_time)),
-    newdialog("personne n'en a encore ete digne ! mais… ❎",trigger(200, trig_time)),
-    newdialog("attendez, oui c'est bien vous ! j'ai entendu parler de vous. ❎",trigger(200, trig_time)),
-    newdialog("mais thelas n'accepte que l'lite vous le savez ! ❎",trigger(200, trig_time)),
-    newdialog("parlez-moi de ce dont vous etes capable. presentez-vous ! ❎",trigger(200, trig_time)),
-   })
-
-   local npc_drh_leonardo_antibes = {}
-   npc_drh_leonardo_antibes = make_npc(665,463,204,boss,100,true,g_weapons[7])
-   npc_drh_leonardo_antibes:create_dialogs({
-    newdialog("hola ! qu'est-ce qu'on a la ? ❎",trigger(200, trig_time)),
-    newdialog("vous cherchez un stage hein ? ❎",trigger(200, trig_time)),
-    newdialog("et qu'est ce qui vous fait dire que vous sortez de la masse d'etudiants qui postulent chez nous ? ❎",trigger(200, trig_time)),
-    newdialog(" j'espere que vous avez prepare cet entretien ! je n'aime pas du tout perdre mon temps… ❎",trigger(200, trig_time)),
-   })
-
-   local npc_daminaca_bestcorp = {}
-   npc_daminaca_bestcorp = make_npc(772,176,201,boss,100,true,g_weapons[8])
-   npc_daminaca_bestcorp:create_dialogs({
-    newdialog("hein ? vous voulez etre directrice de sophiatech ? ❎",trigger(200, trig_time)),
-    newdialog("hmm… vous etes donc venus a sophia dans le seul but de me remplacer dans ma fonction… ❎",trigger(200, trig_time)),
-    newdialog("je vois. votre plan est temeraire. eh bien pour cela, ❎",trigger(200, trig_time)),
-    newdialog("vous allez devoir surpasser mes connaissances ! montrez-moi ce que vous savez faire ! ❎",trigger(200, trig_time)),
-   })
-
-end
-
-
 function make_npc(x, y, s, tag ,health, fury, weapon)
  local health = health or l_ennemy
  local n = make_actor({
@@ -623,13 +603,13 @@ end
 
 function trig_btn_hud(self, dist)
  if(btnp(fire2) and dist < 7) then
-  make_tp_hud()
+  make_hud({control = controls_tp, draw = draw_tp})
  end
 end
 
 function trig_dist_hud(self, dist)
   if (dist < 5) then
-   init_current_area(self.linkto)
+   init_current_area(self.linkto, self.spawn)
   end
 end
 
@@ -687,14 +667,6 @@ function make_anim(anim)
   spd = anim.speed,
   f = anim.frames
  }
-end
-
-function make_tp_hud()
- make_hud({control = controls_tp, draw = draw_tp})
-end
-
-function make_pl_inv()
- make_hud({control = controls_pl_inv, draw = draw_pl_inv})
 end
 
 function make_particles(a, n, c)
@@ -904,7 +876,7 @@ end
 
 function controls_doors(self)
  local dist = distance(self)
- if (dist < 10) then
+ if (dist < 8) then
   hint(self,self.sign)
  end
  self:trigger(dist)
@@ -982,12 +954,6 @@ function going_forward(a)
    if(ry < 0) return down
    return up
  end
-end
-
-function sqr(x) return x*x end
-
-function distance_test(a)
- return sqrt(sqr(a.x - g_p.x)+sqr(a.y - g_p.y))
 end
 
 function distance(a)
@@ -1098,7 +1064,7 @@ function action_player()
  if (btnp(fire2)) then
   local tile = mget(get_tile(g_p.x+((g_p.box.x2-g_p.box.x1)/2)) ,get_tile(g_p.y + (g_p.box.y1/2)))
   if (fget(tile, f_inv)) then
-   make_pl_inv()
+   make_hud({control = controls_pl_inv, draw = draw_pl_inv})
   else
   local target = target_nearest_one(30)
    if (target.enn ~= nil and g_p.cdfx == 0) then
