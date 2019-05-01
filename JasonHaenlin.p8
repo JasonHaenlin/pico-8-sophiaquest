@@ -1196,7 +1196,7 @@ function shoot(a, d)
  if(d == down) then
   fire({
    x = a.x,
-   y = a.y+15,
+   y = a.y+9,
    s = a.weapon.animv,
    dmg = a.weapon.dmg,
    type = a.weapon.type,
@@ -1862,4 +1862,3 @@ __music__
 00 0b0c0e44
 01 0e0f1011
 02 12131415
-
