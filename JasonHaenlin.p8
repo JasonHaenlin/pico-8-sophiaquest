@@ -560,7 +560,7 @@ end
 
 function m_weapons()
  m_weapon({
-  wpm = n_weapon("ordinateur", 104, 3, {h = 72, v = 88}, 20, 15, melee, 2, 8, 5, -5),
+  wpm = n_weapon("ordinateur", 104, 3, {h = 72, v = 88}, 20, 10, melee, 2, 8, 5, -5),
   dfx = n_dfx()
  })
  m_weapon({
@@ -568,23 +568,23 @@ function m_weapons()
   dfx = n_dfx()
  })
  m_weapon({
-  wpm = n_weapon("fougue", 106, 1, {h = 74, v = 90}, 8, 8, ranged, 3, 3, 5, -4),
+  wpm = n_weapon("fougue", 106, 1, {h = 74, v = 90}, 11, 6, ranged, 3, 3, 5, -4),
   dfx = n_dfx()
  })
  m_weapon({
-  wpm = n_weapon("diplomatie", 107, 5, {h = 75, v = 91}, 3, 3, ranged, 10, 2, 5, -5),
+  wpm = n_weapon("diplomatie", 107, 5, {h = 75, v = 91}, 4, 3, ranged, 10, 2, 5, -5),
   dfx = n_dfx()
  })
  m_weapon({
-  wpm = n_weapon("generateur electrique", 108, 8, {h = 76, v = 92}, 15, 10, melee, 2, 8, 5, -4),
+  wpm = n_weapon("generateur electrique", 108, 8, {h = 76, v = 92}, 15, 8, melee, 2, 8, 5, -4),
   dfx = n_dfx(dfx_thunder, draw_thunder, 100)
  })
  m_weapon({
-  wpm = n_weapon("canon a eau", 109, 6, {h = 77, v = 93}, 4, 5, ranged, 5, 1, 5, -5),
+  wpm = n_weapon("canon a eau", 109, 6, {h = 77, v = 93}, 10, 5, ranged, 5, 1, 5, -5),
   dfx = n_dfx(dfx_waterfall, draw_waterfall, 100)
  })
  m_weapon({
-  wpm = n_weapon("arguments convaincants", 111, 8, {h = 79, v = 95}, 18, 10, melee, 2, 8, 5, -4),
+  wpm = n_weapon("arguments convaincants", 111, 8, {h = 79, v = 95}, 30, 15, melee, 2, 8, 5, -4),
   dfx = n_dfx(dfx_explosion, draw_explosion, 100)
 })
 end
