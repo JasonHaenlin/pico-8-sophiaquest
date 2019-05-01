@@ -429,7 +429,7 @@ end
 
 function make_game()
  make_weapons()
- init_current_area("cheat","default")
+ init_current_area("biot","bus")
  make_player(g_spawn.x, g_spawn.y, 192)
 end
 
@@ -690,42 +690,46 @@ end
 
 function format_text(text)
  local ftext = ""
- local check = false
- local offset = {x=0,y=0}
+ local offsety = 0
 	local g = false
 	for i=1, #text do
 		ftext = ftext..sub(text, i,i)
 		if (i%16 == 0 or g) then
 			g = true
    if (sub(text, i,i) == " ") then
-    offset.y -= 3
+    offsety -= 3
     ftext = ftext.. "\n"
-    check = true
 				g = false
 			end
 		end
  end
- if (check) offset.x = -22
- return {text=ftext,ox=offset.x,oy=offset.y}
+ return {text = ftext, offset = offsety}
 end
 
-function make_dialog(self, di)
- local di = di or self.dialogs[self.line]
- local t = format_text(di.text)
- local nd = {
-  x = self.x+(self.box.x2/4) + t.ox,
-  y = self.y-10 + t.oy,
+function make_dialog(self, dialog, margin)
+ local margin = margin or "default"
+ local dialog = dialog or self.dialogs[self.line]
+ local t = format_text(dialog.text)
+ local x = self.x + (self.box.x2 / 4)
+ local y = self.y - 10 + t.offset
+ if (margin == "center") then
+  x = g_fp.x + 32
+  y = g_fp.y + 48
+ end
+ local newdialog = {
+  x = x,
+  y = y,
   text = t.text,
-  is_triggered = di.is_triggered,
-  base_triggered = di.base_triggered,
-  arg = di.arg,
+  is_triggered = dialog.is_triggered,
+  base_triggered = dialog.base_triggered,
+  arg = dialog.arg,
  }
  if (self.talking) then
-  nd.actor = self
+  newdialog.actor = self
   self.talking = false
   self.next = false
  end
- add(g_dialogs, nd)
+ add(g_dialogs, newdialog)
 end
 
 -- draw effect
@@ -909,7 +913,7 @@ end
 function controls_npc(self)
  local dist = distance(self)
  if (dist >= 5 and dist < 10) then
-  if(self.talking) make_dialog(self)
+  if(self.talking) make_dialog(self, nil, "center")
   if (self.hint) hint(self)
  end
 end
