@@ -24,7 +24,7 @@ function _init()
  g_weapons = {}
  g_to_win = 3
  g_loots = {
-  {obj = "heal", s = 239, drop_rate = 35},
+  {obj = "heal", s = 239, drop_rate = 25},
   {obj = "coin", s = 255, drop_rate = 100}
  }
  _update = update_menu
@@ -58,7 +58,7 @@ function clean_memory()
 end
 
  function init_area()
-  g_area_keys = {"biot (c)", "antibes (c)", "valbonne (c)"}
+  g_area_keys = {"biot", "antibes", "valbonne"}
   g_area = {
    biot = {
     tag = outside,
@@ -544,31 +544,31 @@ end
 function m_weapons()
  m_weapon({
   wpm = n_weapon("ordinateur", 104, 3, {h = 72, v = 88}, 20, 10, melee, 2, 8, 5, -5),
-  dfx = n_dfx(dfx_disapearance, draw_explosion, 150)
+  dfx = n_dfx(dfx_disapearance, draw_explosion, 300)
  })
  m_weapon({
   wpm = n_weapon("fiole graduee", 105, 4, {h = 73, v = 89}, 15, 7, melee, 2, 8, 5, -4),
-  dfx = n_dfx(dfx_disapearance, draw_explosion, 150)
+  dfx = n_dfx(dfx_disapearance, draw_explosion, 300)
  })
  m_weapon({
   wpm = n_weapon("fougue", 106, 1, {h = 74, v = 90}, 11, 6, ranged, 3, 3, 5, -4),
-  dfx = n_dfx(dfx_disapearance, draw_explosion, 150)
+  dfx = n_dfx(dfx_disapearance, draw_explosion, 300)
  })
  m_weapon({
   wpm = n_weapon("diplomatie", 107, 5, {h = 75, v = 91}, 1, 1, ranged, 10, 2, 5, -5),
-  dfx = n_dfx(dfx_disapearance, draw_explosion, 150)
+  dfx = n_dfx(dfx_disapearance, draw_explosion, 300)
  })
  m_weapon({
   wpm = n_weapon("generateur electrique", 108, 8, {h = 76, v = 92}, 15, 8, melee, 2, 8, 5, -4),
-  dfx = n_dfx(dfx_thunder, draw_thunder, 100)
+  dfx = n_dfx(dfx_thunder, draw_thunder, 200)
  })
  m_weapon({
   wpm = n_weapon("canon a eau", 109, 6, {h = 77, v = 93}, 6, 4, ranged, 5, 1, 5, -5),
-  dfx = n_dfx(dfx_waterfall, draw_waterfall, 100)
+  dfx = n_dfx(dfx_waterfall, draw_waterfall, 200)
  })
  m_weapon({
   wpm = n_weapon("arguments convaincants", 111, 8, {h = 79, v = 95}, 30, 15, melee, 2, 8, 5, -4),
-  dfx = n_dfx(dfx_explosion, draw_explosion, 100)
+  dfx = n_dfx(dfx_explosion, draw_explosion, 200)
 })
 end
 
