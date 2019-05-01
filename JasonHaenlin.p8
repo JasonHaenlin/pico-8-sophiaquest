@@ -13,11 +13,6 @@ f_heal, f_item, f_door, f_inv, f_obst = 0, 1, 4, 5, 7
 l_pl, l_ennemy, l_boss = 200, 20, 150
 walk, stay = "walk", "stay"
 
-function log_cpu_mem(x, y)
- print("cpu "..flr(stat(1)*100).."%", x, y, red)
- print("mem "..stat(0), x, y+6, red)
-end
-
 function _init()
  music(1)
  g_victory_sfx = true
@@ -198,7 +193,7 @@ end
     m_enn(391, 171, 195)
     m_enn(413, 171, 198)
     m_enn(439, 171, 204)
-    m_enn(418, 199, 198)
+    m_enn(418, 199, 198, g_weapons[2])
     m_enn(408, 200, 201)
     m_enn(470, 201, 204)
     m_enn(567, 32, 204)
@@ -272,11 +267,11 @@ end
      n_dialog(" j'espere que vous avez prepare cet entretien ! je n'aime pas du tout perdre mon temps… ❎",trigger(200, trig_time)),
      n_dialog('...', trigger(200, trig_time))
     })
-    m_enn(477, 276, 198)
-    m_enn(437, 281, 198)
-    m_enn(544, 297, 204)
-    m_enn(564, 265, 204)
-    m_enn(640, 277, 198)
+    m_enn(477, 276, 195)
+    m_enn(437, 281, 198, g_weapons[7])
+    m_enn(544, 297, 204, g_weapons[7])
+    m_enn(564, 265, 195)
+    m_enn(640, 277, 195, g_weapons[7])
     m_enn(552, 333, 204)
     m_enn(530, 272, 204)
     m_enn(576, 318, 204)
@@ -301,27 +296,27 @@ end
      n_dialog("parlez-moi de ce dont vous etes capable. presentez-vous ! ❎",trigger(200, trig_time)),
      n_dialog('...', trigger(200, trig_time))
     })
-    m_enn(839, 137, 198)
-    m_enn(842, 105, 204)
+    m_enn(839, 137, 198, g_weapons[7])
+    m_enn(842, 105, 204, g_weapons[7])
     m_enn(909, 97, 195)
     m_enn(943, 150, 198)
-    m_enn(1014, 100, 198)
+    m_enn(1014, 100, 198, g_weapons[7])
     m_enn(898, 17, 198)
-    m_enn(826, 168, 204)
+    m_enn(826, 168, 204, g_weapons[2])
     m_enn(832, 61, 204)
     m_enn(904, 126, 204)
-    m_enn(904, 135, 198)
+    m_enn(904, 135, 204, g_weapons[7])
     m_enn(904, 168, 204)
-    m_enn(1000, 149, 198)
-    m_enn(966, 149, 204)
-    m_enn(950, 129, 198)
-    m_enn(944, 80, 204)
+    m_enn(1000, 149, 204)
+    m_enn(966, 149, 204, g_weapons[7])
+    m_enn(950, 129, 204)
+    m_enn(944, 80, 204, g_weapons[2])
 
     m_enn(826, 21, 204)
     m_enn(838, 21, 204)
-    m_enn(838, 29, 198)
+    m_enn(838, 29, 204, g_weapons[7])
     m_enn(872, 10, 204)
-    m_enn(855, 31, 198)
+    m_enn(855, 31, 204, g_weapons[7])
     m_enn(855, 29, 204)
    end
   },
@@ -342,9 +337,9 @@ end
     })
     m_enn(619, 169, 195)
     m_enn(634, 179, 195)
-    m_enn(649, 169, 195)
-    m_enn(693, 169, 204)
-    m_enn(755, 193, 195)
+    m_enn(649, 169, 198, g_weapons[2])
+    m_enn(693, 169, 198)
+    m_enn(755, 193, 201, g_weapons[7])
    end
   },
   sophiatechouest = {
@@ -355,12 +350,12 @@ end
    instantiate_entities = function ()
     m_tp(721, 376, 46, 15, 10, "biot", "sophiatechouest", trig_dist_hud,"⬇️")
     m_enn(713, 329, 195)
-    m_enn(728, 295, 195)
+    m_enn(728, 295, 195, g_weapons[7])
     m_enn(728, 279, 198)
     m_enn(751, 279, 198)
-    m_enn(786, 271, 195)
-    m_enn(975, 353, 195)
-    m_enn(914, 356, 195)
+    m_enn(786, 271, 201, g_weapons[2])
+    m_enn(975, 353, 201)
+    m_enn(914, 356, 201, g_weapons[7])
     m_enn(864, 356, 198)
    end
   },
@@ -374,8 +369,9 @@ end
     m_enn(131, 302, 195)
     m_enn(142, 302, 195)
     m_enn(157, 302, 195)
-    m_enn(157, 302, 195)
-    m_enn(157, 302, 195)
+    m_enn(174, 309, 198, g_weapons[7])
+    m_enn(173, 346, 201)
+    m_enn(183, 288, 204, g_weapons[7])
    end
   },
   carrouffe = {
@@ -386,7 +382,7 @@ end
    instantiate_entities = function ()
     m_tp(40, 367, 46, 15, 10, "antibes", "carrouffe", trig_dist_hud,"⬇️")
     m_enn(43, 291, 195)
-    m_enn(17, 296, 195)
+    m_enn(17, 296, 195, g_weapons[7])
     m_enn(17, 321, 201)
    end
   }
@@ -409,11 +405,12 @@ function n_entitie(x, y, sprite, tag, health, direction, mvn)
  }
 end
 
-function n_dfx(pattern, draw, cd)
+function n_dfx(pattern, draw, cd, dmg)
  return {
   pattern = pattern or function (self) end,
   draw = draw or function (self) end,
-  cd = cd or 100
+  cd = cd or 100,
+  dmg = dmg or 20
  }
 end
 
@@ -545,26 +542,26 @@ end
 function m_weapons()
  m_weapon({
   wpm = n_weapon("ordinateur", 104, 3, {h = 72, v = 88}, 20, 10, melee, 2, 8, 5, -5),
-  dfx = n_dfx(dfx_disapearance, draw_explosion, 20)
+  dfx = n_dfx(dfx_disapearance, draw_explosion, 150)
  })
  m_weapon({
   wpm = n_weapon("fiole graduee", 105, 4, {h = 73, v = 89}, 15, 7, melee, 2, 8, 5, -4),
-  dfx = n_dfx(dfx_disapearance, draw_explosion, 20)
+  dfx = n_dfx(dfx_disapearance, draw_explosion, 150)
  })
  m_weapon({
   wpm = n_weapon("fougue", 106, 1, {h = 74, v = 90}, 11, 6, ranged, 3, 3, 5, -4),
-  dfx = n_dfx(dfx_disapearance, draw_explosion, 20)
+  dfx = n_dfx(dfx_disapearance, draw_explosion, 150)
  })
  m_weapon({
   wpm = n_weapon("diplomatie", 107, 5, {h = 75, v = 91}, 1, 1, ranged, 10, 2, 5, -5),
-  dfx = n_dfx(dfx_disapearance, draw_explosion, 20)
+  dfx = n_dfx(dfx_disapearance, draw_explosion, 150)
  })
  m_weapon({
   wpm = n_weapon("generateur electrique", 108, 8, {h = 76, v = 92}, 15, 8, melee, 2, 8, 5, -4),
   dfx = n_dfx(dfx_thunder, draw_thunder, 100)
  })
  m_weapon({
-  wpm = n_weapon("canon a eau", 109, 6, {h = 77, v = 93}, 10, 5, ranged, 5, 1, 5, -5),
+  wpm = n_weapon("canon a eau", 109, 6, {h = 77, v = 93}, 6, 4, ranged, 5, 1, 5, -5),
   dfx = n_dfx(dfx_waterfall, draw_waterfall, 100)
  })
  m_weapon({
@@ -614,7 +611,7 @@ function m_enn(x, y, s, weapon)
   control = controls_enn,
   draw = draw_characters,
   box = {x1 = 0, y1 = 8, x2 = 7, y2 = 15},
-  weapon = weapon or g_weapons[5]
+  weapon = weapon or g_weapons[1]
  })
  e.anim = stay
  e.walk = m_anim(m_walk_anim(s))
@@ -1588,8 +1585,6 @@ function draw_game()
  draw_dfxs()
  draw_dialogs()
  draw_hud()
- log_cpu_mem(g_fp.x+70, g_fp.y+5)
- print(g_p.x..":"..g_p.y, g_fp.x+10,g_fp.y+10)
 end
 
 function update_menu()
@@ -1665,7 +1660,7 @@ function check_game_state()
   g_dfx = {}
   g_weapons = {}
   g_dialogs = {}
-
+  g_p = {}
   m_game()
   reset_camera()
   _draw = draw_menu
@@ -1895,4 +1890,3 @@ __music__
 01 17184e44
 00 191a5051
 02 1a1b5455
-
