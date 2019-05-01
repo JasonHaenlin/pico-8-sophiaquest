@@ -20,7 +20,7 @@ end
 
 function _init()
  music(1)
-
+ g_victory_sfx = true
  g_actors = {}
  g_dfx = {}
  g_dialogs = {}
@@ -602,7 +602,7 @@ function m_pl(x, y, s)
   control = controls_pl,
   draw = draw_characters,
   box = {x1 = 0, y1 = 7, x2 = 7, y2 = 14},
-  weapon = g_weapons[4]
+  weapon = g_weapons[1]
  })
  g_p.anim = stay
  g_p.walk = m_anim(m_walk_anim(s))
@@ -1496,12 +1496,13 @@ function draw_hud()
   m:draw()
  end
  draw_results()
- -- sfx(13)
 end
 
 function draw_results()
   if(g_to_win < 1) then
-    printoutline("Vous avez gagné!", g_p.x,g_p.y,white)
+    if(g_victory_sfx) sfx(13)
+     printoutline("Vous avez gagné!", g_p.x,g_p.y,white)
+     g_victory_sfx = false;
   end
 end
 
@@ -1591,6 +1592,7 @@ function draw_game()
  draw_dialogs()
  draw_hud()
  log_cpu_mem(g_fp.x+70, g_fp.y+5)
+ print(g_p.x..":"..g_p.y, g_fp.x+10,g_fp.y+10)
 end
 
 function update_menu()
