@@ -29,7 +29,7 @@ function _init()
  g_weapons = {}
  g_to_win = 3
  g_loots = {
-  {obj = "heal", s = 239, drop_rate = 50},
+  {obj = "heal", s = 239, drop_rate = 35},
   {obj = "coin", s = 255, drop_rate = 100}
  }
  _update = update_menu
@@ -63,17 +63,8 @@ function clean_memory()
 end
 
  function init_area()
-  g_area_keys = {"biot", "antibes", "valbonne"}
+  g_area_keys = {"biot (c)", "antibes (c)", "valbonne (c)"}
   g_area = {
-   cheat = {
-    tag = nolimit,
-    name = "cheat",
-    map = {x1 = -inf, y1 = -inf, x2 = inf, y2 = inf},
-    spawns = {
-     default = { x = 125, y = 70 }
-    },
-    instantiate_entities = function () end
-   },
    biot = {
     tag = outside,
     name = "biot (c)",
@@ -382,6 +373,8 @@ end
     m_tp(129, 352, 46, 15, 10, "biot", "sophiatechru", trig_dist_hud,"⬇️")
     m_enn(131, 302, 195)
     m_enn(142, 302, 195)
+    m_enn(157, 302, 195)
+    m_enn(157, 302, 195)
     m_enn(157, 302, 195)
    end
   },
@@ -843,7 +836,7 @@ function controls_loot(self)
  local dist = distance(self)
  if (dist < 8) then
   if(self.obj == "heal" and g_p.health < l_pl) then
-   g_p.health += 40
+   g_p.health += 20
    if (g_p.health > l_pl) g_p.health = l_pl
    sfx(2)
    del(g_actors,self)
