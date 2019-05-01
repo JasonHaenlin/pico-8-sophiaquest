@@ -17,6 +17,7 @@ walk, stay = "walk", "stay"
 -- debug
 
 g_dbg = {"","","","","","","","","",""}
+g_cl = {x1=0,y1=0,x2=0,y2=0}
 function debug_log(x, y)
  for i=1,#g_dbg do
   print(g_dbg[i], x, y+(6*i), red)
@@ -31,6 +32,10 @@ end
 function log(tab,text)
  if(tab < 0 or tab > #g_dbg) return
  g_dbg[tab] = text
+end
+
+function display_collision_matrix(params)
+ line(g_cl.x1,g_cl.y1,g_cl.x2,g_cl.y2,pink)
 end
 
 -- init
@@ -144,7 +149,7 @@ end
       })
 
       local npc_daminaca_sophiatech_biot = {}
-      npc_daminaca_sophiatech_biot = make_npc(179,163,201)
+      npc_daminaca_sophiatech_biot = make_npc(179,163,201,immortal_object,false)
       npc_daminaca_sophiatech_biot:create_dialogs({
        newdialog("hmm, une nouvelle tete ? ❎",trigger(200, trig_time)),
        newdialog("je ne vous avais jamais vu jeune fille.❎",trigger(200, trig_time)),
@@ -555,7 +560,7 @@ function make_player(x, y, s)
   -- add a draw controller
   draw = draw_characters,
   -- set the hitbox
-  box = {x1 = 0, y1 = 8, x2 = 7, y2 = 14},
+  box = {x1 = 0, y1 = 7, x2 = 7, y2 = 14},
   -- add weapon
   weapon = g_weapons[1]
  })
@@ -694,7 +699,7 @@ function format_text(text)
 	local g = false
 	for i=1, #text do
 		ftext = ftext..sub(text, i,i)
-		if (i%16 == 0 or g) then
+		if (i%14 == 0 or g) then
 			g = true
    if (sub(text, i,i) == " ") then
     offsety -= 3
@@ -714,7 +719,7 @@ function make_dialog(self, dialog, margin)
  local y = self.y - 10 + t.offset
  if (margin == "center") then
   x = g_fp.x + 32
-  y = g_fp.y + 48
+  y = g_fp.y + 40
  end
  local newdialog = {
   x = x,
@@ -912,7 +917,7 @@ end
 
 function controls_npc(self)
  local dist = distance(self)
- if (dist >= 5 and dist < 10) then
+ if (dist < 10) then
   if(self.talking) make_dialog(self, nil, "center")
   if (self.hint) hint(self)
  end
@@ -1036,23 +1041,26 @@ end
 
 function move(a, x, y, ox, oy)
  local x1 = (a.x + x + (ox * x))
- local y1 = max(a.box.y1 + a.y, a.y + y + ((oy/2) * y) + oy/2)
+ local y1 = max(a.box.y1 + a.y, a.y + y + ((oy/2) * y) + oy/2 + (1*abs(x)))
  local x2 = (a.x + x + ox)
  local y2 = max(a.box.y1 + a.y, a.y + y + oy)
+ log(6, x1..":"..y1)
+ log(7, x2..":"..y2)
+ g_cl = {x1=x1,y1=y1,x2=x2,y2=y2}
  local sp1 = mget(get_tile(x1), get_tile(y1))
  local sp2 = mget(get_tile(x2), get_tile(y2))
  if(is_limit_of_map(x1,y1) or is_limit_of_map(x2,y2)) return
 
- -- for b in all(g_actors) do
- --  if(check_collisions(a, b, x, y) and b.tag ~= invisible and b.tag ~= item) then
- --   return
- --  end
- -- end
+ for b in all(g_actors) do
+  if(check_collisions(a, b, x, y) and b.tag ~= invisible and b.tag ~= item) then
+   return
+  end
+ end
 
- -- if (not fget(sp1, f_obst) and not fget(sp2, f_obst))  then
+ if (not fget(sp1, f_obst) and not fget(sp2, f_obst))  then
   a.x += x
   a.y += y
- -- end -- check obstacles on map
+ end -- check obstacles on map
 end
 
 -- action
@@ -1182,7 +1190,7 @@ function shoot(a, d)
   fire({
    -- new bullet
    x = a.x,
-   y = a.y-7,
+   y = a.y-3,
    s = a.weapon.animv,
    dmg = a.weapon.dmg,
    type = a.weapon.type,
@@ -1573,6 +1581,7 @@ function draw_game()
  log(5, #g_actors)
  debug_log(g_fp.x+10, g_fp.y+10)
  log_cpu_mem(g_fp.x+70, g_fp.y+5)
+ display_collision_matrix()
 end
 
 -- update

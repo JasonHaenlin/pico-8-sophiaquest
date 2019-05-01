@@ -64,7 +64,7 @@ function display_front_matrix()
  line(g_ft.x2, g_ft.y2, g_ft.x1, g_ft.y2, orange)
 end
 
-function display_collision_matrix(params)
+function display_collision_matrix()
  line(g_cl.x1,g_cl.y1,g_cl.x2,g_cl.y2,pink)
 end
 
