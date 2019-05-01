@@ -336,6 +336,7 @@ end
     m_enn(838, 29, 204)
     m_enn(872, 10, 204)
     m_enn(855, 31, 204)
+    m_enn(855, 29, 204)
    end
   },
   sophiatechest = {
