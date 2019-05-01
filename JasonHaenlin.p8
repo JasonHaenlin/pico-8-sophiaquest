@@ -31,11 +31,9 @@ function log(tab,text)
  g_dbg[tab] = text
 end
 
-function display_collision_matrix(params)
- line(g_cl.x1,g_cl.y1,g_cl.x2,g_cl.y2,pink)
-end
-
 function _init()
+ music(1)
+
  g_actors = {}
  g_dfx = {}
  g_dialogs = {}
@@ -124,6 +122,7 @@ end
        n_dialog("le directeur de l'ecole se trouve juste apres l'entree. ❎",trigger(200, trig_time)),
        n_dialog("ah ! et ne pensez meme pas aller vers l'est si vous n'etes pas prete. ❎",trigger(200, trig_time)),
        n_dialog("il y a des recruteurs sans vergogne qui rodent dans ces environs. ❎",trigger(200, trig_time)),
+       n_dialog('...', trigger(200, trig_time))
       })
 
       local npc_r1_biot = {}
@@ -132,6 +131,7 @@ end
        n_dialog("eh la, jeune fille ! ❎",trigger(200, trig_time)),
        n_dialog("ou pensez-vous aller comme ca ? ❎",trigger(200, trig_time)),
        n_dialog("quel est votre domaine de competence ? ❎",trigger(200, trig_time)),
+       n_dialog('...', trigger(200, trig_time))
       })
 
       local npc_r2_biot = {}
@@ -140,10 +140,11 @@ end
        n_dialog("tiens tiens, qu'est-ce qu'on a la ? ❎",trigger(200, trig_time)),
        n_dialog("vous etes sans emploi ? ❎",trigger(200, trig_time)),
        n_dialog("laissez-moi regarder votre cv ! ❎",trigger(200, trig_time)),
+       n_dialog('...', trigger(200, trig_time))
       })
 
       local npc_daminaca_sophiatech_biot = {}
-      npc_daminaca_sophiatech_biot = m_npc(185,171,201,immortal_object,false)
+      npc_daminaca_sophiatech_biot = m_npc(185,171,201,npc,immortal_object,false)
       npc_daminaca_sophiatech_biot:create_dialogs({
        n_dialog("hmm, une nouvelle tete ? ❎",trigger(200, trig_time)),
        n_dialog("je ne vous avais jamais vu jeune fille.❎",trigger(200, trig_time)),
@@ -172,6 +173,7 @@ end
        n_dialog("utilisez-le pour demontrer vos connaissances aux etudiants et aux professeurs qui veulent vous tester. ❎",trigger(200, trig_time)),
        n_dialog("et il y en a beaucoup sur le campus et sur les routes. ❎",trigger(200, trig_time)),
        n_dialog("ici, vos arguments et vos competences sont votre arme !❎",trigger(200, trig_time)),
+       n_dialog('...', trigger(200, trig_time))
      })
 
       local npc_st1_biot = {}
@@ -179,13 +181,15 @@ end
       npc_st1_biot:create_dialogs({
        n_dialog("ma specialite c'est genie de l'eau ! ❎",trigger(200, trig_time)),
        n_dialog("et toi ?! ❎",trigger(200, trig_time)),
+       n_dialog('...', trigger(200, trig_time))
       })
 
       local npc_st1_biot = {}
       npc_st1_biot = m_npc(51,217,195)
       npc_st1_biot:create_dialogs({
        n_dialog("tu sais que tu peux changer de materiel ❎",trigger(200, trig_time)),
-       n_dialog("depuis le terminal deriere le directeur ? ❎",trigger(200, trig_time)),
+       n_dialog("depuis le terminal derriere le directeur ? ❎",trigger(200, trig_time)),
+       n_dialog('...', trigger(200, trig_time))
       })
 
       local npc_st2_biot = {}
@@ -193,6 +197,7 @@ end
       npc_st2_biot:create_dialogs({
        n_dialog("tu peux voyager entre les villes grace aux arrets de bus ❎",trigger(200, trig_time)),
        n_dialog("tu savais ? ❎",trigger(200, trig_time)),
+       n_dialog('...', trigger(200, trig_time))
       })
     end
    },
@@ -239,6 +244,7 @@ end
      n_dialog("j'ai entendu dire que le drh de cet entreprise… thelas ❎",trigger(200, trig_time)),
      n_dialog("est assez rude avec ses recrues. ❎",trigger(200, trig_time)),
      n_dialog("sois bien prete avant d'y entrer. ❎",trigger(200, trig_time)),
+     n_dialog('...', trigger(200, trig_time))
     })
    end
   },
@@ -253,6 +259,7 @@ end
     npc_drh_capgemo_biot = m_npc(346,425,204,boss)
     npc_drh_capgemo_biot:create_dialogs({
      n_dialog("presentez vous ! ❎",trigger(200, trig_time)),
+     n_dialog('...', trigger(200, trig_time))
     })
     local npc_st_capgemo_biot = {}
     npc_st_capgemo_biot = m_npc(349,304,195)
@@ -260,6 +267,7 @@ end
      n_dialog("tu vas passer un entretien a capgemo ? ❎",trigger(200, trig_time)),
      n_dialog("tu n'as pas l'air si douee que ça. ❎",trigger(200, trig_time)),
      n_dialog("laisse-moi t'evaluer rapidement. ❎",trigger(200, trig_time)),
+     n_dialog('...', trigger(200, trig_time))
     })
     m_enn(230, 295, 195)
     m_enn(273, 288, 195)
@@ -280,6 +288,7 @@ end
      n_dialog("vous cherchez un stage hein ? ❎",trigger(200, trig_time)),
      n_dialog("et qu'est ce qui vous fait dire que vous sortez de la masse d'etudiants qui postulent chez nous ? ❎",trigger(200, trig_time)),
      n_dialog(" j'espere que vous avez prepare cet entretien ! je n'aime pas du tout perdre mon temps… ❎",trigger(200, trig_time)),
+     n_dialog('...', trigger(200, trig_time))
     })
     m_enn(477, 276, 195)
     m_enn(437, 281, 198)
@@ -304,6 +313,7 @@ end
      n_dialog("attendez, oui c'est bien vous ! j'ai entendu parler de vous. ❎",trigger(200, trig_time)),
      n_dialog("mais thelas n'accepte que l'lite vous le savez ! ❎",trigger(200, trig_time)),
      n_dialog("parlez-moi de ce dont vous etes capable. presentez-vous ! ❎",trigger(200, trig_time)),
+     n_dialog('...', trigger(200, trig_time))
     })
     m_enn(839, 137, 198)
     m_enn(842, 105, 204)
@@ -342,6 +352,7 @@ end
      n_dialog("hmm… vous etes donc venus a sophia dans le seul but de me remplacer dans ma fonction… ❎",trigger(200, trig_time)),
      n_dialog("je vois. votre plan est temeraire. eh bien pour cela, ❎",trigger(200, trig_time)),
      n_dialog("vous allez devoir surpasser mes connaissances ! montrez-moi ce que vous savez faire ! ❎",trigger(200, trig_time)),
+     n_dialog('...', trigger(200, trig_time))
     })
     m_enn(619, 169, 195)
     m_enn(634, 179, 195)
@@ -472,7 +483,7 @@ function to_trigger(self)
   self.actor.hint = true
   self.actor.line = 1
   g_p.control = controls_pl
-  if(self.actor.furymode) go_in_fury(self.actor)
+  if(self.actor.furymode == true) go_in_fury(self.actor)
  end
 end
 
@@ -590,7 +601,8 @@ function m_npc(x, y, s, tag ,health, fury, weapon)
  n.walk = m_anim(m_walk_anim(s))
  n.stay = m_anim(m_stay_anim(s))
  n.create_dialogs = create_dialogs
- n.furymode = fury or true
+ n.furymode = true
+ if (fury ~= nil) n.furymode = fury
  n.weapon_in_pocket = weapon or g_weapons[1]
  n.super = tag or npc
  return n
@@ -1223,7 +1235,7 @@ function shoot(a, d)
  if(d == down) then
   fire({
    x = a.x,
-   y = a.y+9,
+   y = a.y+10,
    s = a.weapon.animv,
    dmg = a.weapon.dmg,
    type = a.weapon.type,
@@ -1594,7 +1606,6 @@ function draw_game()
  log(2, #g_actors)
  debug_log(g_fp.x+10, g_fp.y+10)
  log_cpu_mem(g_fp.x+70, g_fp.y+5)
- display_collision_matrix()
 end
 
 function update_menu()
@@ -1863,7 +1874,7 @@ __map__
 0002311212121212121212121212121212121212121212121212121212121212121212121212020200000000000000001718181818181819020217181818181818181818181818181917180056575657565756577c7c7c7c7c7f7f7c7c7c7c7c7c7c7c7c7c770000000000000000000000000000000000000000000000000000
 000231121212121212121212121212121212121212121212121212121212121212121212121202020000000000007f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f000000000000000000000000000000007f7f00000000000000000000000000000000000000000000000000000000000000000000000000
 __sfx__
-0110000017050000000000023050230500000000000210502105000000000001c05000000000001c0501a05000000000000000000000000000000000000000000000000000000000000000000000000000000000
+0010000017050000000000023050230500000000000210502105000000000001c05000000000001c0501a05000000000000000000000000000000000000000000000000000000000000000000000000000000000
 00040000185600125017540175301651016500165001670013700117001f2001e2001b2001a2001b2001e20000000000000000000000000000000000000000000000000000000000000000000000000000000000
 0003000015760187501a7501d7401f740207302272023710257002570000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
 000300000d7700a7700677005760037500274001720027100640005400054000000000000000000000000000000002c2000000000000000000000000000000000000000000000000000000000000000000000000
@@ -1885,8 +1896,18 @@ __sfx__
 001000000000000000000001f5501f550005000050000500005001f5501f550005000050000500005001f5501f5500000000000181000000021500215001f5501f55013500000001f5501f5501f5561f50000000
 001000000000000000000002355023550005000050000500005002455024550005000050000500005002455024550000000000018100000002450024500245502455018500000002455124550245562450000000
 00100000000000000000000265502655000500005000050000500285502855000500005000050000500285502855000000000001810000000295002950028550285501c500000002855128550285562850000000
+0109000418070160701307011070295052650529505265052d505295052950526505225051f5051d505215052e5052b50528505245052d5052d5052850528505265052e5052b5052850524505215051d50521505
+0014000020724200251c7241c0251972419525157243951520724200251c7241c0251952219025147241502121724210251c7241c0261971419015237241702521724395251c7141c01519724195251772717025
+001400000c0230903520714090350a5551971315535090350c033090551971309555207142461509055155550c043060452071406045246151671306045125450c03306055167130655520714246150604515545
+001400000c043021551e7140205524615197350e7550c04302155020551e7241e7250255524615020550e55501155010551e7140c04324615167130b0350d0550c04301155197340b55520724246150104515545
+0014000020714200151c7141c01525732287321571439515207142a7222c7212c7122c71219015147142a73228732287351c7141e7221e7221e715237141701521714395151c7241c02519724195251772617025
+0014000020714200151c7141c01525722287221571439515207142a7322c7312c7222c71219015147142f7222d7222d7252d714217322173221725237141701521714395251c7241c02519724195251772617025
+0016002006055061550d055061550d547061550d055061550d055060550615501155065470d15504055041550b055041550b547041550b055041550b0550b155040550b155045460b1550b055041550b0550b155
+010b00201e4421e4321f4261e4261c4321c4221e4421e4321e4221e4221f4261e4261c4421c4321c4221c4221c4221c4221c4221c4221c4221c4221c4221c4221c4221c4221c4221c42510125101051012510105
+011600001e4401e4321e4221e4250653500505065351a0241a025065351a0250653500505065351902419025045351702404535005050453500505045351e0241e025045351e0240453504535005050453504535
+010b00201e4421e4361f4261e4261c4421c4421a4451c4451e4451f44521445234452644528445254422543219442194322544225432264362543623442234322144221432234472343625440234402144520445
 __music__
 03 08020355
-00 0b0c0e44
-01 0e0f1011
-02 12131415
+01 17184e44
+00 191a5051
+02 1a1b5455
