@@ -8,9 +8,9 @@ black, dark_blue, dark_purple, dark_green, brown, dark_gray, light_gray, white, 
 pl, bullet, ennemy, item, npc, invisible, outside, inside,  boss = 0, 1, 2, 3, 4, 5, 6, 7, 8
 immortal_object = 10000
 inf = 10000
-melee, ranged = 1, 20
+melee, ranged, nuke = 1, 20, 30
 f_heal, f_item, f_door, f_inv, f_obst = 0, 1, 4, 5, 7
-l_pl, l_ennemy, l_boss = 200, 20, 150
+l_pl, l_ennemy, l_boss = 200, 50, 160
 walk, stay = "walk", "stay"
 
 function _init()
@@ -80,7 +80,7 @@ end
      m_tp(136, 224, 46, 15, 10, "sophiatechouest", "entrance", trig_dist_hud,"⬆️")
      m_tp(33, 192, 46, 15, 10, "sophiatechru", "entrance", trig_dist_hud,"⬆️")
      local npc_outside_man_biot = {}
-     npc_outside_man_biot = m_npc(108,71,204)
+     npc_outside_man_biot = m_npc(108,71,204, npc, 20)
      npc_outside_man_biot:create_dialogs({
        n_dialog("que… quoi ? ❎",trigger(200, trig_time)),
        n_dialog("vous arrivez a sophia sans aucune competence ?! ❎",trigger(200, trig_time)),
@@ -322,7 +322,7 @@ end
    instantiate_entities = function ()
     m_tp(713, 239, 46, 15, 10, "biot", "sophiatechest", trig_dist_hud,"⬇️")
     local npc_daminaca_bestcorp = {}
-    npc_daminaca_bestcorp = m_npc(772,176,201,npc,100,true,g_weapons[2])
+    npc_daminaca_bestcorp = m_npc(772,176,201,npc,200,true,g_weapons[2])
     npc_daminaca_bestcorp:create_dialogs({
      n_dialog("hein ? non non je ne suis que le frere du directeur ! ❎",trigger(200, trig_time)),
      n_dialog("mon frere vous a donc accepte dans son ecole ❎",trigger(200, trig_time)),
@@ -333,7 +333,7 @@ end
     m_enn(634, 179, 195)
     m_enn(649, 169, 198, g_weapons[2])
     m_enn(693, 169, 198)
-    m_enn(755, 193, 201, g_weapons[7])
+    m_enn(755, 193, 204, g_weapons[7])
    end
   },
   sophiatechouest = {
@@ -347,9 +347,9 @@ end
     m_enn(728, 295, 195, g_weapons[7])
     m_enn(728, 279, 198)
     m_enn(751, 279, 198)
-    m_enn(786, 271, 201, g_weapons[2])
-    m_enn(975, 353, 201)
-    m_enn(914, 356, 201, g_weapons[7])
+    m_enn(786, 271, 195, g_weapons[2])
+    m_enn(975, 353, 204)
+    m_enn(914, 356, 204, g_weapons[7])
     m_enn(864, 356, 198)
    end
   },
@@ -364,10 +364,10 @@ end
     m_enn(142, 302, 195, g_weapons[7])
     m_enn(157, 302, 195)
     m_enn(174, 309, 198, g_weapons[7])
-    m_enn(173, 346, 201)
-    m_enn(183, 288, 204, g_weapons[7])
-    m_enn(173, 309, 201)
-    m_enn(156, 306, 204, g_weapons[7])
+    m_enn(173, 346, 195)
+    m_enn(183, 288, 195, g_weapons[7])
+    m_enn(173, 309, 195)
+    m_enn(156, 306, 195, g_weapons[7])
    end
   },
   carrouffe = {
@@ -379,7 +379,7 @@ end
     m_tp(40, 367, 46, 15, 10, "antibes", "carrouffe", trig_dist_hud,"⬇️")
     m_enn(43, 291, 195)
     m_enn(17, 296, 195, g_weapons[7])
-    m_enn(17, 321, 201)
+    m_enn(17, 321, 198)
    end
   }
  }
@@ -535,13 +535,14 @@ function m_actor(t)
  return actor
 end
 
+--name, sprite, sfx, anim, cd, dmg, type, speed, hitbox, offsetx, offsety
 function m_weapons()
  m_weapon({
-  wpm = n_weapon("ordinateur", 104, 3, {h = 72, v = 88}, 20, 10, melee, 2, 8, 5, -5),
+  wpm = n_weapon("ordinateur", 104, 3, {h = 72, v = 88}, 20, 8, melee, 2, 8, 5, -5),
   dfx = n_dfx(dfx_disapearance, draw_explosion, 300)
  })
  m_weapon({
-  wpm = n_weapon("fiole graduee", 105, 4, {h = 73, v = 89}, 15, 7, melee, 2, 8, 5, -4),
+  wpm = n_weapon("fiole graduee", 105, 4, {h = 73, v = 89}, 15, 10, melee, 2, 8, 5, -4),
   dfx = n_dfx(dfx_disapearance, draw_explosion, 300)
  })
  m_weapon({
@@ -553,7 +554,7 @@ function m_weapons()
   dfx = n_dfx(dfx_disapearance, draw_explosion, 300)
  })
  m_weapon({
-  wpm = n_weapon("generateur electrique", 108, 8, {h = 76, v = 92}, 15, 8, melee, 2, 8, 5, -4),
+  wpm = n_weapon("generateur electrique", 108, 8, {h = 76, v = 92}, 15, 12, melee, 2, 8, 5, -4),
   dfx = n_dfx(dfx_thunder, draw_thunder, 200)
  })
  m_weapon({
@@ -561,7 +562,7 @@ function m_weapons()
   dfx = n_dfx(dfx_waterfall, draw_waterfall, 200)
  })
  m_weapon({
-  wpm = n_weapon("arguments convaincants", 111, 8, {h = 79, v = 95}, 30, 15, melee, 2, 8, 5, -4),
+  wpm = n_weapon("arguments convaincants", 111, 8, {h = 79, v = 95}, 30, 30, nuke, 2, 8, 5, -4),
   dfx = n_dfx(dfx_explosion, draw_explosion, 200)
 })
 end
@@ -754,14 +755,19 @@ end
 function dfx_explosion(x, y, a, h, draw)
 	while (a > 0) do
 		local explo = {
-   x = x+(rnd(2)-1)*10,
-   y = y+(rnd(2)-1)*10,
-   r = 4 + rnd(4),
-   c = 8,
+   --x = x+(rnd(2)-1)*10,
+   --y = y+(rnd(2)-1)*10,
+   --r = 4 + rnd(4),
+   --c = 8,
+   --draw = draw
+   x = x+(rnd(2)-1)*5,
+   y = y+(rnd(2)-1)*5,
+   r = 2 + rnd(4),
+   c = flr(rnd(9)+6),
    draw = draw
   }
 		add(g_explosions, explo)
-		sfx(0)
+		sfx(7)
 		a -= 1
 	end
 end
@@ -1238,6 +1244,8 @@ function fire(en)
  b.dmg = en.dmg
  if (en.type == melee) then
   b.range = 5
+ elseif (en.type == nuke) then
+  b.range = 32
  else
   b.range = 128
  end
@@ -1848,14 +1856,14 @@ __map__
 0002311212121212121212121212121212121212121212121212121212121212121212121212020200000000000000001718181818181819020217181818181818181818181818181917180056575657565756577c7c7c7c7c7f7f7c7c7c7c7c7c7c7c7c7c770000000000000000000000000000000000000000000000000000
 000231121212121212121212121212121212121212121212121212121212121212121212121202020000000000007f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f000000000000000000000000000000007f7f00000000000000000000000000000000000000000000000000000000000000000000000000
 __sfx__
-0010000017050000000000023050230500000000000210502105000000000001c05000000000001c0501a05000000000000000000000000000000000000000000000000000000000000000000000000000000000
+001000000e0500e1500e1500e0500e050101501015010150101501015010150101501015010150101501015010150101501015010150101501015010150101501015010150000000000000000000000000000000
 00040000185600125017540175301651016500165001670013700117001f2001e2001b2001a2001b2001e20000000000000000000000000000000000000000000000000000000000000000000000000000000000
 0003000015760187501a7501d7401f740207302272023710257002570000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
 000300000d7700a7700677005760037500274001720027100640005400054000000000000000000000000000000002c2000000000000000000000000000000000000000000000000000000000000000000000000
 0001000011130161401d150221602617023160201601a150151500e1300b13007120021100110000000000000000000000000000b200000000000000000000000000000000000000000000000000000000000000
 000100002674026740267402674026740267402674026740267402674026740267402674026740267402674026740267402674026740267402674026740267400070000700007000070000700007000070000700
-0001000028750237602175025730257101a7101874017760167601674018720197702f5002f5002f5002f5002e50029500215001a5002e5002e5002d50028500225001c500195001a50028500275002650000000
-000200002a63024630226302a6301d630236302a6301d6301a6302c6301f6302b6300000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+0106000028750237602175025730257101a7101874017760167601674018720197702f5002f5002f5002e500295001c500195001a500285002750026500000000000000000000000000000000000000000000000
+000600003b674346742f6742a6742867424664206641d664196641666413654116540f6540d6540b6540964408644076440664405634046340363403634026340263402624026240262402624026140261402614
 00040000376203762037620376203762037620366203661034610326102e60029600216001a6000e6000160003600000000000000000000000000000000000000000000000000000000000000000000000000000
 0001000012040100400f0400e0400f0401004011040000000000000000110001200012000130000000014000140001c0001500015000160001700017000170000000000000000000000000000000000000000000
 000500001364013630136200000013640136301362000000136401363013620000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
@@ -1885,3 +1893,4 @@ __music__
 01 17184e44
 00 191a5051
 02 1a1b5455
+
